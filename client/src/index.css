@@ -51,10 +51,10 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
   
-  /* AutomaDev Custom Colors */
-  --dark: #0d1117;
-  --dark-secondary: #21262d;
-  --dark-tertiary: #30363d;
+  /* AutomaDev Custom Colors - n8n inspired */
+  --dark: #1a1625;
+  --dark-secondary: #252035;
+  --dark-tertiary: #2f2a45;
   --primary: #ff6b35;
   --primary-dark: #ff5722;
   --secondary-blue: #0969da;
@@ -63,38 +63,38 @@
 }
 
 .dark {
-  --background: #0d1117;
+  --background: #1a1625;
   --foreground: hsl(200, 6.6667%, 91.1765%);
-  --card: #21262d;
+  --card: #252035;
   --card-foreground: hsl(0, 0%, 85.0980%);
-  --popover: #0d1117;
+  --popover: #1a1625;
   --popover-foreground: hsl(200, 6.6667%, 91.1765%);
   --primary: #ff6b35;
   --primary-foreground: hsl(0, 0%, 100%);
   --primary-dark: #ff5722;
   --secondary: hsl(195.0000, 15.3846%, 94.9020%);
   --secondary-foreground: hsl(210, 25%, 7.8431%);
-  --muted: #21262d;
+  --muted: #252035;
   --muted-foreground: hsl(210, 3.3898%, 46.2745%);
-  --accent: #30363d;
+  --accent: #2f2a45;
   --accent-foreground: #ff6b35;
   --destructive: hsl(356.3033, 90.5579%, 54.3137%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: #30363d;
-  --input: #21262d;
+  --border: #2f2a45;
+  --input: #252035;
   --ring: #ff6b35;
   --chart-1: hsl(203.8863, 88.2845%, 53.1373%);
   --chart-2: hsl(159.7826, 100%, 36.0784%);
   --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
   --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
   --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
-  --sidebar: #21262d;
+  --sidebar: #252035;
   --sidebar-foreground: hsl(0, 0%, 85.0980%);
   --sidebar-primary: #ff6b35;
   --sidebar-primary-foreground: hsl(0, 0%, 100%);
-  --sidebar-accent: #30363d;
+  --sidebar-accent: #2f2a45;
   --sidebar-accent-foreground: #ff6b35;
-  --sidebar-border: #30363d;
+  --sidebar-border: #2f2a45;
   --sidebar-ring: #ff6b35;
   --font-sans: Inter, system-ui, sans-serif;
   --font-serif: Georgia, serif;
@@ -109,10 +109,10 @@
   --shadow-xl: 0px 2px 0px 0px hsl(42, 92%, 50%, 0.00), 0px 8px 10px -1px hsl(42, 92%, 50%, 0.00);
   --shadow-2xl: 0px 2px 0px 0px hsl(42, 92%, 50%, 0.00);
   
-  /* AutomaDev Dark Mode Colors */
-  --dark: #0d1117;
-  --dark-secondary: #21262d;
-  --dark-tertiary: #30363d;
+  /* AutomaDev Dark Mode Colors - n8n inspired */
+  --dark: #1a1625;
+  --dark-secondary: #252035;
+  --dark-tertiary: #2f2a45;
 }
 
 @layer base {
@@ -185,5 +185,9 @@
   
   .focus\:border-primary:focus {
     border-color: var(--primary);
+  }
+
+  .bg-radial-gradient {
+    background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
   }
 }

@@ -16,12 +16,17 @@ export default function HeroSection() {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background with gradient */}
+      {/* Background with gradient - n8n style */}
       <div className="absolute inset-0 bg-gradient-to-br from-dark via-dark-secondary to-dark-tertiary"></div>
 
-      {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="w-full h-full bg-gradient-to-br from-purple-600/10 via-transparent to-purple-400/10"></div>
+      {/* Animated background elements with subtle purple gradient */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="w-full h-full bg-gradient-to-br from-purple-900/30 via-transparent to-purple-800/20"></div>
+      </div>
+
+      {/* Additional radial gradient for depth */}
+      <div className="absolute inset-0 opacity-40">
+        <div className="w-full h-full bg-radial-gradient from-purple-900/20 via-transparent to-transparent"></div>
       </div>
 
       {/* Content */}

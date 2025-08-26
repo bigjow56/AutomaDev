@@ -62,11 +62,11 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
-        // AutomaDev custom colors
+        // AutomaDev custom colors - n8n inspired
         dark: {
-          DEFAULT: "var(--dark)",
-          secondary: "var(--dark-secondary)",
-          tertiary: "var(--dark-tertiary)",
+          DEFAULT: "#1a1625",
+          secondary: "#252035", 
+          tertiary: "#2f2a45",
         },
         "secondary-blue": "#0969da",
         purple: {
