@@ -21,7 +21,7 @@ export default function HeroSection() {
 
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-30">
-        <div className="w-full h-full bg-gradient-to-br from-primary/10 via-transparent to-orange-400/10"></div>
+        <div className="w-full h-full bg-gradient-to-br from-purple-600/10 via-transparent to-purple-400/10"></div>
       </div>
 
       {/* Content */}
@@ -33,7 +33,7 @@ export default function HeroSection() {
         >
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
             <span className="block text-white">Automação que</span>
-            <span className="block bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">
               Transforma Negócios
             </span>
           </h1>
@@ -53,7 +53,8 @@ export default function HeroSection() {
             <Button
               onClick={() => scrollToSection("services")}
               variant="outline"
-              className="border-2 border-gray-500 hover:border-primary text-white px-8 py-4 font-bold text-lg transition-all duration-300 hover:bg-primary/10"
+              className="border-2 border-gray-500 hover:border-secondary-blue text-white px-8 py-4 font-bold text-lg transition-all duration-300 hover:bg-secondary-blue/10"
+              style={{ borderColor: '#0969da' }}
               data-testid="button-know-services"
             >
               Conhecer Serviços

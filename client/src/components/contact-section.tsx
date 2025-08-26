@@ -228,7 +228,7 @@ export default function ContactSection() {
                     <Input
                       id="company"
                       type="text"
-                      value={formData.company}
+                      value={formData.company || ""}
                       onChange={(e) => handleInputChange("company", e.target.value)}
                       className="bg-dark-secondary border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary"
                       placeholder="Nome da sua empresa"

@@ -68,6 +68,11 @@ export default {
           secondary: "var(--dark-secondary)",
           tertiary: "var(--dark-tertiary)",
         },
+        "secondary-blue": "#0969da",
+        purple: {
+          600: "#6f42c1",
+          400: "#8b5cf6",
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],

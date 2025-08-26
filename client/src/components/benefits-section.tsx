@@ -38,7 +38,7 @@ export default function BenefitsSection() {
     <section id="benefits" className="py-20 bg-gradient-to-br from-dark via-dark-secondary to-dark relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5">
-        <div className="w-full h-full bg-gradient-to-br from-primary/20 via-transparent to-orange-400/20"></div>
+        <div className="w-full h-full bg-gradient-to-br from-purple-600/20 via-transparent to-purple-400/20"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
