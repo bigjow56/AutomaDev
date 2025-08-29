@@ -43,10 +43,10 @@ import { ptBR } from "date-fns/locale";
 
 const eventFormSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
-  subtitle: z.string().optional(),
-  description: z.string().optional(),
-  endDate: z.string().optional(),
-  isActive: z.string().default("false"),
+  subtitle: z.string().optional().or(z.literal("")),
+  description: z.string().optional().or(z.literal("")),
+  endDate: z.string().optional().or(z.literal("")),
+  isActive: z.enum(["true", "false"]).default("false"),
 });
 
 type EventForm = z.infer<typeof eventFormSchema>;
@@ -119,13 +119,21 @@ export default function AdminDashboard() {
   // Create event mutation
   const createEventMutation = useMutation({
     mutationFn: async (data: EventForm) => {
+      console.log("=== MUTATION SENDING DATA ===");
+      console.log("Data being sent:", JSON.stringify(data, null, 2));
       return await apiRequest("POST", "/api/admin/events", data);
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log("=== CREATE SUCCESS ===");
+      console.log("Result:", result);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/events"] });
       setIsDialogOpen(false);
       reset();
       setSelectedTemplate("");
+    },
+    onError: (error) => {
+      console.error("=== CREATE ERROR ===");
+      console.error("Error:", error);
     },
   });
 
@@ -160,6 +168,10 @@ export default function AdminDashboard() {
   }, [authCheck, authLoading, setLocation]);
 
   const onSubmit = (data: EventForm) => {
+    console.log("=== FRONTEND FORM SUBMIT ===");
+    console.log("Form data:", JSON.stringify(data, null, 2));
+    console.log("Form errors:", errors);
+    
     if (editingEvent) {
       updateEventMutation.mutate({ id: editingEvent.id, data });
     } else {
