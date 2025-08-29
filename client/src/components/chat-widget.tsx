@@ -25,13 +25,30 @@ export default function ChatWidget() {
   const [isTyping, setIsTyping] = useState(false);
 
   // Fetch chat messages
-  const { data: messagesData } = useQuery({
-    queryKey: ["/api/chat", sessionId],
-    queryFn: () => apiRequest("GET", `/api/chat/${sessionId}`),
-    enabled: isOpen,
+  const { data: messagesData, isLoading: messagesLoading, error } = useQuery({
+    queryKey: [`/api/chat/${sessionId}`],
+    queryFn: async () => {
+      console.log("=== MAKING API REQUEST ===");
+      console.log("URL:", `/api/chat/${sessionId}`);
+      const response = await apiRequest("GET", `/api/chat/${sessionId}`);
+      const data = await response.json();
+      console.log("API Response JSON:", data);
+      return data;
+    },
+    enabled: isOpen && !!sessionId,
+    refetchInterval: 3000, // Refetch every 3 seconds to get new AI responses
   });
 
   const messages: ChatMessage[] = (messagesData as any)?.messages || [];
+
+  console.log("=== CHAT WIDGET STATE ===");
+  console.log("Session ID:", sessionId);
+  console.log("Chat is open:", isOpen);
+  console.log("Query enabled:", isOpen && !!sessionId);
+  console.log("Messages data:", messagesData);
+  console.log("Messages array:", messages);
+  console.log("Query error:", error);
+  console.log("Total messages found:", messages.length);
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -44,7 +61,7 @@ export default function ChatWidget() {
     },
     onSuccess: () => {
       setIsTyping(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/chat", sessionId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/chat/${sessionId}`] });
       setMessage("");
     },
     onError: (error) => {
@@ -92,7 +109,12 @@ export default function ChatWidget() {
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
       >
         <Button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            console.log("=== TOGGLING CHAT ===");
+            console.log("Current isOpen:", isOpen);
+            console.log("New isOpen:", !isOpen);
+            setIsOpen(!isOpen);
+          }}
           className="w-14 h-14 rounded-full bg-primary hover:bg-primary-dark text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center"
           data-testid="chat-toggle-button"
         >
