@@ -11,9 +11,18 @@ import type { ChatMessage, InsertChatMessage } from "@shared/schema";
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [sessionId] = useState(() => crypto.randomUUID());
+  const [sessionId] = useState(() => {
+    // Get or create session ID with persistence
+    let id = sessionStorage.getItem('chat-session-id');
+    if (!id) {
+      id = crypto.randomUUID();
+      sessionStorage.setItem('chat-session-id', id);
+    }
+    return id;
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const [isTyping, setIsTyping] = useState(false);
 
   // Fetch chat messages
   const { data: messagesData } = useQuery({
@@ -27,21 +36,40 @@ export default function ChatWidget() {
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (data: InsertChatMessage) => {
-      return apiRequest("POST", "/api/chat", data);
+      setIsTyping(true);
+      const result = await apiRequest("POST", "/api/chat", data);
+      // Simulate AI thinking delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return result;
     },
     onSuccess: () => {
+      setIsTyping(false);
       queryClient.invalidateQueries({ queryKey: ["/api/chat", sessionId] });
       setMessage("");
     },
     onError: (error) => {
+      setIsTyping(false);
       console.error("Error sending message:", error);
     },
   });
 
   // Auto scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (isOpen) {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [messages, isOpen, isTyping]);
+
+  // Format timestamp
+  const formatTime = (timestamp: string | Date) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('pt-BR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,17 +108,20 @@ export default function ChatWidget() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed bottom-24 right-6 w-80 h-96 bg-dark-secondary border border-dark-tertiary/30 rounded-2xl shadow-2xl z-40 flex flex-col overflow-hidden"
+            className="fixed bottom-24 right-6 w-80 h-96 bg-white border border-gray-200 rounded-2xl shadow-2xl z-40 flex flex-col overflow-hidden md:w-80 md:h-96 sm:w-72 sm:h-80 max-sm:fixed max-sm:inset-4 max-sm:w-auto max-sm:h-auto max-sm:bottom-4 max-sm:right-4 max-sm:left-4 max-sm:top-4"
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             {/* Header */}
-            <div className="bg-primary px-4 py-3 flex items-center justify-between text-white">
+            <div className="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] px-4 py-3 flex items-center justify-between text-white">
               <div className="flex items-center space-x-2">
                 <Bot className="w-5 h-5" />
-                <span className="font-semibold">Chat com IA</span>
+                <div>
+                  <span className="font-semibold block">AutomaDev Support</span>
+                  <span className="text-xs opacity-90">Estamos aqui para ajudar!</span>
+                </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
@@ -102,13 +133,14 @@ export default function ChatWidget() {
             </div>
 
             {/* Messages Area */}
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="flex-1 p-4 bg-gray-50">
               <div className="space-y-4">
                 {messages.length === 0 && (
                   <div className="text-center text-gray-400 py-8">
-                    <Bot className="w-12 h-12 mx-auto mb-3 text-primary" />
+                    <div className="text-4xl mb-3">🤖</div>
+                    <h3 className="font-semibold text-gray-600 mb-2">👋 Olá!</h3>
                     <p className="text-sm">
-                      Olá! Sou a IA da AutomaDev. Como posso ajudar você hoje?
+                      Como posso te ajudar hoje?
                     </p>
                   </div>
                 )}
@@ -124,37 +156,42 @@ export default function ChatWidget() {
                     <div
                       className={`max-w-[80%] px-3 py-2 rounded-2xl ${
                         msg.isUser === "true"
-                          ? "bg-primary text-white ml-auto"
-                          : "bg-dark-tertiary text-gray-200"
+                          ? "bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white ml-auto rounded-br-md"
+                          : "bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm"
                       }`}
                       data-testid={`chat-message-${msg.isUser === "true" ? "user" : "ai"}`}
                     >
-                      <div className="flex items-start space-x-2">
+                      <div className="space-y-1">
                         {msg.isUser === "false" && (
-                          <Bot className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+                          <div className="flex items-center space-x-1 mb-1">
+                            <span className="text-sm">🤖</span>
+                          </div>
                         )}
-                        {msg.isUser === "true" && (
-                          <User className="w-4 h-4 mt-0.5 text-white flex-shrink-0" />
-                        )}
-                        <p className="text-sm leading-relaxed">{msg.message}</p>
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                        <span className={`text-xs block mt-1 ${
+                          msg.isUser === "true" ? "text-white/70" : "text-gray-500"
+                        }`}>
+                          {formatTime(msg.createdAt)}
+                        </span>
                       </div>
                     </div>
                   </motion.div>
                 ))}
 
-                {sendMessageMutation.isPending && (
+                {isTyping && (
                   <motion.div
                     className="flex justify-start"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
-                    <div className="bg-dark-tertiary text-gray-200 px-3 py-2 rounded-2xl">
+                    <div className="bg-white text-gray-800 border border-gray-200 px-3 py-2 rounded-2xl rounded-bl-md shadow-sm">
                       <div className="flex items-center space-x-2">
-                        <Bot className="w-4 h-4 text-primary" />
+                        <span className="text-sm">🤖</span>
+                        <span className="text-sm text-gray-600 italic">Digitando</span>
                         <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-[#ff6b35] rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-[#ff6b35] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-[#ff6b35] rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                         </div>
                       </div>
                     </div>
@@ -166,24 +203,29 @@ export default function ChatWidget() {
             </ScrollArea>
 
             {/* Input Area */}
-            <div className="border-t border-dark-tertiary/30 p-4">
+            <div className="border-t border-gray-200 p-4 bg-white">
               <form onSubmit={handleSendMessage} className="flex space-x-2">
                 <Input
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Digite sua mensagem..."
-                  className="flex-1 bg-dark border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary"
-                  disabled={sendMessageMutation.isPending}
+                  className="flex-1 bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-500 focus:border-[#ff6b35] focus:ring-1 focus:ring-[#ff6b35] rounded-full px-4"
+                  disabled={sendMessageMutation.isPending || isTyping}
+                  maxLength={500}
                   data-testid="chat-input"
                 />
                 <Button
                   type="submit"
                   size="sm"
-                  disabled={!message.trim() || sendMessageMutation.isPending}
-                  className="bg-primary hover:bg-primary-dark text-white px-3"
+                  disabled={!message.trim() || sendMessageMutation.isPending || isTyping}
+                  className="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] hover:from-[#e55a2b] hover:to-[#e0851a] text-white px-4 rounded-full shadow-sm transition-all duration-200 hover:shadow-md"
                   data-testid="chat-send-button"
                 >
-                  <Send className="w-4 h-4" />
+                  {sendMessageMutation.isPending || isTyping ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
                 </Button>
               </form>
             </div>
