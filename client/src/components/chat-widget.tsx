@@ -171,7 +171,7 @@ export default function ChatWidget() {
                         <span className={`text-xs block mt-1 ${
                           msg.isUser === "true" ? "text-white/70" : "text-gray-500"
                         }`}>
-                          {formatTime(msg.createdAt)}
+                          {formatTime(msg.timestamp)}
                         </span>
                       </div>
                     </div>
