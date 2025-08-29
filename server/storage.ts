@@ -1,4 +1,7 @@
-import { type Contact, type InsertContact, type ChatMessage, type InsertChatMessage } from "@shared/schema";
+import { type Contact, type InsertContact, type ChatMessage, type InsertChatMessage, contacts, chatMessages } from "@shared/schema";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { eq, desc } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -11,55 +14,59 @@ export interface IStorage {
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 }
 
-export class MemStorage implements IStorage {
-  private contacts: Map<string, Contact>;
-  private chatMessages: Map<string, ChatMessage[]>;
+
+// Database storage using Drizzle ORM and PostgreSQL
+export class DbStorage implements IStorage {
+  private db;
 
   constructor() {
-    this.contacts = new Map();
-    this.chatMessages = new Map();
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL is required");
+    }
+    const sql = neon(process.env.DATABASE_URL);
+    this.db = drizzle(sql);
   }
 
   async getContact(id: string): Promise<Contact | undefined> {
-    return this.contacts.get(id);
+    const result = await this.db
+      .select()
+      .from(contacts)
+      .where(eq(contacts.id, id))
+      .limit(1);
+    return result[0];
   }
 
   async getAllContacts(): Promise<Contact[]> {
-    return Array.from(this.contacts.values()).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    return await this.db
+      .select()
+      .from(contacts)
+      .orderBy(desc(contacts.createdAt));
   }
 
   async createContact(insertContact: InsertContact): Promise<Contact> {
-    const id = randomUUID();
-    const contact: Contact = {
-      ...insertContact,
-      company: insertContact.company || null,
-      id,
-      createdAt: new Date(),
-    };
-    this.contacts.set(id, contact);
-    return contact;
+    const result = await this.db
+      .insert(contacts)
+      .values(insertContact)
+      .returning();
+    return result[0];
   }
 
   async getChatMessages(sessionId: string): Promise<ChatMessage[]> {
-    return this.chatMessages.get(sessionId) || [];
+    return await this.db
+      .select()
+      .from(chatMessages)
+      .where(eq(chatMessages.sessionId, sessionId))
+      .orderBy(chatMessages.timestamp);
   }
 
   async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
-    const id = randomUUID();
-    const message: ChatMessage = {
-      ...insertMessage,
-      id,
-      timestamp: new Date(),
-    };
-
-    const sessionMessages = this.chatMessages.get(insertMessage.sessionId) || [];
-    sessionMessages.push(message);
-    this.chatMessages.set(insertMessage.sessionId, sessionMessages);
-    
-    return message;
+    const result = await this.db
+      .insert(chatMessages)
+      .values(insertMessage)
+      .returning();
+    return result[0];
   }
 }
 
-export const storage = new MemStorage();
+// Use database storage instead of memory storage
+export const storage = new DbStorage();
