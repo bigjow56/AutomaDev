@@ -112,18 +112,17 @@ export class DbStorage implements IStorage {
 
   async createEvent(insertEvent: InsertEvent): Promise<Event> {
     // Clean up empty strings and convert to null/undefined
-    const cleanedEvent = {
-      ...insertEvent,
+    const cleanedEvent: any = {
+      title: insertEvent.title,
+      isActive: insertEvent.isActive || "false",
       subtitle: insertEvent.subtitle === "" ? null : insertEvent.subtitle,
       description: insertEvent.description === "" ? null : insertEvent.description,
-      endDate: insertEvent.endDate === "" ? null : new Date(insertEvent.endDate!),
+      endDate: null,
     };
     
     // Only set endDate if it's not empty
     if (insertEvent.endDate && insertEvent.endDate !== "") {
       cleanedEvent.endDate = new Date(insertEvent.endDate);
-    } else {
-      cleanedEvent.endDate = null;
     }
     
     console.log("=== STORAGE CREATE EVENT ===");
@@ -138,9 +137,28 @@ export class DbStorage implements IStorage {
   }
 
   async updateEvent(id: string, eventData: Partial<InsertEvent>): Promise<Event> {
+    // Clean up the update data similar to create
+    const cleanedEventData: any = {
+      ...eventData,
+      updatedAt: new Date(),
+    };
+    
+    // Handle endDate conversion
+    if (eventData.endDate !== undefined) {
+      if (eventData.endDate === "" || !eventData.endDate) {
+        cleanedEventData.endDate = null;
+      } else {
+        cleanedEventData.endDate = new Date(eventData.endDate);
+      }
+    }
+    
+    // Handle empty strings for optional fields
+    if (eventData.subtitle === "") cleanedEventData.subtitle = null;
+    if (eventData.description === "") cleanedEventData.description = null;
+    
     const result = await this.db
       .update(events)
-      .set({ ...eventData, updatedAt: new Date() })
+      .set(cleanedEventData)
       .where(eq(events.id, id))
       .returning();
     return result[0];
