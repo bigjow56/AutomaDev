@@ -59,10 +59,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/chat", async (req, res) => {
     try {
+      console.log("=== CHAT API CALLED ===");
+      console.log("Request body:", req.body);
+      
       const validatedData = insertChatMessageSchema.parse(req.body);
+      console.log("Validated data:", validatedData);
       
       // Save user message
       const userMessage = await storage.createChatMessage(validatedData);
+      console.log("User message saved:", userMessage);
       
       // Send to n8n webhook and get AI response
       const webhookUrl = "https://n8n-curso-n8n.yao8ay.easypanel.host/webhook-test/AutomaDev";
