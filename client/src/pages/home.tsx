@@ -3,9 +3,9 @@ import HeroSection from "@/components/hero-section";
 import ServicesSection from "@/components/services-section";
 import BenefitsSection from "@/components/benefits-section";
 import PortfolioSection from "@/components/portfolio-section";
+import EventsSection from "@/components/events-section";
 import ContactSection from "@/components/contact-section";
 import Footer from "@/components/footer";
-import ChatWidget from "@/components/chat-widget";
 
 export default function Home() {
   return (
@@ -15,9 +15,9 @@ export default function Home() {
       <ServicesSection />
       <BenefitsSection />
       <PortfolioSection />
+      <EventsSection />
       <ContactSection />
       <Footer />
-      <ChatWidget />
     </div>
   );
 }

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AutomaDev</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* LOGIN SCREEN */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #FF6B35;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        /* DASHBOARD */
+        .dashboard {
+            display: none;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #FF6B35;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .preview-box {
+            border: 3px dashed #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            min-height: 150px;
+        }
+
+        .event-banner {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        .event-banner h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .event-banner p {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .event-banner .cta {
+            background: white;
+            color: #FF6B35;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .templates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .template {
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template:hover {
+            border-color: #FF6B35;
+            transform: translateY(-2px);
+        }
+
+        .template.selected {
+            border-color: #FF6B35;
+            background: #fff5f0;
+        }
+
+        .template h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .template p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dc3545;
+        }
+
+        .status-indicator.active {
+            background: #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-box">
+            <h2>🚀 Admin Dashboard</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuário:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="login-btn">Entrar</button>
+                <div class="error" id="loginError"></div>
+            </form>
+            <div style="margin-top: 20px; text-align: center; color: #666; font-size: 12px;">
+                <strong>Demo:</strong> admin / 123456
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard" id="dashboard">
+        <div class="container">
+            <div class="header">
+                <h1>Dashboard Admin - AutomaDev</h1>
+                <button class="logout-btn" onclick="logout()">Sair</button>
+            </div>
+
+            <div class="main-content">
+                <!-- GERENCIADOR DE EVENTOS -->
+                <div class="section">
+                    <h2>📢 Gerenciar Eventos</h2>
+                    
+                    <div class="status">
+                        <span class="status-indicator" id="statusIndicator"></span>
+                        <span id="statusText">Nenhum evento ativo</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Título do Evento:</label>
+                        <input type="text" id="eventTitle" placeholder="🚀 VAGAS LIMITADAS!">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Subtítulo:</label>
+                        <input type="text" id="eventSubtitle" placeholder="Apenas 5 negócios selecionados">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrição:</label>
+                        <textarea id="eventDescription" rows="3" placeholder="E-commerce com IA que vende sozinho..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Data Final:</label>
+                            <input type="datetime-local" id="eventEndDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Evento Ativo:</label>
+                            <label class="switch">
+                                <input type="checkbox" id="eventActive">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn" onclick="saveEvent()">💾 Salvar Evento</button>
+                        <button class="btn btn-secondary" onclick="clearEvent()">🗑️ Limpar</button>
+                    </div>
+                </div>
+
+                <!-- PREVIEW -->
+                <div class="section">
+                    <h2>👀 Preview do Site</h2>
+                    
+                    <div class="preview-box" id="previewBox">
+                        <div style="text-align: center; color: #999; padding: 40px;">
+                            <h3>Preview aparecerá aqui</h3>
+                            <p>Configure um evento para ver como ficará no site</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-success" onclick="updatePreview()">🔄 Atualizar Preview</button>
+                    </div>
+                </div>
+
+                <!-- TEMPLATES -->
+                <div class="section" style="grid-column: 1 / -1;">
+                    <h2>📋 Templates Prontos</h2>
+                    
+                    <div class="templates">
+                        <div class="template" onclick="loadTemplate('vagas')">
+                            <h4>🚀 Vagas Limitadas</h4>
+                            <p>Para lançamentos exclusivos com escassez</p>
+                        </div>
+                        
+                        <div class="template" onclick="loadTemplate('promocao')">
+                            <h4>🔥 Promoção Especial</h4>
+                            <p>Para ofertas por tempo limitado</p>
+                        </div>
+                        
+                        <div class="template" onclick="loadTemplate('lancamento')">
+                            <h4>✨ Novo Lançamento</h4>
+                            <p>Para apresentar novos serviços</p>
+                        </div>
+                        
+                        <div class="template" onclick="loadTemplate('webinar')">
+                            <h4>🎓 Webinar Gratuito</h4>
+                            <p>Para eventos educacionais</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SISTEMA DE LOGIN
+        const ADMIN_USER = 'admin';
+        const ADMIN_PASS = '123456';
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (username === ADMIN_USER && password === ADMIN_PASS) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadSavedEvent();
+            } else {
+                errorDiv.textContent = 'Usuário ou senha incorretos!';
+            }
+        });
+
+        function logout() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('loginError').textContent = '';
+        }
+
+        // GERENCIAMENTO DE EVENTOS
+        function saveEvent() {
+            const eventData = {
+                title: document.getElementById('eventTitle').value,
+                subtitle: document.getElementById('eventSubtitle').value,
+                description: document.getElementById('eventDescription').value,
+                endDate: document.getElementById('eventEndDate').value,
+                active: document.getElementById('eventActive').checked,
+                timestamp: new Date().toISOString()
+            };
+
+            // Salvar no localStorage (em produção, salvaria no banco/API)
+            localStorage.setItem('currentEvent', JSON.stringify(eventData));
+            
+            updateStatus();
+            updatePreview();
+            
+            alert('✅ Evento salvo com sucesso!');
+        }
+
+        function loadSavedEvent() {
+            const saved = localStorage.getItem('currentEvent');
+            if (saved) {
+                const eventData = JSON.parse(saved);
+                
+                document.getElementById('eventTitle').value = eventData.title || '';
+                document.getElementById('eventSubtitle').value = eventData.subtitle || '';
+                document.getElementById('eventDescription').value = eventData.description || '';
+                document.getElementById('eventEndDate').value = eventData.endDate || '';
+                document.getElementById('eventActive').checked = eventData.active || false;
+                
+                updateStatus();
+                updatePreview();
+            }
+        }
+
+        function clearEvent() {
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventSubtitle').value = '';
+            document.getElementById('eventDescription').value = '';
+            document.getElementById('eventEndDate').value = '';
+            document.getElementById('eventActive').checked = false;
+            
+            localStorage.removeItem('currentEvent');
+            
+            updateStatus();
+            document.getElementById('previewBox').innerHTML = `
+                <div style="text-align: center; color: #999; padding: 40px;">
+                    <h3>Preview aparecerá aqui</h3>
+                    <p>Configure um evento para ver como ficará no site</p>
+                </div>
+            `;
+        }
+
+        function updateStatus() {
+            const active = document.getElementById('eventActive').checked;
+            const title = document.getElementById('eventTitle').value;
+            const indicator = document.getElementById('statusIndicator');
+            const text = document.getElementById('statusText');
+            
+            if (active && title) {
+                indicator.classList.add('active');
+                text.textContent = `Evento ativo: ${title}`;
+            } else {
+                indicator.classList.remove('active');
+                text.textContent = 'Nenhum evento ativo';
+            }
+        }
+
+        function updatePreview() {
+            const title = document.getElementById('eventTitle').value;
+            const subtitle = document.getElementById('eventSubtitle').value;
+            const description = document.getElementById('eventDescription').value;
+            const active = document.getElementById('eventActive').checked;
+            
+            if (active && title) {
+                document.getElementById('previewBox').innerHTML = `
+                    <div class="event-banner">
+                        <h3>${title}</h3>
+                        <p>${subtitle}</p>
+                        <p style="font-size: 14px; opacity: 0.9;">${description}</p>
+                        <a href="#" class="cta">CADASTRE-SE AGORA</a>
+                    </div>
+                `;
+            } else {
+                document.getElementById('previewBox').innerHTML = `
+                    <div style="text-align: center; color: #999; padding: 40px;">
+                        <h3>Evento desativado</h3>
+                        <p>Ative o evento para ver o preview</p>
+                    </div>
+                `;
+            }
+        }
+
+        // TEMPLATES
+        function loadTemplate(type) {
+            const templates = {
+                vagas: {
+                    title: '🚀 VAGAS LIMITADAS!',
+                    subtitle: 'Apenas 5 negócios selecionados',
+                    description: 'E-commerce com IA que vende sozinho. Sistema completo por R$ 300/mês. Restam poucas vagas!'
+                },
+                promocao: {
+                    title: '🔥 PROMOÇÃO ESPECIAL',
+                    subtitle: 'Por tempo limitado',
+                    description: 'Desconto exclusivo para os primeiros clientes. Não perca esta oportunidade única!'
+                },
+                lancamento: {
+                    title: '✨ NOVIDADE!',
+                    subtitle: 'Acabou de chegar',
+                    description: 'Conheça nosso novo serviço que vai revolucionar seu negócio. Seja um dos primeiros!'
+                },
+                webinar: {
+                    title: '🎓 WEBINAR GRATUITO',
+                    subtitle: 'Como vender mais online',
+                    description: 'Aprenda as estratégias que aumentaram as vendas em 300%. Vagas limitadas!'
+                }
+            };
+            
+            const template = templates[type];
+            if (template) {
+                document.getElementById('eventTitle').value = template.title;
+                document.getElementById('eventSubtitle').value = template.subtitle;
+                document.getElementById('eventDescription').value = template.description;
+                document.getElementById('eventActive').checked = false;
+                
+                // Marcar template selecionado
+                document.querySelectorAll('.template').forEach(t => t.classList.remove('selected'));
+                event.currentTarget.classList.add('selected');
+                
+                updatePreview();
+            }
+        }
+
+        // Event listeners
+        document.getElementById('eventActive').addEventListener('change', updateStatus);
+        
+        // Auto-update preview quando digitar
+        ['eventTitle', 'eventSubtitle', 'eventDescription'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                if (document.getElementById('eventActive').checked) {
+                    updatePreview();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

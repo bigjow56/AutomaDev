@@ -1,4 +1,10 @@
-import { type Contact, type InsertContact, type ChatMessage, type InsertChatMessage, contacts, chatMessages } from "@shared/schema";
+import { 
+  type Contact, type InsertContact, 
+  type ChatMessage, type InsertChatMessage,
+  type Event, type InsertEvent,
+  type AdminUser, type InsertAdminUser,
+  contacts, chatMessages, events, adminUsers
+} from "@shared/schema";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import { eq, desc } from "drizzle-orm";
@@ -12,6 +18,18 @@ export interface IStorage {
   // Chat methods
   getChatMessages(sessionId: string): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  
+  // Events methods
+  getAllEvents(): Promise<Event[]>;
+  getActiveEvents(): Promise<Event[]>;
+  getEvent(id: string): Promise<Event | undefined>;
+  createEvent(event: InsertEvent): Promise<Event>;
+  updateEvent(id: string, event: Partial<InsertEvent>): Promise<Event>;
+  deleteEvent(id: string): Promise<boolean>;
+  
+  // Admin methods
+  getAdminUser(username: string): Promise<AdminUser | undefined>;
+  createAdminUser(user: InsertAdminUser): Promise<AdminUser>;
 }
 
 
@@ -63,6 +81,74 @@ export class DbStorage implements IStorage {
     const result = await this.db
       .insert(chatMessages)
       .values(insertMessage)
+      .returning();
+    return result[0];
+  }
+
+  // Events methods
+  async getAllEvents(): Promise<Event[]> {
+    return await this.db
+      .select()
+      .from(events)
+      .orderBy(desc(events.createdAt));
+  }
+
+  async getActiveEvents(): Promise<Event[]> {
+    return await this.db
+      .select()
+      .from(events)
+      .where(eq(events.isActive, "true"))
+      .orderBy(desc(events.createdAt));
+  }
+
+  async getEvent(id: string): Promise<Event | undefined> {
+    const result = await this.db
+      .select()
+      .from(events)
+      .where(eq(events.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async createEvent(insertEvent: InsertEvent): Promise<Event> {
+    const result = await this.db
+      .insert(events)
+      .values(insertEvent)
+      .returning();
+    return result[0];
+  }
+
+  async updateEvent(id: string, eventData: Partial<InsertEvent>): Promise<Event> {
+    const result = await this.db
+      .update(events)
+      .set({ ...eventData, updatedAt: new Date() })
+      .where(eq(events.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteEvent(id: string): Promise<boolean> {
+    const result = await this.db
+      .delete(events)
+      .where(eq(events.id, id))
+      .returning();
+    return result.length > 0;
+  }
+
+  // Admin methods
+  async getAdminUser(username: string): Promise<AdminUser | undefined> {
+    const result = await this.db
+      .select()
+      .from(adminUsers)
+      .where(eq(adminUsers.username, username))
+      .limit(1);
+    return result[0];
+  }
+
+  async createAdminUser(insertUser: InsertAdminUser): Promise<AdminUser> {
+    const result = await this.db
+      .insert(adminUsers)
+      .values(insertUser)
       .returning();
     return result[0];
   }
