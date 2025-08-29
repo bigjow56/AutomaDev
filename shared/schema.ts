@@ -23,3 +23,21 @@ export const insertContactSchema = createInsertSchema(contacts).pick({
 
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
+
+// Chat schema
+export const chatMessages = pgTable("chat_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sessionId: text("session_id").notNull(),
+  message: text("message").notNull(),
+  isUser: text("is_user").notNull(), // "true" or "false" as string
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
+export const insertChatMessageSchema = createInsertSchema(chatMessages).pick({
+  sessionId: true,
+  message: true,
+  isUser: true,
+});
+
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;
