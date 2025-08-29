@@ -65,7 +65,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userMessage = await storage.createChatMessage(validatedData);
       
       // Send to n8n webhook and get AI response
-      const webhookUrl = "https://n8n-curso-n8n.yao8ay.easypanel.host/webhook-test/14c61ddf-9057-4879-b86d-96a7ca14b2aa";
+      const webhookUrl = "https://n8n-curso-n8n.yao8ay.easypanel.host/webhook-test/AutomaDev";
       
       try {
         const response = await fetch(webhookUrl, {
