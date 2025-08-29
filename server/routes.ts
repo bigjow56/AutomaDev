@@ -68,6 +68,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const webhookUrl = "https://n8n-curso-n8n.yao8ay.easypanel.host/webhook-test/AutomaDev";
       
       try {
+        console.log("Sending message to n8n webhook:", webhookUrl);
+        console.log("Payload:", { message: validatedData.message, sessionId: validatedData.sessionId });
+        
         const response = await fetch(webhookUrl, {
           method: "POST",
           headers: {
@@ -79,13 +82,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }),
         });
 
+        console.log("Webhook response status:", response.status);
+        console.log("Webhook response ok:", response.ok);
+
         if (response.ok) {
           const aiResponse = await response.text();
+          console.log("AI Response from n8n:", aiResponse);
           
           // Save AI response
           const aiMessage = await storage.createChatMessage({
             sessionId: validatedData.sessionId,
-            message: aiResponse,
+            message: aiResponse || "Recebi sua mensagem, mas não consegui gerar uma resposta no momento.",
             isUser: "false",
           });
           
@@ -95,10 +102,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             aiMessage 
           });
         } else {
+          console.error("Webhook failed with status:", response.status);
+          const errorText = await response.text();
+          console.error("Error response:", errorText);
+          
           // Fallback response if webhook fails
           const fallbackMessage = await storage.createChatMessage({
             sessionId: validatedData.sessionId,
-            message: "Desculpe, estou com dificuldades técnicas no momento. Tente novamente em alguns instantes ou entre em contato via WhatsApp.",
+            message: `Erro no webhook (${response.status}). Tente novamente ou entre em contato via WhatsApp.`,
             isUser: "false",
           });
           
@@ -114,7 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Fallback response
         const fallbackMessage = await storage.createChatMessage({
           sessionId: validatedData.sessionId,
-          message: "Desculpe, estou com dificuldades técnicas no momento. Tente novamente em alguns instantes ou entre em contato via WhatsApp.",
+          message: `Erro de conexão com o webhook: ${fetchError instanceof Error ? fetchError.message : 'Erro desconhecido'}. Tente novamente ou entre em contato via WhatsApp.`,
           isUser: "false",
         });
         
