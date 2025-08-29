@@ -136,11 +136,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/events", requireAuth, async (req, res) => {
     try {
+      console.log("=== CREATE EVENT REQUEST ===");
+      console.log("Request body:", JSON.stringify(req.body, null, 2));
+      
       const validatedData = insertEventSchema.parse(req.body);
+      console.log("Validated data:", JSON.stringify(validatedData, null, 2));
+      
       const event = await storage.createEvent(validatedData);
       res.json({ success: true, event });
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
         res.status(400).json({ 
           success: false, 
           message: "Dados inválidos", 

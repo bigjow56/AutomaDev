@@ -111,9 +111,28 @@ export class DbStorage implements IStorage {
   }
 
   async createEvent(insertEvent: InsertEvent): Promise<Event> {
+    // Clean up empty strings and convert to null/undefined
+    const cleanedEvent = {
+      ...insertEvent,
+      subtitle: insertEvent.subtitle === "" ? null : insertEvent.subtitle,
+      description: insertEvent.description === "" ? null : insertEvent.description,
+      endDate: insertEvent.endDate === "" ? null : new Date(insertEvent.endDate!),
+    };
+    
+    // Only set endDate if it's not empty
+    if (insertEvent.endDate && insertEvent.endDate !== "") {
+      cleanedEvent.endDate = new Date(insertEvent.endDate);
+    } else {
+      cleanedEvent.endDate = null;
+    }
+    
+    console.log("=== STORAGE CREATE EVENT ===");
+    console.log("Original data:", insertEvent);
+    console.log("Cleaned data:", cleanedEvent);
+    
     const result = await this.db
       .insert(events)
-      .values(insertEvent)
+      .values(cleanedEvent)
       .returning();
     return result[0];
   }

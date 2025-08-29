@@ -60,6 +60,11 @@ export const insertEventSchema = createInsertSchema(events).pick({
   description: true,
   endDate: true,
   isActive: true,
+}).extend({
+  // Make optional fields truly optional and allow empty strings
+  subtitle: z.string().optional().or(z.literal("")),
+  description: z.string().optional().or(z.literal("")),
+  endDate: z.string().optional().or(z.literal("")),
 });
 
 export type InsertEvent = z.infer<typeof insertEventSchema>;
