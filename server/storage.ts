@@ -223,7 +223,7 @@ export class DbStorage implements IStorage {
       icon: insertProject.icon || "Building",
       tags: insertProject.tags,
       metric: insertProject.metric,
-      imageUrl: insertProject.imageUrl === "" ? null : insertProject.imageUrl,
+      images: insertProject.images || "[]",
       isActive: insertProject.isActive || "true",
       sortOrder: insertProject.sortOrder || "0",
     };
@@ -242,7 +242,7 @@ export class DbStorage implements IStorage {
     };
     
     // Handle empty strings for optional fields
-    if (projectData.imageUrl === "") cleanedProjectData.imageUrl = null;
+    if (projectData.images === "") cleanedProjectData.images = "[]";
     if (projectData.categoryColor === "") cleanedProjectData.categoryColor = "bg-primary";
     if (projectData.icon === "") cleanedProjectData.icon = "Building";
     if (projectData.sortOrder === "") cleanedProjectData.sortOrder = "0";

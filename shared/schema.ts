@@ -96,7 +96,7 @@ export const projects = pgTable("projects", {
   icon: text("icon").notNull().default("Building"), // Icon name from lucide-react
   tags: text("tags").notNull(), // JSON string array
   metric: text("metric").notNull(),
-  imageUrl: text("image_url"), // Optional project image
+  images: text("images").notNull().default("[]"), // JSON array of image objects
   isActive: text("is_active").notNull().default("true"), // "true" or "false" as string
   sortOrder: varchar("sort_order").notNull().default("0"), // For ordering projects
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -111,12 +111,12 @@ export const insertProjectSchema = createInsertSchema(projects).pick({
   icon: true,
   tags: true,
   metric: true,
-  imageUrl: true,
+  images: true,
   isActive: true,
   sortOrder: true,
 }).extend({
   // Make optional fields truly optional
-  imageUrl: z.string().optional().or(z.literal("")),
+  images: z.string().optional().or(z.literal("")),
   categoryColor: z.string().optional().or(z.literal("")),
   icon: z.string().optional().or(z.literal("")),
   sortOrder: z.string().optional().or(z.literal("")),

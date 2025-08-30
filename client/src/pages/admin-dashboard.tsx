@@ -60,7 +60,7 @@ const projectFormSchema = z.object({
   icon: z.string().optional().or(z.literal("")),
   tags: z.string().min(1, "Pelo menos uma tag é obrigatória"),
   metric: z.string().min(1, "Métrica é obrigatória"),
-  imageUrl: z.string().optional().or(z.literal("")),
+  images: z.string().optional().or(z.literal("")),
   isActive: z.enum(["true", "false"]).default("true"),
   sortOrder: z.string().optional().or(z.literal("")),
 });
@@ -77,6 +77,8 @@ export default function AdminDashboard() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [activeTab, setActiveTab] = useState("events");
+  const [imageUrlInput, setImageUrlInput] = useState("");
+  const [projectImages, setProjectImages] = useState<{url: string, type: "uploaded" | "url", alt: string}[]>([]);
   const queryClient = useQueryClient();
 
   // Check if admin is authenticated
@@ -224,7 +226,13 @@ export default function AdminDashboard() {
       return response.json();
     },
     onSuccess: (data) => {
-      setValueProject('imageUrl', data.imageUrl);
+      const newImage = {
+        url: data.imageUrl,
+        type: "uploaded" as const,
+        alt: `Imagem do projeto ${watchProject("title") || ""}`.trim()
+      };
+      setProjectImages(prev => [...prev, newImage]);
+      updateProjectImagesField();
     },
   });
 
@@ -298,6 +306,37 @@ export default function AdminDashboard() {
         onSettled: () => setUploadingImage(false),
       });
     }
+    // Reset input
+    e.target.value = '';
+  };
+
+  const handleAddImageByUrl = () => {
+    if (imageUrlInput.trim()) {
+      const newImage = {
+        url: imageUrlInput.trim(),
+        type: "url" as const,
+        alt: `Imagem do projeto ${watchProject("title") || ""}`.trim()
+      };
+      setProjectImages(prev => [...prev, newImage]);
+      setImageUrlInput("");
+      updateProjectImagesField();
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setProjectImages(prev => {
+      const newImages = prev.filter((_, i) => i !== index);
+      // Update form field
+      setValueProject('images', JSON.stringify(newImages));
+      return newImages;
+    });
+  };
+
+  const updateProjectImagesField = () => {
+    // Use setTimeout to ensure projectImages state is updated
+    setTimeout(() => {
+      setValueProject('images', JSON.stringify(projectImages));
+    }, 0);
   };
 
   const handleEdit = (event: Event) => {
@@ -319,7 +358,18 @@ export default function AdminDashboard() {
     setValueProject("icon", project.icon || "Building");
     setValueProject("tags", project.tags);
     setValueProject("metric", project.metric);
-    setValueProject("imageUrl", project.imageUrl || "");
+    
+    // Load existing images
+    try {
+      const existingImages = project.images ? JSON.parse(project.images) : [];
+      setProjectImages(existingImages);
+      setValueProject("images", project.images || "[]");
+    } catch (error) {
+      console.error("Error parsing project images:", error);
+      setProjectImages([]);
+      setValueProject("images", "[]");
+    }
+    
     setValueProject("isActive", project.isActive as "true" | "false");
     setValueProject("sortOrder", project.sortOrder || "0");
     setIsProjectDialogOpen(true);
@@ -335,6 +385,8 @@ export default function AdminDashboard() {
   const handleNewProject = () => {
     setEditingProject(null);
     resetProject();
+    setProjectImages([]);
+    setImageUrlInput("");
     setIsProjectDialogOpen(true);
   };
 
@@ -374,7 +426,7 @@ export default function AdminDashboard() {
         icon: project.icon || "Building",
         tags: project.tags,
         metric: project.metric,
-        imageUrl: project.imageUrl || "",
+        images: project.images || "[]",
         isActive: newStatus as "true" | "false",
         sortOrder: project.sortOrder || "0",
       }
@@ -858,27 +910,82 @@ export default function AdminDashboard() {
                       )}
                     </div>
 
-                    {/* Image Upload */}
-                    <div className="space-y-2">
-                      <Label htmlFor="project-image">Imagem do Projeto</Label>
-                      <div className="flex items-center space-x-4">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          disabled={uploadingImage}
-                        />
-                        {uploadingImage && (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        )}
+                    {/* Multiple Images Upload */}
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="project-images">Imagens do Projeto</Label>
+                        <p className="text-sm text-gray-500 mt-1">
+                          📐 <strong>Tamanho recomendado:</strong> 800x600px ou proporção 4:3 para melhor visualização
+                        </p>
                       </div>
-                      {watchProject("imageUrl") && (
-                        <div className="mt-2">
-                          <img
-                            src={watchProject("imageUrl")}
-                            alt="Preview"
-                            className="w-20 h-20 object-cover rounded border"
+
+                      {/* Upload by File */}
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Upload de Arquivo</Label>
+                        <div className="flex items-center space-x-4">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            disabled={uploadingImage}
+                            className="flex-1"
                           />
+                          {uploadingImage && (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Upload by URL */}
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Adicionar por URL</Label>
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="https://exemplo.com/imagem.jpg"
+                            value={imageUrlInput}
+                            onChange={(e) => setImageUrlInput(e.target.value)}
+                            className="flex-1"
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleAddImageByUrl}
+                            variant="outline"
+                            disabled={!imageUrlInput.trim()}
+                          >
+                            Adicionar
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Display Current Images */}
+                      {projectImages.length > 0 && (
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Imagens Adicionadas ({projectImages.length})</Label>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                            {projectImages.map((image, index) => (
+                              <div key={index} className="relative group">
+                                <img
+                                  src={image.url}
+                                  alt={image.alt || `Imagem ${index + 1}`}
+                                  className="w-full h-20 object-cover rounded border hover:shadow-md transition-shadow"
+                                />
+                                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleRemoveImage(index)}
+                                    className="w-6 h-6 p-0"
+                                  >
+                                    ×
+                                  </Button>
+                                </div>
+                                <div className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-1 rounded">
+                                  {image.type === "uploaded" ? "📁" : "🔗"}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -983,15 +1090,27 @@ export default function AdminDashboard() {
                           <span className="text-primary font-medium">{project.metric}</span>
                         </div>
                       </div>
-                      {project.imageUrl && (
-                        <div className="ml-4">
-                          <img
-                            src={project.imageUrl}
-                            alt={project.title}
-                            className="w-16 h-16 object-cover rounded border"
-                          />
-                        </div>
-                      )}
+                      {(() => {
+                        try {
+                          const images = JSON.parse(project.images || "[]");
+                          return images.length > 0 ? (
+                            <div className="ml-4 flex space-x-2">
+                              <img
+                                src={images[0].url}
+                                alt={images[0].alt || project.title}
+                                className="w-16 h-16 object-cover rounded border"
+                              />
+                              {images.length > 1 && (
+                                <div className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded border text-xs text-gray-600">
+                                  +{images.length - 1}
+                                </div>
+                              )}
+                            </div>
+                          ) : null;
+                        } catch (error) {
+                          return null;
+                        }
+                      })()}
                       <div className="flex items-center space-x-2 ml-4">
                         <Button
                           variant="outline"

@@ -43,6 +43,22 @@ export default function PortfolioSection() {
     return tagsString.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
   };
 
+  // Parse images from JSON string
+  const parseImages = (imagesString: string): Array<{url: string, type: string, alt: string}> => {
+    try {
+      return JSON.parse(imagesString || "[]");
+    } catch (error) {
+      console.error("Error parsing images:", error);
+      return [];
+    }
+  };
+
+  // Get primary image (first image or fallback to icon)
+  const getPrimaryImage = (project: Project) => {
+    const images = parseImages(project.images || "[]");
+    return images.length > 0 ? images[0].url : null;
+  };
+
   return (
     <section id="portfolio" className="py-20 bg-dark-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -111,9 +127,9 @@ export default function PortfolioSection() {
             >
               <Card className="bg-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 group h-full">
                 <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/20 to-orange-400/20 flex items-center justify-center">
-                  {project.imageUrl ? (
+                  {getPrimaryImage(project) ? (
                     <img
-                      src={project.imageUrl}
+                      src={getPrimaryImage(project)!}
                       alt={project.title}
                       className="w-full h-full object-cover"
                     />
@@ -127,6 +143,12 @@ export default function PortfolioSection() {
                       {project.category}
                     </span>
                   </div>
+                  {/* Show image count if multiple images */}
+                  {parseImages(project.images || "[]").length > 1 && (
+                    <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      +{parseImages(project.images || "[]").length - 1}
+                    </div>
+                  )}
                 </div>
                 <CardContent className="p-6">
                   <div className="flex items-center mb-3">
