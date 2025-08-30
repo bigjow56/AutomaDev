@@ -85,3 +85,42 @@ export const insertAdminUserSchema = createInsertSchema(adminUsers).pick({
 
 export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
 export type AdminUser = typeof adminUsers.$inferSelect;
+
+// Projects schema
+export const projects = pgTable("projects", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  categoryColor: text("category_color").notNull().default("bg-primary"),
+  icon: text("icon").notNull().default("Building"), // Icon name from lucide-react
+  tags: text("tags").notNull(), // JSON string array
+  metric: text("metric").notNull(),
+  imageUrl: text("image_url"), // Optional project image
+  isActive: text("is_active").notNull().default("true"), // "true" or "false" as string
+  sortOrder: varchar("sort_order").notNull().default("0"), // For ordering projects
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertProjectSchema = createInsertSchema(projects).pick({
+  title: true,
+  description: true,
+  category: true,
+  categoryColor: true,
+  icon: true,
+  tags: true,
+  metric: true,
+  imageUrl: true,
+  isActive: true,
+  sortOrder: true,
+}).extend({
+  // Make optional fields truly optional
+  imageUrl: z.string().optional().or(z.literal("")),
+  categoryColor: z.string().optional().or(z.literal("")),
+  icon: z.string().optional().or(z.literal("")),
+  sortOrder: z.string().optional().or(z.literal("")),
+});
+
+export type InsertProject = z.infer<typeof insertProjectSchema>;
+export type Project = typeof projects.$inferSelect;

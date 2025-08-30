@@ -3,12 +3,11 @@ import {
   type ChatMessage, type InsertChatMessage,
   type Event, type InsertEvent,
   type AdminUser, type InsertAdminUser,
-  contacts, chatMessages, events, adminUsers
+  type Project, type InsertProject,
+  contacts, chatMessages, events, adminUsers, projects
 } from "@shared/schema";
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
-import { randomUUID } from "crypto";
 
 export interface IStorage {
   getContact(id: string): Promise<Contact | undefined>;
@@ -30,20 +29,20 @@ export interface IStorage {
   // Admin methods
   getAdminUser(username: string): Promise<AdminUser | undefined>;
   createAdminUser(user: InsertAdminUser): Promise<AdminUser>;
+  
+  // Projects methods
+  getAllProjects(): Promise<Project[]>;
+  getActiveProjects(): Promise<Project[]>;
+  getProject(id: string): Promise<Project | undefined>;
+  createProject(project: InsertProject): Promise<Project>;
+  updateProject(id: string, project: Partial<InsertProject>): Promise<Project>;
+  deleteProject(id: string): Promise<boolean>;
 }
 
 
 // Database storage using Drizzle ORM and PostgreSQL
 export class DbStorage implements IStorage {
-  private db;
-
-  constructor() {
-    if (!process.env.DATABASE_URL) {
-      throw new Error("DATABASE_URL is required");
-    }
-    const sql = neon(process.env.DATABASE_URL);
-    this.db = drizzle(sql);
-  }
+  private db = db;
 
   async getContact(id: string): Promise<Contact | undefined> {
     const result = await this.db
@@ -188,6 +187,80 @@ export class DbStorage implements IStorage {
       .values(insertUser)
       .returning();
     return result[0];
+  }
+
+  // Projects methods
+  async getAllProjects(): Promise<Project[]> {
+    return await this.db
+      .select()
+      .from(projects)
+      .orderBy(projects.sortOrder, desc(projects.createdAt));
+  }
+
+  async getActiveProjects(): Promise<Project[]> {
+    return await this.db
+      .select()
+      .from(projects)
+      .where(eq(projects.isActive, "true"))
+      .orderBy(projects.sortOrder, desc(projects.createdAt));
+  }
+
+  async getProject(id: string): Promise<Project | undefined> {
+    const result = await this.db
+      .select()
+      .from(projects)
+      .where(eq(projects.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const cleanedProject: any = {
+      title: insertProject.title,
+      description: insertProject.description,
+      category: insertProject.category,
+      categoryColor: insertProject.categoryColor || "bg-primary",
+      icon: insertProject.icon || "Building",
+      tags: insertProject.tags,
+      metric: insertProject.metric,
+      imageUrl: insertProject.imageUrl === "" ? null : insertProject.imageUrl,
+      isActive: insertProject.isActive || "true",
+      sortOrder: insertProject.sortOrder || "0",
+    };
+    
+    const result = await this.db
+      .insert(projects)
+      .values(cleanedProject)
+      .returning();
+    return result[0];
+  }
+
+  async updateProject(id: string, projectData: Partial<InsertProject>): Promise<Project> {
+    const cleanedProjectData: any = {
+      ...projectData,
+      updatedAt: new Date(),
+    };
+    
+    // Handle empty strings for optional fields
+    if (projectData.imageUrl === "") cleanedProjectData.imageUrl = null;
+    if (projectData.categoryColor === "") cleanedProjectData.categoryColor = "bg-primary";
+    if (projectData.icon === "") cleanedProjectData.icon = "Building";
+    if (projectData.sortOrder === "") cleanedProjectData.sortOrder = "0";
+    
+    const result = await this.db
+      .update(projects)
+      .set(cleanedProjectData)
+      .where(eq(projects.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteProject(id: string): Promise<boolean> {
+    const result = await this.db
+      .delete(projects)
+      .where(eq(projects.id, id))
+      .returning();
+    return result.length > 0;
   }
 }
 

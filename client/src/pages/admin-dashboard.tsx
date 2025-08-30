@@ -37,9 +37,12 @@ import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import { Event } from "@shared/schema";
+import { Event, Project } from "@shared/schema";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Building, ShoppingCart, BarChart3, Image, Upload } from "lucide-react";
 
 const eventFormSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
@@ -49,13 +52,31 @@ const eventFormSchema = z.object({
   isActive: z.enum(["true", "false"]).default("false"),
 });
 
+const projectFormSchema = z.object({
+  title: z.string().min(1, "Título é obrigatório"),
+  description: z.string().min(1, "Descrição é obrigatória"),
+  category: z.string().min(1, "Categoria é obrigatória"),
+  categoryColor: z.string().optional().or(z.literal("")),
+  icon: z.string().optional().or(z.literal("")),
+  tags: z.string().min(1, "Pelo menos uma tag é obrigatória"),
+  metric: z.string().min(1, "Métrica é obrigatória"),
+  imageUrl: z.string().optional().or(z.literal("")),
+  isActive: z.enum(["true", "false"]).default("true"),
+  sortOrder: z.string().optional().or(z.literal("")),
+});
+
 type EventForm = z.infer<typeof eventFormSchema>;
+type ProjectForm = z.infer<typeof projectFormSchema>;
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
+  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [activeTab, setActiveTab] = useState("events");
   const queryClient = useQueryClient();
 
   // Check if admin is authenticated
@@ -70,7 +91,14 @@ export default function AdminDashboard() {
     enabled: !!authCheck?.isAdmin,
   });
 
+  // Fetch projects
+  const { data: projectsData, isLoading: projectsLoading } = useQuery<{ success: boolean; projects: Project[] }>({
+    queryKey: ["/api/admin/projects"],
+    enabled: !!authCheck?.isAdmin,
+  });
+
   const events = eventsData?.events || [];
+  const projects = projectsData?.projects || [];
 
   const {
     register,
@@ -83,6 +111,23 @@ export default function AdminDashboard() {
     resolver: zodResolver(eventFormSchema),
     defaultValues: {
       isActive: "false"
+    }
+  });
+
+  const {
+    register: registerProject,
+    handleSubmit: handleSubmitProject,
+    reset: resetProject,
+    setValue: setValueProject,
+    watch: watchProject,
+    formState: { errors: errorsProject },
+  } = useForm<ProjectForm>({
+    resolver: zodResolver(projectFormSchema),
+    defaultValues: {
+      isActive: "true",
+      categoryColor: "bg-primary",
+      icon: "Building",
+      sortOrder: "0"
     }
   });
 
@@ -127,7 +172,7 @@ export default function AdminDashboard() {
       console.log("=== CREATE SUCCESS ===");
       console.log("Result:", result);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/events"] });
-      setIsDialogOpen(false);
+      setIsEventDialogOpen(false);
       reset();
       setSelectedTemplate("");
     },
@@ -144,7 +189,7 @@ export default function AdminDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/events"] });
-      setIsDialogOpen(false);
+      setIsEventDialogOpen(false);
       setEditingEvent(null);
       reset();
     },
@@ -157,6 +202,64 @@ export default function AdminDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/events"] });
+    },
+  });
+
+  // Image upload mutation
+  const uploadImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro no upload da imagem');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setValueProject('imageUrl', data.imageUrl);
+    },
+  });
+
+  // Create project mutation
+  const createProjectMutation = useMutation({
+    mutationFn: async (data: ProjectForm) => {
+      return await apiRequest("POST", "/api/admin/projects", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/projects"] });
+      setIsProjectDialogOpen(false);
+      resetProject();
+    },
+  });
+
+  // Update project mutation
+  const updateProjectMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: ProjectForm }) => {
+      return await apiRequest("PUT", `/api/admin/projects/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/projects"] });
+      setIsProjectDialogOpen(false);
+      setEditingProject(null);
+      resetProject();
+    },
+  });
+
+  // Delete project mutation
+  const deleteProjectMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("DELETE", `/api/admin/projects/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/projects"] });
     },
   });
 
@@ -179,6 +282,24 @@ export default function AdminDashboard() {
     }
   };
 
+  const onSubmitProject = (data: ProjectForm) => {
+    if (editingProject) {
+      updateProjectMutation.mutate({ id: editingProject.id, data });
+    } else {
+      createProjectMutation.mutate(data);
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadingImage(true);
+      uploadImageMutation.mutate(file, {
+        onSettled: () => setUploadingImage(false),
+      });
+    }
+  };
+
   const handleEdit = (event: Event) => {
     setEditingEvent(event);
     setValue("title", event.title);
@@ -186,14 +307,35 @@ export default function AdminDashboard() {
     setValue("description", event.description || "");
     setValue("endDate", event.endDate ? format(new Date(event.endDate), "yyyy-MM-dd'T'HH:mm") : "");
     setValue("isActive", event.isActive);
-    setIsDialogOpen(true);
+    setIsEventDialogOpen(true);
+  };
+
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project);
+    setValueProject("title", project.title);
+    setValueProject("description", project.description);
+    setValueProject("category", project.category);
+    setValueProject("categoryColor", project.categoryColor || "bg-primary");
+    setValueProject("icon", project.icon || "Building");
+    setValueProject("tags", project.tags);
+    setValueProject("metric", project.metric);
+    setValueProject("imageUrl", project.imageUrl || "");
+    setValueProject("isActive", project.isActive as "true" | "false");
+    setValueProject("sortOrder", project.sortOrder || "0");
+    setIsProjectDialogOpen(true);
   };
 
   const handleNewEvent = () => {
     setEditingEvent(null);
     reset();
     setSelectedTemplate("");
-    setIsDialogOpen(true);
+    setIsEventDialogOpen(true);
+  };
+
+  const handleNewProject = () => {
+    setEditingProject(null);
+    resetProject();
+    setIsProjectDialogOpen(true);
   };
 
   const handleTemplateSelect = (templateKey: string) => {
@@ -215,10 +357,46 @@ export default function AdminDashboard() {
         subtitle: event.subtitle || undefined,
         description: event.description || undefined,
         endDate: event.endDate ? format(new Date(event.endDate), "yyyy-MM-dd'T'HH:mm") : undefined,
-        isActive: newStatus,
+        isActive: newStatus as "true" | "false",
       }
     });
   };
+
+  const toggleProjectStatus = (project: Project) => {
+    const newStatus = project.isActive === "true" ? "false" : "true";
+    updateProjectMutation.mutate({
+      id: project.id,
+      data: {
+        title: project.title,
+        description: project.description,
+        category: project.category,
+        categoryColor: project.categoryColor || "bg-primary",
+        icon: project.icon || "Building",
+        tags: project.tags,
+        metric: project.metric,
+        imageUrl: project.imageUrl || "",
+        isActive: newStatus as "true" | "false",
+        sortOrder: project.sortOrder || "0",
+      }
+    });
+  };
+
+  // Icon options
+  const iconOptions = [
+    { value: "Building", label: "Edifício", icon: <Building className="w-4 h-4" /> },
+    { value: "ShoppingCart", label: "Carrinho", icon: <ShoppingCart className="w-4 h-4" /> },
+    { value: "BarChart3", label: "Gráfico", icon: <BarChart3 className="w-4 h-4" /> },
+  ];
+
+  // Category color options
+  const colorOptions = [
+    { value: "bg-primary", label: "Laranja (Padrão)" },
+    { value: "bg-green-500", label: "Verde" },
+    { value: "bg-blue-500", label: "Azul" },
+    { value: "bg-purple-500", label: "Roxo" },
+    { value: "bg-red-500", label: "Vermelho" },
+    { value: "bg-yellow-500", label: "Amarelo" },
+  ];
 
   if (authLoading) {
     return (
@@ -303,8 +481,16 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        {/* Events Section */}
-        <Card>
+        {/* Tabs Section */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="events">Eventos</TabsTrigger>
+            <TabsTrigger value="projects">Projetos</TabsTrigger>
+          </TabsList>
+
+          {/* Events Tab */}
+          <TabsContent value="events">
+            <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
@@ -313,7 +499,7 @@ export default function AdminDashboard() {
                   Crie, edite e ative eventos para exibir no site
                 </CardDescription>
               </div>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
                     onClick={handleNewEvent}
@@ -416,7 +602,7 @@ export default function AdminDashboard() {
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setIsDialogOpen(false)}
+                        onClick={() => setIsEventDialogOpen(false)}
                       >
                         Cancelar
                       </Button>
@@ -538,6 +724,313 @@ export default function AdminDashboard() {
             )}
           </CardContent>
         </Card>
+      </TabsContent>
+
+      {/* Projects Tab */}
+      <TabsContent value="projects">
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Gerenciar Projetos</CardTitle>
+                <CardDescription>
+                  Crie, edite e gerencie projetos do portfólio
+                </CardDescription>
+              </div>
+              <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    onClick={handleNewProject}
+                    className="bg-gradient-to-r from-[#FF6B35] to-[#F7931E] hover:from-[#e55a2b] hover:to-[#e0851a]"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Novo Projeto
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {editingProject ? "Editar Projeto" : "Criar Novo Projeto"}
+                    </DialogTitle>
+                    <DialogDescription>
+                      Preencha as informações do projeto abaixo
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <form onSubmit={handleSubmitProject(onSubmitProject)} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="project-title">Título *</Label>
+                        <Input
+                          id="project-title"
+                          {...registerProject("title")}
+                          placeholder="Ex: Sistema de Gestão Empresarial"
+                        />
+                        {errorsProject.title && (
+                          <p className="text-sm text-red-600">{errorsProject.title.message}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="project-category">Categoria *</Label>
+                        <Input
+                          id="project-category"
+                          {...registerProject("category")}
+                          placeholder="Ex: Sistema, E-commerce, Analytics"
+                        />
+                        {errorsProject.category && (
+                          <p className="text-sm text-red-600">{errorsProject.category.message}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="project-description">Descrição *</Label>
+                      <Textarea
+                        id="project-description"
+                        {...registerProject("description")}
+                        placeholder="Descreva o projeto e seus principais benefícios..."
+                        rows={3}
+                      />
+                      {errorsProject.description && (
+                        <p className="text-sm text-red-600">{errorsProject.description.message}</p>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="project-icon">Ícone</Label>
+                        <Select value={watchProject("icon")} onValueChange={(value) => setValueProject("icon", value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione um ícone" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {iconOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                <div className="flex items-center space-x-2">
+                                  {option.icon}
+                                  <span>{option.label}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="project-categoryColor">Cor da Categoria</Label>
+                        <Select value={watchProject("categoryColor")} onValueChange={(value) => setValueProject("categoryColor", value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione uma cor" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {colorOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="project-tags">Tags *</Label>
+                      <Input
+                        id="project-tags"
+                        {...registerProject("tags")}
+                        placeholder="Ex: Automação, Dashboard, Relatórios (separadas por vírgula)"
+                      />
+                      {errorsProject.tags && (
+                        <p className="text-sm text-red-600">{errorsProject.tags.message}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="project-metric">Métrica de Sucesso *</Label>
+                      <Input
+                        id="project-metric"
+                        {...registerProject("metric")}
+                        placeholder="Ex: ↗ 70% redução no tempo administrativo"
+                      />
+                      {errorsProject.metric && (
+                        <p className="text-sm text-red-600">{errorsProject.metric.message}</p>
+                      )}
+                    </div>
+
+                    {/* Image Upload */}
+                    <div className="space-y-2">
+                      <Label htmlFor="project-image">Imagem do Projeto</Label>
+                      <div className="flex items-center space-x-4">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          disabled={uploadingImage}
+                        />
+                        {uploadingImage && (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        )}
+                      </div>
+                      {watchProject("imageUrl") && (
+                        <div className="mt-2">
+                          <img
+                            src={watchProject("imageUrl")}
+                            alt="Preview"
+                            className="w-20 h-20 object-cover rounded border"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="project-sortOrder">Ordem de Exibição</Label>
+                        <Input
+                          id="project-sortOrder"
+                          {...registerProject("sortOrder")}
+                          placeholder="0"
+                          type="number"
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2 mt-6">
+                        <Switch
+                          id="project-isActive"
+                          checked={watchProject("isActive") === "true"}
+                          onCheckedChange={(checked) => setValueProject("isActive", checked ? "true" : "false")}
+                        />
+                        <Label htmlFor="project-isActive">Projeto ativo (visível no site)</Label>
+                      </div>
+                    </div>
+
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsProjectDialogOpen(false)}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={createProjectMutation.isPending || updateProjectMutation.isPending}
+                        className="bg-gradient-to-r from-[#FF6B35] to-[#F7931E] hover:from-[#e55a2b] hover:to-[#e0851a]"
+                      >
+                        {(createProjectMutation.isPending || updateProjectMutation.isPending) ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Salvando...
+                          </>
+                        ) : (
+                          editingProject ? "Atualizar" : "Criar"
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+
+          <CardContent>
+            {projectsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin" />
+                <span className="ml-2">Carregando projetos...</span>
+              </div>
+            ) : projects.length === 0 ? (
+              <div className="text-center py-8">
+                <Building className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Nenhum projeto criado
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Crie seu primeiro projeto para começar
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {projects.map((project: Project) => (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {project.title}
+                          </h3>
+                          {project.isActive === "true" ? (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Ativo
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                              <PowerOff className="w-3 h-3 mr-1" />
+                              Inativo
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-gray-600 mb-2">{project.category}</p>
+                        <p className="text-gray-700 mb-2 line-clamp-2">{project.description}</p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <span>Tags: {project.tags}</span>
+                          <span className="text-primary font-medium">{project.metric}</span>
+                        </div>
+                      </div>
+                      {project.imageUrl && (
+                        <div className="ml-4">
+                          <img
+                            src={project.imageUrl}
+                            alt={project.title}
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                        </div>
+                      )}
+                      <div className="flex items-center space-x-2 ml-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleProjectStatus(project)}
+                          disabled={updateProjectMutation.isPending}
+                        >
+                          {project.isActive === "true" ? (
+                            <PowerOff className="w-4 h-4" />
+                          ) : (
+                            <Power className="w-4 h-4" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditProject(project)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deleteProjectMutation.mutate(project.id)}
+                          disabled={deleteProjectMutation.isPending}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
       </div>
     </div>
   );

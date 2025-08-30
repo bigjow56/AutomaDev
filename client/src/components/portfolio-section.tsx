@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building, ShoppingCart, BarChart3, ArrowRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Project } from "@shared/schema";
 
 export default function PortfolioSection() {
   const scrollToSection = (sectionId: string) => {
@@ -15,38 +17,31 @@ export default function PortfolioSection() {
     }
   };
 
-  const projects = [
-    {
-      id: "business-management",
-      icon: <Building className="w-6 h-6 text-primary mr-2" />,
-      category: "Sistema",
-      categoryColor: "bg-primary",
-      title: "Sistema de Gestão Empresarial",
-      description: "Automação completa de processos administrativos, reduzindo 70% do tempo em tarefas burocráticas.",
-      tags: ["Automação", "Dashboard", "Relatórios"],
-      metric: "↗ 70% redução no tempo administrativo"
-    },
-    {
-      id: "smart-ecommerce",
-      icon: <ShoppingCart className="w-6 h-6 text-primary mr-2" />,
-      category: "E-commerce",
-      categoryColor: "bg-green-500",
-      title: "E-commerce Inteligente",
-      description: "Loja online com automação de estoque, vendas e atendimento ao cliente via chatbot.",
-      tags: ["E-commerce", "Chatbot", "Integração"],
-      metric: "↗ 300% aumento nas conversões"
-    },
-    {
-      id: "analytics-dashboard",
-      icon: <BarChart3 className="w-6 h-6 text-primary mr-2" />,
-      category: "Analytics",
-      categoryColor: "bg-blue-500",
-      title: "Dashboard Analítico",
-      description: "Painel de controle que integra múltiplas fontes de dados para tomada de decisão estratégica.",
-      tags: ["BI", "Integração", "Real-time"],
-      metric: "↗ 50% melhoria na tomada de decisão"
+  // Fetch projects from API
+  const { data: projectsData, isLoading } = useQuery<{ success: boolean; projects: Project[] }>({
+    queryKey: ["/api/projects"],
+  });
+
+  const projects = projectsData?.projects || [];
+
+  // Icon mapping
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case "Building":
+        return <Building className="w-6 h-6 text-primary mr-2" />;
+      case "ShoppingCart":
+        return <ShoppingCart className="w-6 h-6 text-primary mr-2" />;
+      case "BarChart3":
+        return <BarChart3 className="w-6 h-6 text-primary mr-2" />;
+      default:
+        return <Building className="w-6 h-6 text-primary mr-2" />;
     }
-  ];
+  };
+
+  // Parse tags from string
+  const parseTags = (tagsString: string): string[] => {
+    return tagsString.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+  };
 
   return (
     <section id="portfolio" className="py-20 bg-dark-secondary">
@@ -72,7 +67,40 @@ export default function PortfolioSection() {
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
+          {isLoading ? (
+            // Loading skeletons
+            [...Array(3)].map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <Card className="bg-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden h-full">
+                  <div className="aspect-video bg-gray-300 dark:bg-gray-700" />
+                  <CardContent className="p-6">
+                    <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded mb-3" />
+                    <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-4" />
+                    <div className="space-y-2 mb-4">
+                      <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded" />
+                      <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-3/4" />
+                    </div>
+                    <div className="flex gap-2 mb-4">
+                      <div className="h-6 w-16 bg-gray-300 dark:bg-gray-700 rounded" />
+                      <div className="h-6 w-20 bg-gray-300 dark:bg-gray-700 rounded" />
+                    </div>
+                    <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2" />
+                  </CardContent>
+                </Card>
+              </div>
+            ))
+          ) : projects.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">
+                Nenhum projeto disponível
+              </h3>
+              <p className="text-gray-400">
+                Os projetos serão exibidos aqui quando estiverem disponíveis.
+              </p>
+            </div>
+          ) : (
+            projects.map((project, index) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 30 }}
@@ -83,18 +111,26 @@ export default function PortfolioSection() {
             >
               <Card className="bg-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 group h-full">
                 <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/20 to-orange-400/20 flex items-center justify-center">
-                  <div className="text-6xl text-primary/40">
-                    {project.icon}
-                  </div>
+                  {project.imageUrl ? (
+                    <img
+                      src={project.imageUrl}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-6xl text-primary/40">
+                      {getIcon(project.icon || "Building")}
+                    </div>
+                  )}
                   <div className="absolute top-4 left-4">
-                    <span className={`${project.categoryColor} px-3 py-1 rounded-full text-sm font-semibold text-white`}>
+                    <span className={`${project.categoryColor || "bg-primary"} px-3 py-1 rounded-full text-sm font-semibold text-white`}>
                       {project.category}
                     </span>
                   </div>
                 </div>
                 <CardContent className="p-6">
                   <div className="flex items-center mb-3">
-                    {project.icon}
+                    {getIcon(project.icon || "Building")}
                     <h3 className="text-xl font-bold text-white" data-testid={`project-title-${project.id}`}>
                       {project.title}
                     </h3>
@@ -103,7 +139,7 @@ export default function PortfolioSection() {
                     {project.description}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4" data-testid={`project-tags-${project.id}`}>
-                    {project.tags.map((tag, tagIndex) => (
+                    {parseTags(project.tags).map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
                         className="text-xs bg-dark-tertiary/50 text-gray-300 px-2 py-1 rounded"
@@ -118,7 +154,8 @@ export default function PortfolioSection() {
                 </CardContent>
               </Card>
             </motion.div>
-          ))}
+            ))
+          )}
         </div>
 
         {/* CTA */}
