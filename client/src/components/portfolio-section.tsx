@@ -73,7 +73,7 @@ export default function PortfolioSection() {
     <section id="portfolio" className="py-20 bg-dark-secondary relative overflow-hidden">
       {/* Parallax background elements */}
       <motion.div
-        className="absolute top-10 right-10 w-28 h-28 bg-purple-600/10 rounded-full blur-2xl"
+        className="absolute top-10 right-10 w-28 h-28 bg-emerald-600/10 rounded-full blur-2xl"
         style={{ y: parallaxOffset }}
         animate={{
           scale: [1, 1.3, 1],
@@ -87,7 +87,7 @@ export default function PortfolioSection() {
       ></motion.div>
       
       <motion.div
-        className="absolute bottom-20 left-10 w-20 h-20 bg-purple-400/10 rounded-full blur-xl"
+        className="absolute bottom-20 left-10 w-20 h-20 bg-cyan-400/10 rounded-full blur-xl"
         style={{ y: parallaxOffset * -1.2 }}
         animate={{
           scale: [1.1, 1, 1.1],
