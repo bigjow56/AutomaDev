@@ -5,6 +5,13 @@ import { Building, ShoppingCart, BarChart3, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Project } from "@shared/schema";
 import { useParallax } from "@/hooks/use-scroll";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function PortfolioSection() {
   const parallaxOffset = useParallax(-0.15);
@@ -103,113 +110,208 @@ export default function PortfolioSection() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="flex items-center justify-center mb-6">
-            <BarChart3 className="w-8 h-8 text-primary mr-3" />
-            <h2 className="text-4xl md:text-5xl font-bold text-white" data-testid="portfolio-title">
-              Projetos Realizados
+          <div className="text-center mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4" data-testid="portfolio-title">
+              Cronograma visual dos módulos
             </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Explore nossos projetos de automação e desenvolvimento em um formato interativo
+            </p>
           </div>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Casos de sucesso que demonstram nossa expertise em automação e desenvolvimento web
-          </p>
         </motion.div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Projects Carousel */}
+        <div className="w-full max-w-[calc(100vw-2rem)] mx-auto">
           {isLoading ? (
-            // Loading skeletons
-            [...Array(3)].map((_, index) => (
-              <div key={index} className="animate-pulse">
-                <Card className="bg-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden h-full">
-                  <div className="aspect-video bg-gray-300 dark:bg-gray-700" />
-                  <CardContent className="p-6">
-                    <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded mb-3" />
-                    <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-4" />
-                    <div className="space-y-2 mb-4">
-                      <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded" />
-                      <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-3/4" />
-                    </div>
-                    <div className="flex gap-2 mb-4">
-                      <div className="h-6 w-16 bg-gray-300 dark:bg-gray-700 rounded" />
-                      <div className="h-6 w-20 bg-gray-300 dark:bg-gray-700 rounded" />
-                    </div>
-                    <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2" />
-                  </CardContent>
-                </Card>
-              </div>
-            ))
-          ) : projects.length === 0 ? (
-            <div className="col-span-full text-center py-12">
-              <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-300 mb-2">
-                Nenhum projeto disponível
-              </h3>
-              <p className="text-gray-400">
-                Os projetos serão exibidos aqui quando estiverem disponíveis.
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <Card className="bg-dark border border-dark-tertiary/30 rounded-2xl p-8 h-64">
+                    <CardContent className="p-0">
+                      <div className="w-8 h-8 bg-gray-600 rounded mb-4"></div>
+                      <div className="h-6 bg-gray-600 rounded mb-4"></div>
+                      <div className="h-4 bg-gray-600 rounded mb-2"></div>
+                      <div className="h-4 bg-gray-600 rounded w-3/4"></div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
             </div>
-          ) : (
-            projects.map((project, index) => (
+          ) : projects.length > 0 ? (
             <motion.div
-              key={project.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
+              transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
             >
-              <Card className="bg-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 group h-full">
-                <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-primary/20 to-orange-400/20 flex items-center justify-center">
-                  {getPrimaryImage(project) ? (
-                    <img
-                      src={getPrimaryImage(project)!}
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="text-6xl text-primary/40">
-                      {getIcon(project.icon || "Building")}
-                    </div>
-                  )}
-                  <div className="absolute top-4 left-4">
-                    <span className={`${project.categoryColor || "bg-primary"} px-3 py-1 rounded-full text-sm font-semibold text-white`}>
-                      {project.category}
-                    </span>
-                  </div>
-                  {/* Show image count if multiple images */}
-                  {parseImages(project.images || "[]").length > 1 && (
-                    <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                      +{parseImages(project.images || "[]").length - 1}
-                    </div>
-                  )}
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-3">
-                    {getIcon(project.icon || "Building")}
-                    <h3 className="text-xl font-bold text-white" data-testid={`project-title-${project.id}`}>
-                      {project.title}
-                    </h3>
-                  </div>
-                  <p className="text-gray-300 mb-4 leading-relaxed" data-testid={`project-description-${project.id}`}>
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4" data-testid={`project-tags-${project.id}`}>
-                    {parseTags(project.tags).map((tag, tagIndex) => (
-                      <span
-                        key={tagIndex}
-                        className="text-xs bg-dark-tertiary/50 text-gray-300 px-2 py-1 rounded"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="text-primary font-semibold" data-testid={`project-metric-${project.id}`}>
-                    {project.metric}
-                  </div>
-                </CardContent>
-              </Card>
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {projects.map((project, index) => {
+                    const tags = parseTags(project.tags);
+                    const primaryImage = getPrimaryImage(project);
+
+                    return (
+                      <CarouselItem key={project.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                        <motion.div
+                          initial={{ opacity: 0, y: 50, rotateX: 15 }}
+                          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                          transition={{ 
+                            duration: 0.8, 
+                            delay: index * 0.1,
+                            type: "spring",
+                            stiffness: 100,
+                            damping: 15
+                          }}
+                          viewport={{ once: true, margin: "-10%" }}
+                          whileHover={{ 
+                            scale: 1.03, 
+                            y: -10,
+                            transition: { duration: 0.3 }
+                          }}
+                          className="h-full"
+                        >
+                          <Card className="group bg-gradient-to-br from-dark via-dark-secondary to-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-purple-500/20 backdrop-blur-sm">
+                            <CardContent className="p-0 h-full flex flex-col">
+                              {/* Project Header with gradient background */}
+                              <div className="relative h-32 bg-gradient-to-br from-purple-600/20 via-purple-500/10 to-purple-400/5 flex items-center justify-center overflow-hidden">
+                                {/* Floating background elements */}
+                                <motion.div
+                                  className="absolute top-2 right-2 w-8 h-8 bg-purple-400/20 rounded-full blur-sm"
+                                  animate={{
+                                    scale: [1, 1.2, 1],
+                                    opacity: [0.3, 0.6, 0.3],
+                                  }}
+                                  transition={{
+                                    duration: 3,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                  }}
+                                ></motion.div>
+                                
+                                <motion.div
+                                  className="absolute bottom-2 left-2 w-6 h-6 bg-purple-500/20 rounded-full blur-sm"
+                                  animate={{
+                                    scale: [1.2, 1, 1.2],
+                                    opacity: [0.2, 0.5, 0.2],
+                                  }}
+                                  transition={{
+                                    duration: 4,
+                                    repeat: Infinity,
+                                    ease: "easeInOut",
+                                  }}
+                                ></motion.div>
+
+                                {primaryImage ? (
+                                  <img 
+                                    src={primaryImage} 
+                                    alt={project.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <motion.div 
+                                    className="text-primary text-6xl" 
+                                    data-testid={`project-icon-${project.id}`}
+                                    whileHover={{ scale: 1.1, rotate: 5 }}
+                                    transition={{ duration: 0.3 }}
+                                  >
+                                    {getIcon(project.icon)}
+                                  </motion.div>
+                                )}
+                                
+                                {/* Category Badge with modern styling */}
+                                <motion.div 
+                                  className={`absolute top-3 left-3 ${project.categoryColor} text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm`}
+                                  initial={{ opacity: 0, scale: 0.8 }}
+                                  whileInView={{ opacity: 1, scale: 1 }}
+                                  transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
+                                >
+                                  {project.category}
+                                </motion.div>
+                              </div>
+
+                              {/* Project Content */}
+                              <div className="p-4 flex-1 flex flex-col">
+                                <motion.h3 
+                                  className="text-lg font-bold text-white mb-2 group-hover:text-primary transition-colors line-clamp-2" 
+                                  data-testid={`project-title-${project.id}`}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  whileInView={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.6, delay: index * 0.1 + 0.4 }}
+                                >
+                                  {project.title}
+                                </motion.h3>
+                                
+                                <motion.p 
+                                  className="text-gray-300 leading-relaxed mb-3 text-sm line-clamp-3 flex-1" 
+                                  data-testid={`project-description-${project.id}`}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  whileInView={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.6, delay: index * 0.1 + 0.5 }}
+                                >
+                                  {project.description}
+                                </motion.p>
+
+                                {/* Tags */}
+                                {tags.length > 0 && (
+                                  <motion.div 
+                                    className="flex flex-wrap gap-1 mb-3" 
+                                    data-testid={`project-tags-${project.id}`}
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    transition={{ duration: 0.6, delay: index * 0.1 + 0.6 }}
+                                  >
+                                    {tags.slice(0, 2).map((tag, tagIndex) => (
+                                      <span key={tagIndex} className="bg-dark-tertiary/50 text-gray-300 px-2 py-1 rounded text-xs">
+                                        {tag}
+                                      </span>
+                                    ))}
+                                  </motion.div>
+                                )}
+
+                                {/* Metric */}
+                                {project.metric && (
+                                  <motion.div 
+                                    className="text-primary font-semibold text-sm" 
+                                    data-testid={`project-metric-${project.id}`}
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.5, delay: index * 0.1 + 0.7 }}
+                                  >
+                                    {project.metric}
+                                  </motion.div>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      </CarouselItem>
+                    );
+                  })}
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex -left-12 bg-dark/80 border-primary/30 text-primary hover:bg-primary hover:text-white transition-all duration-300" />
+                <CarouselNext className="hidden md:flex -right-12 bg-dark/80 border-primary/30 text-primary hover:bg-primary hover:text-white transition-all duration-300" />
+              </Carousel>
             </motion.div>
-            ))
+          ) : (
+            <motion.div
+              className="text-center py-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <div className="text-gray-400 mb-6">
+                <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <h3 className="text-xl font-semibold mb-2">Nenhum projeto encontrado</h3>
+                <p>Em breve teremos novos projetos para mostrar.</p>
+              </div>
+            </motion.div>
           )}
         </div>
 
