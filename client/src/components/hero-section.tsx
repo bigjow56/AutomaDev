@@ -1,13 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
-import { useParallax } from "@/hooks/use-scroll";
 
 export default function HeroSection() {
-  const parallaxOffset1 = useParallax(-0.3);
-  const parallaxOffset2 = useParallax(-0.5);
-  const parallaxOffset3 = useParallax(-0.7);
-
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -20,135 +14,377 @@ export default function HeroSection() {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background with gradient - n8n style */}
-      <div className="absolute inset-0 bg-gradient-to-br from-dark via-dark-secondary to-dark-tertiary"></div>
-
-      {/* Parallax background layers */}
-      <motion.div
-        className="absolute inset-0 opacity-20"
-        style={{ y: parallaxOffset1 }}
-      >
-        <div className="w-full h-full bg-gradient-to-br from-purple-900/30 via-transparent to-purple-800/20"></div>
-      </motion.div>
-
-      <motion.div
-        className="absolute inset-0 opacity-40"
-        style={{ y: parallaxOffset2 }}
-      >
-        <div className="w-full h-full bg-radial-gradient from-purple-900/20 via-transparent to-transparent"></div>
-      </motion.div>
-
-      {/* Floating geometric shapes for depth */}
-      <motion.div
-        className="absolute top-20 left-10 w-20 h-20 bg-purple-600/10 rounded-full blur-xl"
-        style={{ y: parallaxOffset3 }}
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.6, 0.3],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      ></motion.div>
-      
-      <motion.div
-        className="absolute top-40 right-20 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"
-        style={{ y: parallaxOffset1 * 0.8 }}
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.2, 0.5, 0.2],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      ></motion.div>
-
-      <motion.div
-        className="absolute bottom-20 left-1/4 w-24 h-24 bg-purple-400/10 rounded-full blur-xl"
-        style={{ y: parallaxOffset2 * 1.2 }}
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.4, 0.2, 0.4],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      ></motion.div>
-
-      {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
-            <span className="block text-white">Automação que</span>
-            <span className="block bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">
-              Transforma Negócios
-            </span>
-          </h1>
-
-          <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-            Criamos sites profissionais e automatizamos processos para empresas que querem crescer de forma inteligente e eficiente.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              onClick={() => scrollToSection("contact")}
-              className="bg-primary hover:bg-primary-dark text-white px-8 py-4 font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-              data-testid="button-start-project-hero"
-            >
-              Começar Projeto
-            </Button>
-            <Button
-              onClick={() => scrollToSection("services")}
-              variant="outline"
-              className="border-2 border-white/70 hover:border-white text-white hover:text-dark px-8 py-4 font-bold text-lg transition-all duration-300 hover:bg-white/90 backdrop-blur-sm bg-white/10"
-              data-testid="button-know-services"
-            >
-              Conhecer Serviços
-            </Button>
-          </div>
-
-          {/* Stats */}
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
+      {/* Logo Neural Network Background */}
+      <div className="absolute w-96 h-96 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-15 z-10">
+        <div className="w-full h-full relative">
+          {/* Neural Network Nodes */}
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-3xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <div className="text-center" data-testid="stat-time-reduction">
-              <div className="text-3xl md:text-4xl font-bold text-primary mb-2">80%</div>
-              <div className="text-gray-400">Redução de tempo em tarefas manuais</div>
-            </div>
-            <div className="text-center" data-testid="stat-roi-months">
-              <div className="text-3xl md:text-4xl font-bold text-primary mb-2">3-6</div>
-              <div className="text-gray-400">Meses para retorno do investimento</div>
-            </div>
-            <div className="text-center" data-testid="stat-processes-automated">
-              <div className="text-3xl md:text-4xl font-bold text-primary mb-2">100+</div>
-              <div className="text-gray-400">Processos automatizados</div>
-            </div>
-          </motion.div>
-        </motion.div>
+            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-12 left-12"
+            animate={{
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 0 10px #34d399",
+                "0 0 30px #34d399",
+                "0 0 10px #34d399"
+              ],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0
+            }}
+          />
+          
+          <motion.div
+            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-12 right-12"
+            animate={{
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 0 10px #34d399",
+                "0 0 30px #34d399",
+                "0 0 10px #34d399"
+              ],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.4
+            }}
+          />
+          
+          <motion.div
+            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-1/2 left-1/4 transform -translate-y-1/2"
+            animate={{
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 0 10px #34d399",
+                "0 0 30px #34d399",
+                "0 0 10px #34d399"
+              ],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.8
+            }}
+          />
+          
+          <motion.div
+            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            animate={{
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 0 10px #34d399",
+                "0 0 30px #34d399",
+                "0 0 10px #34d399"
+              ],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1.2
+            }}
+          />
+          
+          <motion.div
+            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-1/2 right-1/4 transform -translate-y-1/2"
+            animate={{
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 0 10px #34d399",
+                "0 0 30px #34d399",
+                "0 0 10px #34d399"
+              ],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1.6
+            }}
+          />
+          
+          <motion.div
+            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg bottom-12 left-12"
+            animate={{
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 0 10px #34d399",
+                "0 0 30px #34d399",
+                "0 0 10px #34d399"
+              ],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+          
+          <motion.div
+            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg bottom-12 right-12"
+            animate={{
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 0 10px #34d399",
+                "0 0 30px #34d399",
+                "0 0 10px #34d399"
+              ],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2.4
+            }}
+          />
+          
+          <motion.div
+            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-32 left-1/2 transform -translate-x-1/2"
+            animate={{
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 0 10px #34d399",
+                "0 0 30px #34d399",
+                "0 0 10px #34d399"
+              ],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.6
+            }}
+          />
+          
+          <motion.div
+            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg bottom-32 left-1/2 transform -translate-x-1/2"
+            animate={{
+              scale: [1, 1.4, 1],
+              boxShadow: [
+                "0 0 10px #34d399",
+                "0 0 30px #34d399",
+                "0 0 10px #34d399"
+              ],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1.8
+            }}
+          />
+
+          {/* Neural Network Connections */}
+          <motion.div
+            className="absolute top-14 left-16 w-64 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40"
+            animate={{
+              opacity: [0, 0.6, 0],
+              scaleX: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 0
+            }}
+          />
+          
+          <motion.div
+            className="absolute top-32 left-36 w-44 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform rotate-45"
+            animate={{
+              opacity: [0, 0.6, 0],
+              scaleX: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 0.5
+            }}
+          />
+          
+          <motion.div
+            className="absolute top-48 left-24 w-48 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform -rotate-12"
+            animate={{
+              opacity: [0, 0.6, 0],
+              scaleX: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 1
+            }}
+          />
+          
+          <motion.div
+            className="absolute top-64 left-36 w-44 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform -rotate-45"
+            animate={{
+              opacity: [0, 0.6, 0],
+              scaleX: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 1.5
+            }}
+          />
+          
+          <motion.div
+            className="absolute bottom-14 left-16 w-64 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40"
+            animate={{
+              opacity: [0, 0.6, 0],
+              scaleX: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 2
+            }}
+          />
+          
+          <motion.div
+            className="absolute top-1/2 left-16 w-32 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform rotate-90"
+            animate={{
+              opacity: [0, 0.6, 0],
+              scaleX: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 2.5
+            }}
+          />
+          
+          <motion.div
+            className="absolute top-1/2 right-16 w-32 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform rotate-90"
+            animate={{
+              opacity: [0, 0.6, 0],
+              scaleX: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 3
+            }}
+          />
+          
+          <motion.div
+            className="absolute top-40 left-48 w-24 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform rotate-45"
+            animate={{
+              opacity: [0, 0.6, 0],
+              scaleX: [0, 1, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 0.8
+            }}
+          />
+        </div>
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        animate={{ y: [0, -10, 0] }}
-        transition={{ repeat: Infinity, duration: 1.5 }}
-      >
-        <ArrowDown className="w-6 h-6 text-primary" data-testid="scroll-indicator" />
-      </motion.div>
+      {/* Floating Particles */}
+      <div className="absolute w-full h-full pointer-events-none">
+        {[...Array(9)].map((_, index) => (
+          <motion.div
+            key={index}
+            className="absolute w-1 h-1 bg-emerald-400 rounded-full opacity-30"
+            style={{
+              left: `${10 + index * 10}%`,
+            }}
+            animate={{
+              y: ["100vh", "-100px"],
+              rotate: [0, 360],
+              opacity: [0, 0.3, 0.3, 0]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "linear",
+              delay: index * 1
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Hero Content */}
+      <div className="relative z-20 text-center max-w-4xl mx-auto px-8">
+        <motion.h1
+          className="text-6xl md:text-8xl font-extrabold mb-6 bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent"
+          style={{
+            backgroundSize: "300% 300%",
+          }}
+          animate={{
+            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          AutomaDev
+        </motion.h1>
+
+        <motion.p
+          className="text-2xl text-slate-400 mb-8 font-light"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          Automação Inteligente para o Futuro
+        </motion.p>
+
+        <motion.p
+          className="text-xl text-slate-300 leading-relaxed mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          Transformamos ideias em soluções automatizadas. 
+          Desenvolvemos sistemas inteligentes que otimizam processos 
+          e impulsionam o crescimento do seu negócio.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        >
+          <Button
+            onClick={() => scrollToSection("contact")}
+            className="bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-emerald-500 hover:to-cyan-500 text-slate-900 px-10 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-400/30 uppercase tracking-wide"
+            data-testid="button-start-project-hero"
+          >
+            Começar Agora
+          </Button>
+        </motion.div>
+      </div>
     </section>
   );
 }
