@@ -345,7 +345,7 @@ export default function AdminDashboard() {
     setValue("subtitle", event.subtitle || "");
     setValue("description", event.description || "");
     setValue("endDate", event.endDate ? format(new Date(event.endDate), "yyyy-MM-dd'T'HH:mm") : "");
-    setValue("isActive", event.isActive);
+    setValue("isActive", event.isActive ? "true" : "false");
     setIsEventDialogOpen(true);
   };
 

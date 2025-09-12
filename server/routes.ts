@@ -9,8 +9,38 @@ import session from "express-session";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // JWT Configuration
+  const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+  const JWT_EXPIRES_IN = '24h';
+
+  // Utility functions for JWT
+  const generateToken = (adminId: string): string => {
+    return jwt.sign(
+      { 
+        adminId, 
+        type: 'admin',
+        iat: Math.floor(Date.now() / 1000)
+      }, 
+      JWT_SECRET, 
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+  };
+
+  const verifyToken = (token: string): { adminId: string } | null => {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      if (decoded.type === 'admin' && decoded.adminId) {
+        return { adminId: decoded.adminId };
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  };
   // Ensure uploads directory exists
   const uploadsDir = path.join(process.cwd(), 'uploads');
   if (!fs.existsSync(uploadsDir)) {
@@ -50,26 +80,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Configure sessions for admin authentication
   app.use(session({
     secret: process.env.SESSION_SECRET || 'automadev-secret-key-2024',
-    resave: true,
-    saveUninitialized: true, // Create session for everyone 
+    resave: false,
+    saveUninitialized: false, // Only create session when needed
     name: 'sid',
     cookie: { 
-      secure: false,
-      httpOnly: false, 
+      secure: false, // Set to true in production with HTTPS
+      httpOnly: true, // Security: prevent XSS attacks
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax', // Changed back to lax for Replit compatibility 
+      sameSite: 'lax',
       path: '/'
     },
-    rolling: false
+    rolling: true // Extend session on activity
   }));
 
-  // Middleware to check if admin is authenticated
+  // Middleware to check if admin is authenticated (supports both sessions and JWT tokens)
   const requireAuth = (req: any, res: any, next: any) => {
+    // Method 1: Check session-based authentication
     if (req.session?.isAdmin) {
-      next();
-    } else {
-      res.status(401).json({ success: false, message: "Não autorizado" });
+      req.adminId = req.session.adminId;
+      return next();
     }
+
+    // Method 2: Check JWT token authentication
+    const authHeader = req.headers.authorization;
+    const tokenFromHeader = authHeader && authHeader.startsWith('Bearer ') 
+      ? authHeader.slice(7) 
+      : null;
+    
+    const tokenFromCustomHeader = req.headers['x-auth-token'];
+    const token = tokenFromHeader || tokenFromCustomHeader;
+
+    if (token) {
+      const decoded = verifyToken(token);
+      if (decoded) {
+        req.adminId = decoded.adminId;
+        return next();
+      }
+    }
+
+    // Neither session nor valid token found
+    res.status(401).json({ 
+      success: false, 
+      message: "Não autorizado",
+      code: "AUTH_REQUIRED"
+    });
   };
 
   // Initialize admin user if not exists
@@ -119,13 +173,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Set admin properties directly
+      // Set admin properties in session
       req.session.isAdmin = true;
       req.session.adminId = admin.id;
       
-      console.log('Setting session - isAdmin:', true, 'adminId:', admin.id);
-      console.log('Session ID:', req.sessionID);
-      console.log('Session data:', req.session);
+      // Generate secure JWT token
+      const jwtToken = generateToken(admin.id);
       
       req.session.save((saveErr: any) => {
         if (saveErr) {
@@ -136,17 +189,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
         
-        console.log('Session saved successfully');
-        
-        // Generate auth token for Replit browser compatibility
-        const authToken = `admin_${admin.id}_${Date.now()}_${req.sessionID}`;
-        req.session.authToken = authToken;
-        
         res.json({ 
           success: true, 
           message: "Login realizado com sucesso",
-          authToken: authToken,
-          sessionId: req.sessionID
+          token: jwtToken,
+          sessionId: req.sessionID,
+          expiresIn: JWT_EXPIRES_IN
         });
       });
     } catch (error) {
@@ -168,34 +216,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/admin/check", (req: any, res) => {
-    console.log('Session check - Session ID:', req.sessionID);
-    console.log('Session data:', req.session);
-    console.log('isAdmin?', !!req.session?.isAdmin);
-    console.log('Cookies received:', req.headers.cookie);
-    
-    // Check for auth token in header (for Replit browser compatibility)
-    const authTokenHeader = req.headers.authorization || req.headers['x-auth-token'];
-    console.log('Auth token header:', authTokenHeader);
-    
-    // Check session or token
+    // Check session-based authentication
     let isAuthenticated = !!req.session?.isAdmin;
+    let authMethod = 'none';
+    let adminId = null;
     
-    // If session failed, try token-based auth
-    if (!isAuthenticated && authTokenHeader) {
-      // Simple token validation for demo (in production, use proper JWT)
-      if (authTokenHeader.startsWith('admin_')) {
-        console.log('Using token-based authentication');
-        isAuthenticated = true;
+    if (isAuthenticated) {
+      authMethod = 'session';
+      adminId = req.session.adminId;
+    } else {
+      // Check JWT token authentication
+      const authHeader = req.headers.authorization;
+      const tokenFromHeader = authHeader && authHeader.startsWith('Bearer ') 
+        ? authHeader.slice(7) 
+        : null;
+      
+      const tokenFromCustomHeader = req.headers['x-auth-token'];
+      const token = tokenFromHeader || tokenFromCustomHeader;
+
+      if (token) {
+        const decoded = verifyToken(token);
+        if (decoded) {
+          isAuthenticated = true;
+          authMethod = 'jwt';
+          adminId = decoded.adminId;
+        }
       }
     }
-    
-    console.log('Final auth result:', isAuthenticated);
     
     res.json({ 
       success: true, 
       isAdmin: isAuthenticated,
-      sessionId: req.sessionID,
-      method: isAuthenticated ? (req.session?.isAdmin ? 'session' : 'token') : 'none'
+      adminId: adminId,
+      authMethod: authMethod,
+      sessionId: req.sessionID
     });
   });
 

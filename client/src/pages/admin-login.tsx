@@ -40,10 +40,10 @@ export default function AdminLogin() {
     onSuccess: (data) => {
       console.log('Login successful:', data);
       
-      // Save auth token for Replit browser compatibility
-      if (data.authToken) {
-        localStorage.setItem('authToken', data.authToken);
-        console.log('Auth token saved to localStorage');
+      // Save JWT token for Replit browser compatibility
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+        console.log('JWT token saved to localStorage');
       }
       
       queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
