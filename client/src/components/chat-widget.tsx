@@ -52,6 +52,9 @@ export default function ChatWidget() {
     onError: (error) => console.error("WebSocket error:", error),
   });
 
+  // Track previous message count for fallback typing indicator clearing
+  const previousMessageCountRef = useRef(0);
+  
   // Fetch chat messages (now without polling since we use WebSocket)
   const { data: messagesData, isLoading: messagesLoading, error } = useQuery({
     queryKey: [`/api/chat/${sessionId}`],
@@ -68,6 +71,26 @@ export default function ChatWidget() {
   });
 
   const messages: ChatMessage[] = (messagesData as any)?.messages || [];
+  
+  // Fallback: clear typing indicator if new AI messages appeared
+  useEffect(() => {
+    if (messages.length > previousMessageCountRef.current) {
+      const hasNewAIMessage = messages.some(msg => 
+        msg.isUser === "false" && 
+        new Date(msg.timestamp).getTime() > Date.now() - 60000 // Within last minute
+      );
+      
+      if (hasNewAIMessage && isAgentTyping) {
+        console.log("Fallback: clearing typing indicator due to new AI message");
+        setIsAgentTyping(false);
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = null;
+        }
+      }
+    }
+    previousMessageCountRef.current = messages.length;
+  }, [messages, isAgentTyping]);
 
   console.log("=== CHAT WIDGET STATE ===");
   console.log("Session ID:", sessionId);
@@ -89,11 +112,11 @@ export default function ChatWidget() {
     onSuccess: (result) => {
       setIsTyping(false);
       
-      // Check if we got an immediate AI response (fallback case)
+      // Check if we got an immediate AI response (fallback case) or if we're awaiting webhook
       if (result.aiMessage) {
         // Immediate response - don't show "Digitando..." indicator
         setIsAgentTyping(false);
-      } else {
+      } else if (result.awaitingWebhook) {
         // Waiting for webhook response - show "Digitando..." indicator
         setIsAgentTyping(true);
         
@@ -102,6 +125,9 @@ export default function ChatWidget() {
           setIsAgentTyping(false);
           console.warn("Agent typing indicator timed out after 30 seconds");
         }, 30000);
+      } else {
+        // Unknown state - be safe and don't show typing indicator
+        setIsAgentTyping(false);
       }
       
       queryClient.invalidateQueries({ queryKey: [`/api/chat/${sessionId}`] });

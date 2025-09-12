@@ -102,6 +102,24 @@ app.use((req, res, next) => {
     
     // Track connection state
     let clientSessionId: string | null = null;
+    let pingInterval: NodeJS.Timeout | null = null;
+    let isAlive = true;
+    
+    // Start ping/pong heartbeat to keep connection alive
+    pingInterval = setInterval(() => {
+      if (!isAlive) {
+        console.log('WebSocket connection appears dead, terminating');
+        ws.terminate();
+        return;
+      }
+      
+      if (ws.readyState === ws.OPEN) {
+        isAlive = false; // Will be set to true if pong is received
+        ws.ping();
+      } else {
+        if (pingInterval) clearInterval(pingInterval);
+      }
+    }, 25000); // Ping every 25 seconds
     
     ws.on('message', (message) => {
       try {
@@ -115,7 +133,10 @@ app.use((req, res, next) => {
           if (!sessionClients.has(clientSessionId)) {
             sessionClients.set(clientSessionId, new Set());
           }
-          sessionClients.get(clientSessionId)?.add(ws);
+          const clients = sessionClients.get(clientSessionId);
+          if (clients) {
+            clients.add(ws);
+          }
           
           console.log(`Client joined session: ${clientSessionId}. Total sessions: ${sessionClients.size}`);
           
@@ -131,8 +152,19 @@ app.use((req, res, next) => {
       }
     });
     
+    // Handle pong response
+    ws.on('pong', () => {
+      isAlive = true; // Mark connection as alive
+    });
+    
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
+      
+      // Clear ping interval
+      if (pingInterval) {
+        clearInterval(pingInterval);
+        pingInterval = null;
+      }
       
       // Remove client from session
       if (clientSessionId) {
@@ -149,6 +181,12 @@ app.use((req, res, next) => {
     
     ws.on('error', (error) => {
       console.error('WebSocket error:', error);
+      
+      // Clear ping interval
+      if (pingInterval) {
+        clearInterval(pingInterval);
+        pingInterval = null;
+      }
       
       // Remove client from session on error
       if (clientSessionId) {

@@ -452,17 +452,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const aiResponse = await response.text();
           console.log("AI Response from n8n:", aiResponse);
           
-          // Check if this is just the "Workflow was started" acknowledgment
+          // Check if this is just the "Workflow was started" acknowledgment (case-insensitive)
           // Don't save it - wait for the real response via webhook
-          const isWorkflowStarted = aiResponse.includes("Workflow was started") || 
-                                  aiResponse.includes('"message":"Workflow was started"');
+          const responseText = aiResponse.toLowerCase();
+          const isWorkflowStarted = responseText.includes("workflow was started");
           
           if (isWorkflowStarted) {
             console.log("Skipping 'Workflow was started' message - waiting for real response via webhook");
             // Just return user message, don't save AI acknowledgment
-            res.json({ 
+            return res.json({ 
               success: true, 
               userMessage,
+              awaitingWebhook: true,
               message: "Mensagem enviada! Aguardando resposta do agente..." 
             });
           } else {
