@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { WebSocketServer } from "ws";
 
 const app = express();
 
@@ -55,6 +56,39 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Setup WebSocket server
+  const wss = new WebSocketServer({ server });
+  
+  wss.on('connection', (ws, req) => {
+    console.log('WebSocket client connected from:', req.socket.remoteAddress);
+    
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log('WebSocket message received:', data);
+        
+        if (data.type === 'join_session' && data.sessionId) {
+          // Store session ID for this client
+          (ws as any).sessionId = data.sessionId;
+          console.log('Client joined session:', data.sessionId);
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    });
+    
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+    });
+    
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  });
+
+  // Make WebSocket server available to routes
+  (app as any).wss = wss;
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
