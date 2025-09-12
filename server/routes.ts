@@ -452,18 +452,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const aiResponse = await response.text();
           console.log("AI Response from n8n:", aiResponse);
           
-          // Save AI response
-          const aiMessage = await dbStorage.createChatMessage({
-            sessionId: validatedData.sessionId,
-            message: aiResponse || "Recebi sua mensagem, mas não consegui gerar uma resposta no momento.",
-            isUser: "false",
-          });
+          // Check if this is just the "Workflow was started" acknowledgment
+          // Don't save it - wait for the real response via webhook
+          let parsedResponse;
+          try {
+            parsedResponse = JSON.parse(aiResponse);
+          } catch {
+            parsedResponse = { message: aiResponse };
+          }
           
-          res.json({ 
-            success: true, 
-            userMessage, 
-            aiMessage 
-          });
+          if (parsedResponse.message === "Workflow was started") {
+            console.log("Skipping 'Workflow was started' message - waiting for real response via webhook");
+            // Just return user message, don't save AI acknowledgment
+            res.json({ 
+              success: true, 
+              userMessage,
+              message: "Mensagem enviada! Aguardando resposta do agente..." 
+            });
+          } else {
+            // Save actual AI response (fallback case)
+            const aiMessage = await dbStorage.createChatMessage({
+              sessionId: validatedData.sessionId,
+              message: aiResponse || "Recebi sua mensagem, mas não consegui gerar uma resposta no momento.",
+              isUser: "false",
+            });
+            
+            res.json({ 
+              success: true, 
+              userMessage, 
+              aiMessage 
+            });
+          }
         } else {
           console.error("Webhook failed with status:", response.status);
           const errorText = await response.text();
