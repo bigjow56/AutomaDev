@@ -1,8 +1,13 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, TrendingUp, Headphones, Zap } from "lucide-react";
+import { useIntersection } from "@/hooks/use-intersection";
+import { useParallax } from "@/hooks/use-scroll";
 
 export default function BenefitsSection() {
+  const { ref, isIntersecting } = useIntersection({ threshold: 0.1 });
+  const parallaxOffset = useParallax(-0.2);
+
   const benefits = [
     {
       id: "time-savings",
@@ -35,11 +40,43 @@ export default function BenefitsSection() {
   ];
 
   return (
-    <section id="benefits" className="py-20 bg-gradient-to-br from-dark via-dark-secondary to-dark relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-5">
+    <section id="benefits" className="py-20 bg-gradient-to-br from-dark via-dark-secondary to-dark relative overflow-hidden" ref={ref}>
+      {/* Parallax background decoration */}
+      <motion.div 
+        className="absolute inset-0 opacity-5"
+        style={{ y: parallaxOffset }}
+      >
         <div className="w-full h-full bg-gradient-to-br from-purple-600/20 via-transparent to-purple-400/20"></div>
-      </div>
+      </motion.div>
+
+      {/* Floating elements for depth */}
+      <motion.div
+        className="absolute top-10 right-10 w-16 h-16 bg-purple-500/10 rounded-full blur-xl"
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.3, 0.7, 0.3],
+          x: [0, 20, 0],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      ></motion.div>
+      
+      <motion.div
+        className="absolute bottom-10 left-10 w-24 h-24 bg-purple-400/10 rounded-full blur-2xl"
+        animate={{
+          scale: [1.2, 1, 1.2],
+          opacity: [0.2, 0.5, 0.2],
+          y: [0, -30, 0],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      ></motion.div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -63,29 +100,62 @@ export default function BenefitsSection() {
           {benefits.map((benefit, index) => (
             <motion.div
               key={benefit.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, y: 50, rotateX: 15 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              transition={{ 
+                duration: 0.8, 
+                delay: index * 0.15,
+                type: "spring",
+                stiffness: 100,
+                damping: 15
+              }}
+              viewport={{ once: true, margin: "-10%" }}
+              whileHover={{ 
+                scale: 1.03, 
+                y: -10,
+                transition: { duration: 0.3 }
+              }}
             >
-              <Card className="bg-dark/60 backdrop-blur-sm border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/30 transition-all duration-300">
+              <Card className="bg-dark/60 backdrop-blur-sm border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/20">
                 <CardContent className="p-0">
                   <div className="flex items-start space-x-4">
-                    <div className="flex-shrink-0">
+                    <motion.div 
+                      className="flex-shrink-0"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center" data-testid={`benefit-icon-${benefit.id}`}>
                         {benefit.icon}
                       </div>
-                    </div>
+                    </motion.div>
                     <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-white mb-4" data-testid={`benefit-title-${benefit.id}`}>
+                      <motion.h3 
+                        className="text-2xl font-bold text-white mb-4" 
+                        data-testid={`benefit-title-${benefit.id}`}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.2 + 0.3 }}
+                      >
                         {benefit.title}
-                      </h3>
-                      <p className="text-gray-300 leading-relaxed mb-4" data-testid={`benefit-description-${benefit.id}`}>
+                      </motion.h3>
+                      <motion.p 
+                        className="text-gray-300 leading-relaxed mb-4" 
+                        data-testid={`benefit-description-${benefit.id}`}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.2 + 0.4 }}
+                      >
                         {benefit.description}
-                      </p>
-                      <div className="text-primary font-semibold" data-testid={`benefit-metric-${benefit.id}`}>
+                      </motion.p>
+                      <motion.div 
+                        className="text-primary font-semibold" 
+                        data-testid={`benefit-metric-${benefit.id}`}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: index * 0.2 + 0.6 }}
+                      >
                         {benefit.metric}
-                      </div>
+                      </motion.div>
                     </div>
                   </div>
                 </CardContent>

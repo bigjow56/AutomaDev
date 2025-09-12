@@ -1,8 +1,13 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
+import { useParallax } from "@/hooks/use-scroll";
 
 export default function HeroSection() {
+  const parallaxOffset1 = useParallax(-0.3);
+  const parallaxOffset2 = useParallax(-0.5);
+  const parallaxOffset3 = useParallax(-0.7);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -19,15 +24,63 @@ export default function HeroSection() {
       {/* Background with gradient - n8n style */}
       <div className="absolute inset-0 bg-gradient-to-br from-dark via-dark-secondary to-dark-tertiary"></div>
 
-      {/* Animated background elements with subtle purple gradient */}
-      <div className="absolute inset-0 opacity-20">
+      {/* Parallax background layers */}
+      <motion.div
+        className="absolute inset-0 opacity-20"
+        style={{ y: parallaxOffset1 }}
+      >
         <div className="w-full h-full bg-gradient-to-br from-purple-900/30 via-transparent to-purple-800/20"></div>
-      </div>
+      </motion.div>
 
-      {/* Additional radial gradient for depth */}
-      <div className="absolute inset-0 opacity-40">
+      <motion.div
+        className="absolute inset-0 opacity-40"
+        style={{ y: parallaxOffset2 }}
+      >
         <div className="w-full h-full bg-radial-gradient from-purple-900/20 via-transparent to-transparent"></div>
-      </div>
+      </motion.div>
+
+      {/* Floating geometric shapes for depth */}
+      <motion.div
+        className="absolute top-20 left-10 w-20 h-20 bg-purple-600/10 rounded-full blur-xl"
+        style={{ y: parallaxOffset3 }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.6, 0.3],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      ></motion.div>
+      
+      <motion.div
+        className="absolute top-40 right-20 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"
+        style={{ y: parallaxOffset1 * 0.8 }}
+        animate={{
+          scale: [1.2, 1, 1.2],
+          opacity: [0.2, 0.5, 0.2],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      ></motion.div>
+
+      <motion.div
+        className="absolute bottom-20 left-1/4 w-24 h-24 bg-purple-400/10 rounded-full blur-xl"
+        style={{ y: parallaxOffset2 * 1.2 }}
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.4, 0.2, 0.4],
+        }}
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      ></motion.div>
 
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
