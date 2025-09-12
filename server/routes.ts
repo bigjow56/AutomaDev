@@ -49,14 +49,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Configure sessions for admin authentication
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    secret: process.env.SESSION_SECRET || 'automadev-secret-key-2024',
     resave: false,
     saveUninitialized: false,
+    name: 'automadev.sid',
     cookie: { 
       secure: false, // Set to true in production with HTTPS
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'lax'
+    },
+    rolling: true // Refresh the session on each request
   }));
 
   // Middleware to check if admin is authenticated
@@ -115,12 +118,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Save session explicitly
       req.session.isAdmin = true;
       req.session.adminId = admin.id;
       
-      res.json({ 
-        success: true, 
-        message: "Login realizado com sucesso" 
+      req.session.save((err: any) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ 
+            success: false, 
+            message: "Erro ao salvar sessão" 
+          });
+        }
+        
+        res.json({ 
+          success: true, 
+          message: "Login realizado com sucesso" 
+        });
       });
     } catch (error) {
       console.error("Error in admin login:", error);
@@ -141,6 +155,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/admin/check", (req: any, res) => {
+    console.log('Session check - Session ID:', req.sessionID);
+    console.log('Session data:', req.session);
+    console.log('isAdmin?', !!req.session?.isAdmin);
+    
     res.json({ 
       success: true, 
       isAdmin: !!req.session?.isAdmin 
