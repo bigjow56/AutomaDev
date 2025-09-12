@@ -4,6 +4,8 @@
 
 AutomaDev is a full-stack web application that serves as a landing page and contact platform for a business automation consultancy. The application showcases automation services, web development capabilities, and system integration solutions. It's built as a modern, responsive single-page application with a professional contact form system for lead generation.
 
+**Latest Update (Sept 2025)**: The platform now includes complete AI agent integration with n8n workflow automation, featuring real-time bidirectional communication through WebSockets and webhook endpoints for seamless customer support automation.
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -43,8 +45,18 @@ The application uses a hybrid storage approach designed for flexibility:
 
 This approach allows for easy development while maintaining production scalability.
 
+### AI Agent Integration (New)
+The platform now features a complete AI agent integration system:
+
+- **Real-time Communication**: WebSocket-based bidirectional messaging system on dedicated `/ws` path
+- **n8n Workflow Integration**: Seamless connection to n8n automation workflows using secure webhook endpoints
+- **Session Management**: Session-based client management for targeted message broadcasting
+- **Webhook Endpoints**: `/api/webhook/n8n` for receiving asynchronous AI responses from n8n workflows
+- **Live Chat Widget**: Professional chat interface with real-time updates, connection indicators, and message history
+- **Secret Management**: Secure handling of N8N_WEBHOOK_URL through environment variables
+
 ### Authentication and Authorization
-Currently implements a basic contact form system without user authentication, focusing on lead capture and business inquiry management. The architecture supports future authentication implementation through the existing middleware pattern.
+Currently implements a basic contact form system and AI chat without user authentication, focusing on lead capture and automated customer support. The architecture supports future authentication implementation through the existing middleware pattern.
 
 ## External Dependencies
 

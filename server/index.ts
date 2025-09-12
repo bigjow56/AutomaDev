@@ -115,7 +115,7 @@ app.use((req, res, next) => {
           if (!sessionClients.has(clientSessionId)) {
             sessionClients.set(clientSessionId, new Set());
           }
-          sessionClients.get(clientSessionId)!.add(ws);
+          sessionClients.get(clientSessionId)?.add(ws);
           
           console.log(`Client joined session: ${clientSessionId}. Total sessions: ${sessionClients.size}`);
           
