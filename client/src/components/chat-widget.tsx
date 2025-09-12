@@ -149,7 +149,7 @@ export default function ChatWidget() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed bottom-24 right-6 w-80 h-96 bg-white border border-gray-200 rounded-2xl shadow-2xl z-40 flex flex-col overflow-hidden md:w-80 md:h-96 sm:w-72 sm:h-80 max-sm:fixed max-sm:inset-4 max-sm:w-auto max-sm:h-auto max-sm:bottom-4 max-sm:right-4 max-sm:left-4 max-sm:top-4"
+            className="fixed bottom-24 right-6 w-96 h-[32rem] bg-white border border-gray-200 rounded-2xl shadow-2xl z-40 flex flex-col overflow-hidden md:w-96 md:h-[32rem] sm:w-80 sm:h-96 max-sm:fixed max-sm:inset-4 max-sm:w-auto max-sm:h-auto max-sm:bottom-4 max-sm:right-4 max-sm:left-4 max-sm:top-4"
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
