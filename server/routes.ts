@@ -52,13 +52,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     secret: process.env.SESSION_SECRET || 'automadev-secret-key-2024',
     resave: false,
     saveUninitialized: false,
-    name: 'automadev.sid',
+    name: 'connect.sid', // Use standard session name 
     cookie: { 
-      secure: false, // Set to true in production with HTTPS
-      httpOnly: true,
+      secure: false,
+      httpOnly: false, // Allow JS access for debugging in Replit
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax',
-      domain: undefined, // Let browser handle domain
+      sameSite: 'none', // Required for cross-origin in Replit
       path: '/'
     },
     rolling: false
