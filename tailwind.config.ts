@@ -62,16 +62,20 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
-        // AutomaDev custom colors - n8n inspired
+        // AutomaDev custom colors - Neural Network inspired
         dark: {
-          DEFAULT: "#1a1625",
-          secondary: "#252035", 
-          tertiary: "#2f2a45",
+          DEFAULT: "#0f172a",
+          secondary: "#1e293b", 
+          tertiary: "#334155",
         },
-        "secondary-blue": "#0969da",
-        purple: {
-          600: "#6f42c1",
-          400: "#8b5cf6",
+        "secondary-cyan": "#06b6d4",
+        emerald: {
+          500: "#10b981",
+          600: "#059669",
+        },
+        cyan: {
+          400: "#22d3ee",
+          500: "#06b6d4",
         },
       },
       fontFamily: {

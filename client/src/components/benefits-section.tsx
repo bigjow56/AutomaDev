@@ -116,7 +116,7 @@ export default function BenefitsSection() {
                 transition: { duration: 0.3 }
               }}
             >
-              <Card className="bg-dark/60 backdrop-blur-sm border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/20">
+              <Card className="bg-dark/60 backdrop-blur-sm border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/20">
                 <CardContent className="p-0">
                   <div className="flex items-start space-x-4">
                     <motion.div 

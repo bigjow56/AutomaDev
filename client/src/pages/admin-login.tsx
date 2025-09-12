@@ -47,7 +47,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FF6B35] via-[#F7931E] to-[#FF6B35] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-600 via-cyan-500 to-emerald-600 p-4">
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -59,7 +59,7 @@ export default function AdminLogin() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
-              className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-[#FF6B35] to-[#F7931E] rounded-full flex items-center justify-center"
+              className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-emerald-600 to-cyan-500 rounded-full flex items-center justify-center"
             >
               <Lock className="w-8 h-8 text-white" />
             </motion.div>
@@ -83,7 +83,7 @@ export default function AdminLogin() {
                     id="username"
                     type="text"
                     placeholder="Digite seu usuário"
-                    className="pl-10 border-gray-300 focus:border-[#FF6B35] focus:ring-[#FF6B35]"
+                    className="pl-10 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                     {...register("username")}
                     data-testid="admin-username-input"
                   />
@@ -103,7 +103,7 @@ export default function AdminLogin() {
                     id="password"
                     type="password"
                     placeholder="Digite sua senha"
-                    className="pl-10 border-gray-300 focus:border-[#FF6B35] focus:ring-[#FF6B35]"
+                    className="pl-10 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
                     {...register("password")}
                     data-testid="admin-password-input"
                   />
@@ -124,7 +124,7 @@ export default function AdminLogin() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#FF6B35] to-[#F7931E] hover:from-[#e55a2b] hover:to-[#e0851a] text-white font-semibold py-2 px-4 rounded-md transition-all duration-200 shadow-md hover:shadow-lg"
+                className="w-full bg-gradient-to-r from-emerald-600 to-cyan-500 hover:from-emerald-700 hover:to-cyan-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-200 shadow-md hover:shadow-lg"
                 disabled={loginMutation.isPending}
                 data-testid="admin-login-button"
               >

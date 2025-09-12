@@ -176,13 +176,13 @@ export default function PortfolioSection() {
                           }}
                           className="h-full"
                         >
-                          <Card className="group bg-gradient-to-br from-dark via-dark-secondary to-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-purple-500/20 backdrop-blur-sm">
+                          <Card className="group bg-gradient-to-br from-dark via-dark-secondary to-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-emerald-500/20 backdrop-blur-sm">
                             <CardContent className="p-0 h-full flex flex-col">
                               {/* Project Header with gradient background */}
-                              <div className="relative h-32 bg-gradient-to-br from-purple-600/20 via-purple-500/10 to-purple-400/5 flex items-center justify-center overflow-hidden">
+                              <div className="relative h-32 bg-gradient-to-br from-emerald-600/20 via-cyan-500/10 to-emerald-400/5 flex items-center justify-center overflow-hidden">
                                 {/* Floating background elements */}
                                 <motion.div
-                                  className="absolute top-2 right-2 w-8 h-8 bg-purple-400/20 rounded-full blur-sm"
+                                  className="absolute top-2 right-2 w-8 h-8 bg-emerald-400/20 rounded-full blur-sm"
                                   animate={{
                                     scale: [1, 1.2, 1],
                                     opacity: [0.3, 0.6, 0.3],
@@ -195,7 +195,7 @@ export default function PortfolioSection() {
                                 ></motion.div>
                                 
                                 <motion.div
-                                  className="absolute bottom-2 left-2 w-6 h-6 bg-purple-500/20 rounded-full blur-sm"
+                                  className="absolute bottom-2 left-2 w-6 h-6 bg-cyan-500/20 rounded-full blur-sm"
                                   animate={{
                                     scale: [1.2, 1, 1.2],
                                     opacity: [0.2, 0.5, 0.2],

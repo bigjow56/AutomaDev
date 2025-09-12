@@ -137,7 +137,7 @@ export default function ChatWidget() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] px-4 py-3 flex items-center justify-between text-white">
+            <div className="bg-gradient-to-r from-emerald-600 to-cyan-500 px-4 py-3 flex items-center justify-between text-white">
               <div className="flex items-center space-x-2">
                 <Bot className="w-5 h-5" />
                 <div>
@@ -178,7 +178,7 @@ export default function ChatWidget() {
                     <div
                       className={`max-w-[80%] px-3 py-2 rounded-2xl ${
                         msg.isUser === "true"
-                          ? "bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white ml-auto rounded-br-md"
+                          ? "bg-gradient-to-r from-emerald-600 to-cyan-500 text-white ml-auto rounded-br-md"
                           : "bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm"
                       }`}
                       data-testid={`chat-message-${msg.isUser === "true" ? "user" : "ai"}`}
@@ -211,9 +211,9 @@ export default function ChatWidget() {
                         <span className="text-sm">🤖</span>
                         <span className="text-sm text-gray-600 italic">Digitando</span>
                         <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-[#ff6b35] rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-[#ff6b35] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                          <div className="w-2 h-2 bg-[#ff6b35] rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                          <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                         </div>
                       </div>
                     </div>
@@ -231,7 +231,7 @@ export default function ChatWidget() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Digite sua mensagem..."
-                  className="flex-1 bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-500 focus:border-[#ff6b35] focus:ring-1 focus:ring-[#ff6b35] rounded-full px-4"
+                  className="flex-1 bg-gray-50 border-gray-200 text-gray-800 placeholder-gray-500 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 rounded-full px-4"
                   disabled={sendMessageMutation.isPending || isTyping}
                   maxLength={500}
                   data-testid="chat-input"
@@ -240,7 +240,7 @@ export default function ChatWidget() {
                   type="submit"
                   size="sm"
                   disabled={!message.trim() || sendMessageMutation.isPending || isTyping}
-                  className="bg-gradient-to-r from-[#ff6b35] to-[#f7931e] hover:from-[#e55a2b] hover:to-[#e0851a] text-white px-4 rounded-full shadow-sm transition-all duration-200 hover:shadow-md"
+                  className="bg-gradient-to-r from-emerald-600 to-cyan-500 hover:from-emerald-700 hover:to-cyan-600 text-white px-4 rounded-full shadow-sm transition-all duration-200 hover:shadow-md"
                   data-testid="chat-send-button"
                 >
                   {sendMessageMutation.isPending || isTyping ? (

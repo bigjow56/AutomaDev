@@ -24,7 +24,7 @@ export default function EventsSection() {
               Próximos Eventos
             </h2>
             <div className="flex items-center justify-center space-x-2">
-              <div className="w-4 h-4 border-2 border-[#FF6B35] border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
               <span className="text-gray-600 dark:text-gray-300">Carregando eventos...</span>
             </div>
           </div>
@@ -75,12 +75,12 @@ export default function EventsSection() {
                         className={
                           isExpired
                             ? "bg-gray-100 text-gray-600"
-                            : "bg-gradient-to-r from-[#FF6B35] to-[#F7931E] text-white"
+                            : "bg-gradient-to-r from-emerald-600 to-cyan-500 text-white"
                         }
                       >
                         {isExpired ? "Encerrado" : "Disponível"}
                       </Badge>
-                      <Calendar className="w-5 h-5 text-[#FF6B35]" />
+                      <Calendar className="w-5 h-5 text-emerald-600" />
                     </div>
                     <CardTitle className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                       {event.title}
@@ -120,7 +120,7 @@ export default function EventsSection() {
                       className={`w-full ${
                         isExpired
                           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : "bg-gradient-to-r from-[#FF6B35] to-[#F7931E] hover:from-[#e55a2b] hover:to-[#e0851a] text-white"
+                          : "bg-gradient-to-r from-emerald-600 to-cyan-500 hover:from-emerald-700 hover:to-cyan-600 text-white"
                       } transition-all duration-200`}
                       disabled={isExpired}
                       data-testid={`event-cta-${event.id}`}
@@ -153,7 +153,7 @@ export default function EventsSection() {
           </p>
           <Button
             variant="outline"
-            className="border-[#FF6B35] text-[#FF6B35] hover:bg-[#FF6B35] hover:text-white"
+            className="border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white"
             data-testid="events-notify-button"
           >
             Receber Notificações

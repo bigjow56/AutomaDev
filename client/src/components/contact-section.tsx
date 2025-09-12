@@ -75,7 +75,7 @@ export default function ContactSection() {
     <section id="contact" className="py-20 bg-gradient-to-br from-dark via-dark-secondary to-dark relative overflow-hidden">
       {/* Parallax background elements */}
       <motion.div
-        className="absolute top-16 left-16 w-24 h-24 bg-purple-500/10 rounded-full blur-xl"
+        className="absolute top-16 left-16 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl"
         style={{ y: parallaxOffset }}
         animate={{
           scale: [1, 1.4, 1],
@@ -90,7 +90,7 @@ export default function ContactSection() {
       ></motion.div>
       
       <motion.div
-        className="absolute bottom-16 right-16 w-32 h-32 bg-purple-400/10 rounded-full blur-2xl"
+        className="absolute bottom-16 right-16 w-32 h-32 bg-cyan-400/10 rounded-full blur-2xl"
         style={{ y: parallaxOffset * -0.8 }}
         animate={{
           scale: [1.3, 1, 1.3],

@@ -113,7 +113,7 @@ export default function ServicesSection() {
                 transition: { duration: 0.4, type: "spring", stiffness: 300 }
               }}
             >
-              <Card className="group bg-dark border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-purple-500/25 backdrop-blur-sm">
+              <Card className="group bg-dark border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-emerald-500/25 backdrop-blur-sm">
                 <CardContent className="p-0">
                   <motion.div 
                     className="text-primary mb-6" 
