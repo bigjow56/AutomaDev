@@ -11,8 +11,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { MessageSquare, Mail, ExternalLink } from "lucide-react";
 import type { InsertContact } from "@shared/schema";
+import { useParallax } from "@/hooks/use-scroll";
 
 export default function ContactSection() {
+  const parallaxOffset = useParallax(0.2);
+
   const [formData, setFormData] = useState<InsertContact>({
     name: "",
     email: "",
@@ -69,8 +72,38 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-br from-dark via-dark-secondary to-dark relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="contact" className="py-20 bg-gradient-to-br from-dark via-dark-secondary to-dark relative overflow-hidden">
+      {/* Parallax background elements */}
+      <motion.div
+        className="absolute top-16 left-16 w-24 h-24 bg-purple-500/10 rounded-full blur-xl"
+        style={{ y: parallaxOffset }}
+        animate={{
+          scale: [1, 1.4, 1],
+          opacity: [0.3, 0.6, 0.3],
+          rotate: [0, 90, 180],
+        }}
+        transition={{
+          duration: 11,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      ></motion.div>
+      
+      <motion.div
+        className="absolute bottom-16 right-16 w-32 h-32 bg-purple-400/10 rounded-full blur-2xl"
+        style={{ y: parallaxOffset * -0.8 }}
+        animate={{
+          scale: [1.3, 1, 1.3],
+          opacity: [0.2, 0.5, 0.2],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      ></motion.div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           className="text-center mb-16"

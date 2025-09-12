@@ -6,10 +6,12 @@ import PortfolioSection from "@/components/portfolio-section";
 import EventsSection from "@/components/events-section";
 import ContactSection from "@/components/contact-section";
 import Footer from "@/components/footer";
+import ScrollProgress from "@/components/scroll-progress";
 
 export default function Home() {
   return (
     <div className="bg-dark text-white font-sans antialiased">
+      <ScrollProgress />
       <Navigation />
       <HeroSection />
       <ServicesSection />

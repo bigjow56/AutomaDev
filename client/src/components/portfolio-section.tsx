@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Building, ShoppingCart, BarChart3, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Project } from "@shared/schema";
+import { useParallax } from "@/hooks/use-scroll";
 
 export default function PortfolioSection() {
+  const parallaxOffset = useParallax(-0.15);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -60,8 +63,38 @@ export default function PortfolioSection() {
   };
 
   return (
-    <section id="portfolio" className="py-20 bg-dark-secondary">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="portfolio" className="py-20 bg-dark-secondary relative overflow-hidden">
+      {/* Parallax background elements */}
+      <motion.div
+        className="absolute top-10 right-10 w-28 h-28 bg-purple-600/10 rounded-full blur-2xl"
+        style={{ y: parallaxOffset }}
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.2, 0.5, 0.2],
+        }}
+        transition={{
+          duration: 9,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      ></motion.div>
+      
+      <motion.div
+        className="absolute bottom-20 left-10 w-20 h-20 bg-purple-400/10 rounded-full blur-xl"
+        style={{ y: parallaxOffset * -1.2 }}
+        animate={{
+          scale: [1.1, 1, 1.1],
+          opacity: [0.3, 0.6, 0.3],
+          x: [0, 25, 0],
+        }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      ></motion.div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           className="text-center mb-16"
