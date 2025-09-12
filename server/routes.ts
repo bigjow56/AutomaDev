@@ -50,14 +50,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Configure sessions for admin authentication
   app.use(session({
     secret: process.env.SESSION_SECRET || 'automadev-secret-key-2024',
-    resave: false,
-    saveUninitialized: false,
-    name: 'connect.sid', // Use standard session name 
+    resave: true,
+    saveUninitialized: true, // Create session for everyone 
+    name: 'sid',
     cookie: { 
       secure: false,
-      httpOnly: false, // Allow JS access for debugging in Replit
+      httpOnly: false, 
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'none', // Required for cross-origin in Replit
+      sameSite: 'lax', // Changed back to lax for Replit compatibility 
       path: '/'
     },
     rolling: false
@@ -165,10 +165,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Session check - Session ID:', req.sessionID);
     console.log('Session data:', req.session);
     console.log('isAdmin?', !!req.session?.isAdmin);
+    console.log('Cookies received:', req.headers.cookie);
     
-    res.json({ 
-      success: true, 
-      isAdmin: !!req.session?.isAdmin 
+    // Force session save to ensure consistency
+    req.session.save((err: any) => {
+      if (err) {
+        console.error('Session save error in check:', err);
+      }
+      
+      res.json({ 
+        success: true, 
+        isAdmin: !!req.session?.isAdmin,
+        sessionId: req.sessionID // For debugging
+      });
     });
   });
 
