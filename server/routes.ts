@@ -413,7 +413,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("User message saved:", userMessage);
       
       // Send to n8n webhook and get AI response
-      const webhookUrl = "https://n8n-curso-n8n.yao8ay.easypanel.host/webhook-test/AutomaDev";
+      const webhookUrl = process.env.N8N_WEBHOOK_URL;
+      
+      if (!webhookUrl) {
+        console.error("N8N_WEBHOOK_URL not configured");
+        const fallbackMessage = await dbStorage.createChatMessage({
+          sessionId: validatedData.sessionId,
+          message: "Webhook do n8n não configurado. Entre em contato via WhatsApp para suporte.",
+          isUser: "false",
+        });
+        
+        return res.json({ 
+          success: true, 
+          userMessage, 
+          aiMessage: fallbackMessage 
+        });
+      }
       
       try {
         console.log("Sending message to n8n webhook:", webhookUrl);
