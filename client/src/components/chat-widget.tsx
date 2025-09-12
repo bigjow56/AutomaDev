@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { MessageCircle, X, Send, Bot, User } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { ChatMessage, InsertChatMessage } from "@shared/schema";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +25,25 @@ export default function ChatWidget() {
   const queryClient = useQueryClient();
   const [isTyping, setIsTyping] = useState(false);
 
-  // Fetch chat messages
+  // WebSocket message handler
+  const handleWebSocketMessage = useCallback((wsMessage: any) => {
+    if (wsMessage.type === 'new_message' && wsMessage.message) {
+      console.log("WebSocket new message received:", wsMessage.message);
+      // Invalidate queries to refetch messages with the new AI response
+      queryClient.invalidateQueries({ queryKey: [`/api/chat/${sessionId}`] });
+    }
+  }, [queryClient, sessionId]);
+
+  // Setup WebSocket connection
+  const { isConnected } = useWebSocket({
+    sessionId,
+    onMessage: handleWebSocketMessage,
+    onConnect: () => console.log("WebSocket connected for session:", sessionId),
+    onDisconnect: () => console.log("WebSocket disconnected"),
+    onError: (error) => console.error("WebSocket error:", error),
+  });
+
+  // Fetch chat messages (now without polling since we use WebSocket)
   const { data: messagesData, isLoading: messagesLoading, error } = useQuery({
     queryKey: [`/api/chat/${sessionId}`],
     queryFn: async () => {
@@ -36,7 +55,7 @@ export default function ChatWidget() {
       return data;
     },
     enabled: isOpen && !!sessionId,
-    refetchInterval: 3000, // Refetch every 3 seconds to get new AI responses
+    // Removed refetchInterval since we now use WebSocket for real-time updates
   });
 
   const messages: ChatMessage[] = (messagesData as any)?.messages || [];
@@ -142,7 +161,12 @@ export default function ChatWidget() {
                 <Bot className="w-5 h-5" />
                 <div>
                   <span className="font-semibold block">AutomaDev Support</span>
-                  <span className="text-xs opacity-90">Estamos aqui para ajudar!</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs opacity-90">Estamos aqui para ajudar!</span>
+                    <div className={`w-2 h-2 rounded-full ${
+                      isConnected ? 'bg-green-400' : 'bg-yellow-400'
+                    }`} title={isConnected ? 'Conectado' : 'Reconectando...'}></div>
+                  </div>
                 </div>
               </div>
               <button

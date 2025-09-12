@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { WebSocketServer } from "ws";
+import { parse } from "url";
 
 const app = express();
 
@@ -57,11 +58,50 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  // Setup WebSocket server
-  const wss = new WebSocketServer({ server });
+  // Setup WebSocket server with dedicated path /ws to avoid Vite HMR conflicts
+  const wss = new WebSocketServer({
+    server,
+    path: '/ws',
+    perMessageDeflate: false // Disable compression for better performance
+  });
+  
+  // Store connected clients organized by session ID
+  const sessionClients = new Map<string, Set<any>>();
+  
+  // Broadcast message to all clients in a specific session
+  const broadcastToSession = (sessionId: string, message: any) => {
+    const clients = sessionClients.get(sessionId);
+    if (clients) {
+      const messageStr = JSON.stringify(message);
+      clients.forEach((ws) => {
+        if (ws.readyState === ws.OPEN) {
+          try {
+            ws.send(messageStr);
+            console.log(`Broadcasted message to session ${sessionId}:`, message);
+          } catch (error) {
+            console.error('Error broadcasting message:', error);
+            // Remove dead connection
+            clients.delete(ws);
+          }
+        } else {
+          // Remove dead connection
+          clients.delete(ws);
+        }
+      });
+      
+      // Clean up empty session
+      if (clients.size === 0) {
+        sessionClients.delete(sessionId);
+      }
+    }
+  };
   
   wss.on('connection', (ws, req) => {
-    console.log('WebSocket client connected from:', req.socket.remoteAddress);
+    const { pathname } = parse(req.url || '', true);
+    console.log('WebSocket client connected to:', pathname, 'from:', req.socket.remoteAddress);
+    
+    // Track connection state
+    let clientSessionId: string | null = null;
     
     ws.on('message', (message) => {
       try {
@@ -69,9 +109,22 @@ app.use((req, res, next) => {
         console.log('WebSocket message received:', data);
         
         if (data.type === 'join_session' && data.sessionId) {
-          // Store session ID for this client
-          (ws as any).sessionId = data.sessionId;
-          console.log('Client joined session:', data.sessionId);
+          clientSessionId = data.sessionId;
+          
+          // Add client to session
+          if (!sessionClients.has(clientSessionId)) {
+            sessionClients.set(clientSessionId, new Set());
+          }
+          sessionClients.get(clientSessionId)!.add(ws);
+          
+          console.log(`Client joined session: ${clientSessionId}. Total sessions: ${sessionClients.size}`);
+          
+          // Send confirmation
+          ws.send(JSON.stringify({
+            type: 'session_joined',
+            sessionId: clientSessionId,
+            timestamp: new Date().toISOString()
+          }));
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -80,15 +133,36 @@ app.use((req, res, next) => {
     
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
+      
+      // Remove client from session
+      if (clientSessionId) {
+        const clients = sessionClients.get(clientSessionId);
+        if (clients) {
+          clients.delete(ws);
+          if (clients.size === 0) {
+            sessionClients.delete(clientSessionId);
+          }
+          console.log(`Client left session: ${clientSessionId}. Remaining sessions: ${sessionClients.size}`);
+        }
+      }
     });
     
     ws.on('error', (error) => {
       console.error('WebSocket error:', error);
+      
+      // Remove client from session on error
+      if (clientSessionId) {
+        const clients = sessionClients.get(clientSessionId);
+        if (clients) {
+          clients.delete(ws);
+        }
+      }
     });
   });
 
-  // Make WebSocket server available to routes
+  // Make WebSocket server and broadcasting function available to routes
   (app as any).wss = wss;
+  (app as any).broadcastToSession = broadcastToSession;
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -118,5 +192,6 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    log(`WebSocket server running on /ws`);
   });
 })();

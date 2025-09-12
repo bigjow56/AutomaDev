@@ -515,6 +515,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Webhook endpoint for n8n to send async AI responses
+  app.post("/api/webhook/n8n", async (req, res) => {
+    try {
+      console.log("=== N8N WEBHOOK CALLED ===");
+      console.log("Request body:", req.body);
+
+      const { sessionId, message, type = 'ai_response' } = req.body;
+
+      if (!sessionId || !message) {
+        return res.status(400).json({
+          success: false,
+          message: "sessionId and message are required"
+        });
+      }
+
+      // Save the AI response to the database
+      const aiMessage = await dbStorage.createChatMessage({
+        sessionId,
+        message,
+        isUser: "false",
+      });
+
+      console.log("AI message saved:", aiMessage);
+
+      // Get the WebSocket server and broadcasting function from app
+      const broadcastToSession = (app as any).broadcastToSession;
+      
+      if (broadcastToSession) {
+        // Broadcast the new message to all clients in this session
+        broadcastToSession(sessionId, {
+          type: 'new_message',
+          message: aiMessage,
+          timestamp: new Date().toISOString()
+        });
+        
+        console.log(`Broadcasted AI response to session: ${sessionId}`);
+      } else {
+        console.warn("Broadcasting function not available");
+      }
+
+      res.json({ 
+        success: true, 
+        message: "AI response processed and broadcasted",
+        aiMessage 
+      });
+
+    } catch (error) {
+      console.error("Error in n8n webhook:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error"
+      });
+    }
+  });
+
   // Projects routes
   app.get("/api/projects", async (req, res) => {
     try {
