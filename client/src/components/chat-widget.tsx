@@ -24,11 +24,20 @@ export default function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const [isTyping, setIsTyping] = useState(false);
+  const [isAgentTyping, setIsAgentTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // WebSocket message handler
   const handleWebSocketMessage = useCallback((wsMessage: any) => {
     if (wsMessage.type === 'new_message' && wsMessage.message) {
       console.log("WebSocket new message received:", wsMessage.message);
+      // Stop agent typing indicator when response arrives
+      setIsAgentTyping(false);
+      // Clear timeout if response arrived
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
       // Invalidate queries to refetch messages with the new AI response
       queryClient.invalidateQueries({ queryKey: [`/api/chat/${sessionId}`] });
     }
@@ -73,18 +82,39 @@ export default function ChatWidget() {
   const sendMessageMutation = useMutation({
     mutationFn: async (data: InsertChatMessage) => {
       setIsTyping(true);
-      const result = await apiRequest("POST", "/api/chat", data);
-      // Simulate AI thinking delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await apiRequest("POST", "/api/chat", data);
+      const result = await response.json();
       return result;
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       setIsTyping(false);
+      
+      // Check if we got an immediate AI response (fallback case)
+      if (result.aiMessage) {
+        // Immediate response - don't show "Digitando..." indicator
+        setIsAgentTyping(false);
+      } else {
+        // Waiting for webhook response - show "Digitando..." indicator
+        setIsAgentTyping(true);
+        
+        // Safety timeout: clear typing indicator after 30 seconds if no response
+        typingTimeoutRef.current = setTimeout(() => {
+          setIsAgentTyping(false);
+          console.warn("Agent typing indicator timed out after 30 seconds");
+        }, 30000);
+      }
+      
       queryClient.invalidateQueries({ queryKey: [`/api/chat/${sessionId}`] });
       setMessage("");
     },
     onError: (error) => {
       setIsTyping(false);
+      setIsAgentTyping(false);
+      // Clear timeout if there was an error
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
       console.error("Error sending message:", error);
     },
   });
@@ -96,7 +126,7 @@ export default function ChatWidget() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
     }
-  }, [messages, isOpen, isTyping]);
+  }, [messages, isOpen, isTyping, isAgentTyping]);
 
   // Format timestamp
   const formatTime = (timestamp: string | Date) => {
@@ -224,7 +254,7 @@ export default function ChatWidget() {
                   </motion.div>
                 ))}
 
-                {isTyping && (
+                {isAgentTyping && (
                   <motion.div
                     className="flex justify-start"
                     initial={{ opacity: 0, y: 10 }}
@@ -233,7 +263,7 @@ export default function ChatWidget() {
                     <div className="bg-white text-gray-800 border border-gray-200 px-3 py-2 rounded-2xl rounded-bl-md shadow-sm">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm">🤖</span>
-                        <span className="text-sm text-gray-600 italic">Digitando</span>
+                        <span className="text-sm text-gray-600 italic">Digitando...</span>
                         <div className="flex space-x-1">
                           <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"></div>
                           <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>

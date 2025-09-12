@@ -48,12 +48,16 @@ export function useWebSocket({
           setConnectionState('connected');
         }
         
-        // Join session immediately after connection
+        // Join session with a small delay to ensure connection is fully ready
         if (ws.current && sessionId) {
-          ws.current.send(JSON.stringify({
-            type: 'join_session',
-            sessionId: sessionId
-          }));
+          setTimeout(() => {
+            if (ws.current?.readyState === WebSocket.OPEN) {
+              ws.current.send(JSON.stringify({
+                type: 'join_session',
+                sessionId: sessionId
+              }));
+            }
+          }, 100);
         }
         
         onConnect?.();
