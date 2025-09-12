@@ -50,16 +50,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Configure sessions for admin authentication
   app.use(session({
     secret: process.env.SESSION_SECRET || 'automadev-secret-key-2024',
-    resave: true, // Force session save on every request
+    resave: false,
     saveUninitialized: false,
     name: 'automadev.sid',
     cookie: { 
       secure: false, // Set to true in production with HTTPS
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax'
+      sameSite: 'lax',
+      domain: undefined, // Let browser handle domain
+      path: '/'
     },
-    rolling: true // Refresh the session on each request
+    rolling: false
   }));
 
   // Middleware to check if admin is authenticated
@@ -118,38 +120,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Regenerate session and save admin info
-      req.session.regenerate((err: any) => {
-        if (err) {
-          console.error('Session regenerate error:', err);
+      // Set admin properties directly
+      req.session.isAdmin = true;
+      req.session.adminId = admin.id;
+      
+      console.log('Setting session - isAdmin:', true, 'adminId:', admin.id);
+      console.log('Session ID:', req.sessionID);
+      console.log('Session data:', req.session);
+      
+      req.session.save((saveErr: any) => {
+        if (saveErr) {
+          console.error('Session save error:', saveErr);
           return res.status(500).json({ 
             success: false, 
-            message: "Erro ao criar sessão" 
+            message: "Erro ao salvar sessão" 
           });
         }
         
-        // Set admin properties
-        req.session.isAdmin = true;
-        req.session.adminId = admin.id;
+        console.log('Session saved successfully');
         
-        console.log('Setting session - isAdmin:', true, 'adminId:', admin.id);
-        console.log('Session before save:', req.session);
-        
-        req.session.save((saveErr: any) => {
-          if (saveErr) {
-            console.error('Session save error:', saveErr);
-            return res.status(500).json({ 
-              success: false, 
-              message: "Erro ao salvar sessão" 
-            });
-          }
-          
-          console.log('Session after save:', req.session);
-          
-          res.json({ 
-            success: true, 
-            message: "Login realizado com sucesso" 
-          });
+        res.json({ 
+          success: true, 
+          message: "Login realizado com sucesso" 
         });
       });
     } catch (error) {
