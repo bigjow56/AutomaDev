@@ -6,6 +6,7 @@ import { insertContactSchema, insertChatMessageSchema, insertEventSchema, insert
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import session from "express-session";
+import MemoryStore from "memorystore";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -47,9 +48,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve uploaded files statically
   app.use('/uploads', express.static(uploadsDir));
 
-  // Configure sessions for admin authentication
+  // Configure sessions for admin authentication with MemoryStore
+  const MemoryStoreSession = MemoryStore(session);
   app.use(session({
     secret: process.env.SESSION_SECRET || 'automadev-secret-key-2024',
+    store: new MemoryStoreSession({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    }),
     resave: false,
     saveUninitialized: false,
     name: 'automadev.sid',
