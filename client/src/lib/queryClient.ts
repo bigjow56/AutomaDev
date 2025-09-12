@@ -12,11 +12,26 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  // Get auth token from localStorage for Replit browser compatibility
+  const authToken = localStorage.getItem('authToken');
+  
+  const headers: Record<string, string> = {};
+  
+  if (data) {
+    headers["Content-Type"] = "application/json";
+  }
+  
+  // Add auth token header if available (for Replit browser compatibility)
+  if (authToken) {
+    headers["Authorization"] = authToken;
+    headers["x-auth-token"] = authToken;
+  }
+
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
+    credentials: "include", // Still include cookies for curl compatibility
   });
 
   await throwIfResNotOk(res);
@@ -29,8 +44,18 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Get auth token from localStorage for Replit browser compatibility
+    const authToken = localStorage.getItem('authToken');
+    
+    const headers: Record<string, string> = {};
+    if (authToken) {
+      headers["Authorization"] = authToken;
+      headers["x-auth-token"] = authToken;
+    }
+
     const res = await fetch(queryKey.join("/") as string, {
-      credentials: "include",
+      headers,
+      credentials: "include", // Still include cookies for curl compatibility
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {

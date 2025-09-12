@@ -34,9 +34,18 @@ export default function AdminLogin() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
-      return await apiRequest("POST", "/api/admin/login", data);
+      const response = await apiRequest("POST", "/api/admin/login", data);
+      return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Login successful:', data);
+      
+      // Save auth token for Replit browser compatibility
+      if (data.authToken) {
+        localStorage.setItem('authToken', data.authToken);
+        console.log('Auth token saved to localStorage');
+      }
+      
       queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
       setLocation("/admin/dashboard");
     },
