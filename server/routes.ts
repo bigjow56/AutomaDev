@@ -118,22 +118,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Save session explicitly
-      req.session.isAdmin = true;
-      req.session.adminId = admin.id;
-      
-      req.session.save((err: any) => {
+      // Regenerate session and save admin info
+      req.session.regenerate((err: any) => {
         if (err) {
-          console.error('Session save error:', err);
+          console.error('Session regenerate error:', err);
           return res.status(500).json({ 
             success: false, 
-            message: "Erro ao salvar sessão" 
+            message: "Erro ao criar sessão" 
           });
         }
         
-        res.json({ 
-          success: true, 
-          message: "Login realizado com sucesso" 
+        // Set admin properties
+        req.session.isAdmin = true;
+        req.session.adminId = admin.id;
+        
+        console.log('Setting session - isAdmin:', true, 'adminId:', admin.id);
+        console.log('Session before save:', req.session);
+        
+        req.session.save((saveErr: any) => {
+          if (saveErr) {
+            console.error('Session save error:', saveErr);
+            return res.status(500).json({ 
+              success: false, 
+              message: "Erro ao salvar sessão" 
+            });
+          }
+          
+          console.log('Session after save:', req.session);
+          
+          res.json({ 
+            success: true, 
+            message: "Login realizado com sucesso" 
+          });
         });
       });
     } catch (error) {
