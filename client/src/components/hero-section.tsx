@@ -14,19 +14,19 @@ export default function HeroSection() {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800">
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden purple-gradient">
       {/* Logo Neural Network Background */}
       <div className="absolute w-96 h-96 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-15 z-10">
         <div className="w-full h-full relative">
           {/* Neural Network Nodes */}
           <motion.div
-            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-12 left-12"
+            className="absolute w-4 h-4 bg-purple-600 rounded-full shadow-purple shadow-lg top-12 left-12"
             animate={{
               scale: [1, 1.4, 1],
               boxShadow: [
-                "0 0 10px #34d399",
-                "0 0 30px #34d399",
-                "0 0 10px #34d399"
+                "0 0 10px #9333ea",
+                "0 0 30px #9333ea",
+                "0 0 10px #9333ea"
               ],
               opacity: [0.8, 1, 0.8]
             }}
@@ -39,13 +39,13 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-12 right-12"
+            className="absolute w-4 h-4 bg-purple-600 rounded-full shadow-purple shadow-lg top-12 right-12"
             animate={{
               scale: [1, 1.4, 1],
               boxShadow: [
-                "0 0 10px #34d399",
-                "0 0 30px #34d399",
-                "0 0 10px #34d399"
+                "0 0 10px #9333ea",
+                "0 0 30px #9333ea",
+                "0 0 10px #9333ea"
               ],
               opacity: [0.8, 1, 0.8]
             }}
@@ -58,13 +58,13 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-1/2 left-1/4 transform -translate-y-1/2"
+            className="absolute w-4 h-4 bg-purple-600 rounded-full shadow-purple shadow-lg top-1/2 left-1/4 transform -translate-y-1/2"
             animate={{
               scale: [1, 1.4, 1],
               boxShadow: [
-                "0 0 10px #34d399",
-                "0 0 30px #34d399",
-                "0 0 10px #34d399"
+                "0 0 10px #9333ea",
+                "0 0 30px #9333ea",
+                "0 0 10px #9333ea"
               ],
               opacity: [0.8, 1, 0.8]
             }}
@@ -77,13 +77,13 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            className="absolute w-4 h-4 bg-purple-600 rounded-full shadow-purple shadow-lg top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
             animate={{
               scale: [1, 1.4, 1],
               boxShadow: [
-                "0 0 10px #34d399",
-                "0 0 30px #34d399",
-                "0 0 10px #34d399"
+                "0 0 10px #9333ea",
+                "0 0 30px #9333ea",
+                "0 0 10px #9333ea"
               ],
               opacity: [0.8, 1, 0.8]
             }}
@@ -96,13 +96,13 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-1/2 right-1/4 transform -translate-y-1/2"
+            className="absolute w-4 h-4 bg-purple-600 rounded-full shadow-purple shadow-lg top-1/2 right-1/4 transform -translate-y-1/2"
             animate={{
               scale: [1, 1.4, 1],
               boxShadow: [
-                "0 0 10px #34d399",
-                "0 0 30px #34d399",
-                "0 0 10px #34d399"
+                "0 0 10px #9333ea",
+                "0 0 30px #9333ea",
+                "0 0 10px #9333ea"
               ],
               opacity: [0.8, 1, 0.8]
             }}
@@ -115,13 +115,13 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg bottom-12 left-12"
+            className="absolute w-4 h-4 bg-purple-600 rounded-full shadow-purple shadow-lg bottom-12 left-12"
             animate={{
               scale: [1, 1.4, 1],
               boxShadow: [
-                "0 0 10px #34d399",
-                "0 0 30px #34d399",
-                "0 0 10px #34d399"
+                "0 0 10px #9333ea",
+                "0 0 30px #9333ea",
+                "0 0 10px #9333ea"
               ],
               opacity: [0.8, 1, 0.8]
             }}
@@ -134,13 +134,13 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg bottom-12 right-12"
+            className="absolute w-4 h-4 bg-purple-600 rounded-full shadow-purple shadow-lg bottom-12 right-12"
             animate={{
               scale: [1, 1.4, 1],
               boxShadow: [
-                "0 0 10px #34d399",
-                "0 0 30px #34d399",
-                "0 0 10px #34d399"
+                "0 0 10px #9333ea",
+                "0 0 30px #9333ea",
+                "0 0 10px #9333ea"
               ],
               opacity: [0.8, 1, 0.8]
             }}
@@ -153,13 +153,13 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg top-32 left-1/2 transform -translate-x-1/2"
+            className="absolute w-4 h-4 bg-purple-600 rounded-full shadow-purple shadow-lg top-32 left-1/2 transform -translate-x-1/2"
             animate={{
               scale: [1, 1.4, 1],
               boxShadow: [
-                "0 0 10px #34d399",
-                "0 0 30px #34d399",
-                "0 0 10px #34d399"
+                "0 0 10px #9333ea",
+                "0 0 30px #9333ea",
+                "0 0 10px #9333ea"
               ],
               opacity: [0.8, 1, 0.8]
             }}
@@ -172,13 +172,13 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute w-4 h-4 bg-emerald-400 rounded-full shadow-emerald-400 shadow-lg bottom-32 left-1/2 transform -translate-x-1/2"
+            className="absolute w-4 h-4 bg-purple-600 rounded-full shadow-purple shadow-lg bottom-32 left-1/2 transform -translate-x-1/2"
             animate={{
               scale: [1, 1.4, 1],
               boxShadow: [
-                "0 0 10px #34d399",
-                "0 0 30px #34d399",
-                "0 0 10px #34d399"
+                "0 0 10px #9333ea",
+                "0 0 30px #9333ea",
+                "0 0 10px #9333ea"
               ],
               opacity: [0.8, 1, 0.8]
             }}
@@ -192,7 +192,7 @@ export default function HeroSection() {
 
           {/* Neural Network Connections */}
           <motion.div
-            className="absolute top-14 left-16 w-64 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40"
+            className="absolute top-14 left-16 w-64 h-0.5 bg-gradient-to-r from-transparent via-purple-600 to-transparent opacity-40"
             animate={{
               opacity: [0, 0.6, 0],
               scaleX: [0, 1, 0]
@@ -206,7 +206,7 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute top-32 left-36 w-44 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform rotate-45"
+            className="absolute top-32 left-36 w-44 h-0.5 bg-gradient-to-r from-transparent via-purple-600 to-transparent opacity-40 transform rotate-45"
             animate={{
               opacity: [0, 0.6, 0],
               scaleX: [0, 1, 0]
@@ -220,7 +220,7 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute top-48 left-24 w-48 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform -rotate-12"
+            className="absolute top-48 left-24 w-48 h-0.5 bg-gradient-to-r from-transparent via-purple-600 to-transparent opacity-40 transform -rotate-12"
             animate={{
               opacity: [0, 0.6, 0],
               scaleX: [0, 1, 0]
@@ -234,7 +234,7 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute top-64 left-36 w-44 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform -rotate-45"
+            className="absolute top-64 left-36 w-44 h-0.5 bg-gradient-to-r from-transparent via-purple-600 to-transparent opacity-40 transform -rotate-45"
             animate={{
               opacity: [0, 0.6, 0],
               scaleX: [0, 1, 0]
@@ -248,7 +248,7 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute bottom-14 left-16 w-64 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40"
+            className="absolute bottom-14 left-16 w-64 h-0.5 bg-gradient-to-r from-transparent via-purple-600 to-transparent opacity-40"
             animate={{
               opacity: [0, 0.6, 0],
               scaleX: [0, 1, 0]
@@ -262,7 +262,7 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute top-1/2 left-16 w-32 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform rotate-90"
+            className="absolute top-1/2 left-16 w-32 h-0.5 bg-gradient-to-r from-transparent via-purple-600 to-transparent opacity-40 transform rotate-90"
             animate={{
               opacity: [0, 0.6, 0],
               scaleX: [0, 1, 0]
@@ -276,7 +276,7 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute top-1/2 right-16 w-32 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform rotate-90"
+            className="absolute top-1/2 right-16 w-32 h-0.5 bg-gradient-to-r from-transparent via-purple-600 to-transparent opacity-40 transform rotate-90"
             animate={{
               opacity: [0, 0.6, 0],
               scaleX: [0, 1, 0]
@@ -290,7 +290,7 @@ export default function HeroSection() {
           />
           
           <motion.div
-            className="absolute top-40 left-48 w-24 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-40 transform rotate-45"
+            className="absolute top-40 left-48 w-24 h-0.5 bg-gradient-to-r from-transparent via-purple-600 to-transparent opacity-40 transform rotate-45"
             animate={{
               opacity: [0, 0.6, 0],
               scaleX: [0, 1, 0]
@@ -310,7 +310,7 @@ export default function HeroSection() {
         {[...Array(9)].map((_, index) => (
           <motion.div
             key={index}
-            className="absolute w-1 h-1 bg-emerald-400 rounded-full opacity-30"
+            className="absolute w-1 h-1 bg-purple-600 rounded-full opacity-30"
             style={{
               left: `${10 + index * 10}%`,
             }}
@@ -332,7 +332,7 @@ export default function HeroSection() {
       {/* Hero Content */}
       <div className="relative z-20 text-center max-w-4xl mx-auto px-8">
         <motion.h1
-          className="text-6xl md:text-8xl font-extrabold mb-6 bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent"
+          className="text-6xl md:text-8xl font-extrabold mb-6 bg-gradient-to-r from-purple-400 via-purple-600 to-purple-400 bg-clip-text text-transparent"
           style={{
             backgroundSize: "300% 300%",
           }}
@@ -377,7 +377,7 @@ export default function HeroSection() {
         >
           <Button
             onClick={() => scrollToSection("contact")}
-            className="bg-gradient-to-r from-emerald-400 to-cyan-400 hover:from-emerald-500 hover:to-cyan-500 text-slate-900 px-10 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-400/30 uppercase tracking-wide"
+            className="purple-gradient-button hover:from-purple-700 hover:to-purple-800 text-white px-10 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-lg uppercase tracking-wide"
             data-testid="button-start-project-hero"
           >
             Começar Agora

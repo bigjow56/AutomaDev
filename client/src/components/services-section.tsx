@@ -46,7 +46,7 @@ export default function ServicesSection() {
     <section id="services" className="py-20 bg-dark-secondary relative overflow-hidden">
       {/* Parallax background elements */}
       <motion.div
-        className="absolute top-20 left-20 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"
+        className="absolute top-20 left-20 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"
         style={{ y: parallaxOffset }}
         animate={{
           scale: [1, 1.4, 1],
@@ -60,7 +60,7 @@ export default function ServicesSection() {
       ></motion.div>
       
       <motion.div
-        className="absolute bottom-20 right-20 w-20 h-20 bg-cyan-400/10 rounded-full blur-xl"
+        className="absolute bottom-20 right-20 w-20 h-20 bg-purple-400/10 rounded-full blur-xl"
         style={{ y: parallaxOffset * -1.5 }}
         animate={{
           scale: [1.2, 1, 1.2],
@@ -113,7 +113,7 @@ export default function ServicesSection() {
                 transition: { duration: 0.4, type: "spring", stiffness: 300 }
               }}
             >
-              <Card className="group bg-dark border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-emerald-500/25 backdrop-blur-sm">
+              <Card className="group bg-dark border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-purple-500/25 backdrop-blur-sm">
                 <CardContent className="p-0">
                   <motion.div 
                     className="text-primary mb-6" 

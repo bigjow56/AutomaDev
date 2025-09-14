@@ -46,12 +46,12 @@ export default function BenefitsSection() {
         className="absolute inset-0 opacity-5"
         style={{ y: parallaxOffset }}
       >
-        <div className="w-full h-full bg-gradient-to-br from-emerald-600/20 via-transparent to-cyan-400/20"></div>
+        <div className="w-full h-full bg-gradient-to-br from-purple-600/20 via-transparent to-purple-400/20"></div>
       </motion.div>
 
       {/* Floating elements for depth */}
       <motion.div
-        className="absolute top-10 right-10 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl"
+        className="absolute top-10 right-10 w-16 h-16 bg-purple-500/10 rounded-full blur-xl"
         animate={{
           scale: [1, 1.3, 1],
           opacity: [0.3, 0.7, 0.3],
@@ -65,7 +65,7 @@ export default function BenefitsSection() {
       ></motion.div>
       
       <motion.div
-        className="absolute bottom-10 left-10 w-24 h-24 bg-cyan-400/10 rounded-full blur-2xl"
+        className="absolute bottom-10 left-10 w-24 h-24 bg-purple-400/10 rounded-full blur-2xl"
         animate={{
           scale: [1.2, 1, 1.2],
           opacity: [0.2, 0.5, 0.2],
@@ -116,7 +116,7 @@ export default function BenefitsSection() {
                 transition: { duration: 0.3 }
               }}
             >
-              <Card className="bg-dark/60 backdrop-blur-sm border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/20">
+              <Card className="bg-dark/60 backdrop-blur-sm border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/20">
                 <CardContent className="p-0">
                   <div className="flex items-start space-x-4">
                     <motion.div 

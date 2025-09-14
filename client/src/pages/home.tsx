@@ -10,7 +10,7 @@ import ScrollProgress from "@/components/scroll-progress";
 
 export default function Home() {
   return (
-    <div className="bg-dark text-white font-sans antialiased">
+    <div className="purple-gradient text-white font-sans antialiased">
       <ScrollProgress />
       <Navigation />
       <HeroSection />

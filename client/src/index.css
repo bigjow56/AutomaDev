@@ -51,53 +51,53 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
   
-  /* AutomaDev Custom Colors - Neural Network inspired */
-  --dark: #0f172a;
-  --dark-secondary: #1e293b;
-  --dark-tertiary: #334155;
-  --primary: #10b981;
-  --primary-dark: #059669;
-  --secondary-cyan: #06b6d4;
-  --accent-cyan: #06b6d4;
-  --emerald: #10b981;
-  --cyan: #06b6d4;
-  --secondary-emerald: #059669;
+  /* AutomaDev Custom Colors - Purple Innovation */
+  --dark: #0c0c0c;
+  --dark-secondary: #1a0f2e;
+  --dark-tertiary: #2d1b45;
+  --primary: #9333ea;
+  --primary-dark: #7c3aed;
+  --secondary-purple: #a855f7;
+  --accent-purple: #c084fc;
+  --purple: #9333ea;
+  --purple-light: #c084fc;
+  --secondary-purple-dark: #7c3aed;
 }
 
 .dark {
-  --background: #0f172a;
-  --foreground: hsl(213.6, 25%, 85%);
-  --card: #1e293b;
-  --card-foreground: hsl(213.6, 25%, 85%);
-  --popover: #0f172a;
-  --popover-foreground: hsl(213.6, 25%, 85%);
-  --primary: #10b981;
+  --background: #0c0c0c;
+  --foreground: hsl(280, 25%, 85%);
+  --card: #1a0f2e;
+  --card-foreground: hsl(280, 25%, 85%);
+  --popover: #0c0c0c;
+  --popover-foreground: hsl(280, 25%, 85%);
+  --primary: #9333ea;
   --primary-foreground: hsl(0, 0%, 100%);
-  --primary-dark: #059669;
-  --secondary: hsl(195.0000, 15.3846%, 94.9020%);
-  --secondary-foreground: hsl(210, 25%, 7.8431%);
-  --muted: #334155;
-  --muted-foreground: hsl(213.6, 25%, 65%);
-  --accent: #10b981;
-  --accent-foreground: #0f172a;
+  --primary-dark: #7c3aed;
+  --secondary: hsl(270, 15.3846%, 94.9020%);
+  --secondary-foreground: hsl(280, 25%, 7.8431%);
+  --muted: #2d1b45;
+  --muted-foreground: hsl(280, 25%, 65%);
+  --accent: #9333ea;
+  --accent-foreground: #0c0c0c;
   --destructive: hsl(356.3033, 90.5579%, 54.3137%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: #334155;
-  --input: #1e293b;
-  --ring: #10b981;
+  --border: #2d1b45;
+  --input: #1a0f2e;
+  --ring: #9333ea;
   --chart-1: hsl(203.8863, 88.2845%, 53.1373%);
   --chart-2: hsl(159.7826, 100%, 36.0784%);
   --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
   --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
   --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
-  --sidebar: #1e293b;
-  --sidebar-foreground: hsl(213.6, 25%, 85%);
-  --sidebar-primary: #10b981;
+  --sidebar: #1a0f2e;
+  --sidebar-foreground: hsl(280, 25%, 85%);
+  --sidebar-primary: #9333ea;
   --sidebar-primary-foreground: hsl(0, 0%, 100%);
-  --sidebar-accent: #334155;
-  --sidebar-accent-foreground: #10b981;
-  --sidebar-border: #334155;
-  --sidebar-ring: #10b981;
+  --sidebar-accent: #2d1b45;
+  --sidebar-accent-foreground: #9333ea;
+  --sidebar-border: #2d1b45;
+  --sidebar-ring: #9333ea;
   --font-sans: Inter, system-ui, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
@@ -111,10 +111,10 @@
   --shadow-xl: 0px 2px 0px 0px hsl(42, 92%, 50%, 0.00), 0px 8px 10px -1px hsl(42, 92%, 50%, 0.00);
   --shadow-2xl: 0px 2px 0px 0px hsl(42, 92%, 50%, 0.00);
   
-  /* AutomaDev Dark Mode Colors - n8n inspired */
-  --dark: #1a1625;
-  --dark-secondary: #252035;
-  --dark-tertiary: #2f2a45;
+  /* AutomaDev Dark Mode Colors - Purple Innovation */
+  --dark: #0c0c0c;
+  --dark-secondary: #1a0f2e;
+  --dark-tertiary: #2d1b45;
 }
 
 @layer base {
@@ -191,5 +191,70 @@
 
   .bg-radial-gradient {
     background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
+  }
+
+  /* Purple Gradient Classes - AutomaDev Innovation */
+  .purple-gradient {
+    background: linear-gradient(135deg, #0c0c0c 0%, #1a0f2e 100%);
+  }
+  
+  .purple-gradient-primary {
+    background: linear-gradient(135deg, #9333ea, #7c3aed);
+  }
+  
+  .purple-gradient-button {
+    background: linear-gradient(135deg, #9333ea, #7c3aed);
+    color: white;
+  }
+  
+  .purple-gradient-button:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  }
+  
+  .purple-text-gradient {
+    background: linear-gradient(135deg, #9333ea, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .bg-purple-400 {
+    background-color: #c084fc;
+  }
+  
+  .bg-purple-500 {
+    background-color: #a855f7;
+  }
+  
+  .bg-purple-600 {
+    background-color: #9333ea;
+  }
+  
+  .bg-purple-700 {
+    background-color: #7c3aed;
+  }
+  
+  .text-purple-400 {
+    color: #c084fc;
+  }
+  
+  .text-purple-500 {
+    color: #a855f7;
+  }
+  
+  .text-purple-600 {
+    color: #9333ea;
+  }
+  
+  .border-purple-400 {
+    border-color: #c084fc;
+  }
+  
+  .shadow-purple {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+  }
+  
+  .shadow-purple-lg {
+    box-shadow: 0 0 30px rgba(147, 51, 234, 0.4);
   }
 }
