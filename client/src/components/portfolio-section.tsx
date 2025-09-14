@@ -56,9 +56,20 @@ export default function PortfolioSection() {
   // Parse images from JSON string
   const parseImages = (imagesString: string): Array<{url: string, type: string, alt: string}> => {
     try {
-      return JSON.parse(imagesString || "[]");
-    } catch (error) {
-      console.error("Error parsing images:", error);
+      const arr = JSON.parse(imagesString || "[]");
+      if (!Array.isArray(arr)) return [];
+      return arr
+        .map((img: any) => {
+          const url = img?.url ?? img?.src ?? img?.path ?? img?.href;
+          if (!url) return null;
+          return {
+            url,
+            type: img?.type ?? img?.role ?? "gallery",
+            alt: img?.alt ?? img?.title ?? "",
+          };
+        })
+        .filter(Boolean) as Array<{url: string, type: string, alt: string}>;
+    } catch {
       return [];
     }
   };
