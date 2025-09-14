@@ -84,7 +84,7 @@ export default function PortfolioSection() {
     <section id="portfolio" className="py-20 bg-dark-secondary relative overflow-hidden">
       {/* Parallax background elements */}
       <motion.div
-        className="absolute top-10 right-10 w-28 h-28 bg-emerald-600/10 rounded-full blur-2xl"
+        className="absolute top-10 right-10 w-28 h-28 bg-primary/10 rounded-full blur-2xl"
         style={{ y: parallaxOffset }}
         animate={{
           scale: [1, 1.3, 1],
@@ -187,13 +187,13 @@ export default function PortfolioSection() {
                           }}
                           className="h-full"
                         >
-                          <Card className="group bg-gradient-to-br from-dark via-dark-secondary to-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-emerald-500/20 backdrop-blur-sm">
+                          <Card className="group bg-gradient-to-br from-dark via-dark-secondary to-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-primary/20 backdrop-blur-sm">
                             <CardContent className="p-0 h-full flex flex-col">
                               {/* Project Header with gradient background */}
-                              <div className="relative h-32 bg-gradient-to-br from-emerald-600/20 via-cyan-500/10 to-emerald-400/5 flex items-center justify-center overflow-hidden">
+                              <div className="relative h-32 bg-gradient-to-br from-primary/20 via-purple-light/10 to-accent-purple/5 flex items-center justify-center overflow-hidden">
                                 {/* Floating background elements */}
                                 <motion.div
-                                  className="absolute top-2 right-2 w-8 h-8 bg-emerald-400/20 rounded-full blur-sm"
+                                  className="absolute top-2 right-2 w-8 h-8 bg-accent-purple/20 rounded-full blur-sm"
                                   animate={{
                                     scale: [1, 1.2, 1],
                                     opacity: [0.3, 0.6, 0.3],
