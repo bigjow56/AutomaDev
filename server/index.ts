@@ -130,10 +130,10 @@ app.use((req, res, next) => {
           clientSessionId = data.sessionId;
           
           // Add client to session
-          if (!sessionClients.has(clientSessionId)) {
-            sessionClients.set(clientSessionId, new Set());
+          if (!sessionClients.has(clientSessionId!)) {
+            sessionClients.set(clientSessionId!, new Set());
           }
-          const clients = sessionClients.get(clientSessionId);
+          const clients = sessionClients.get(clientSessionId!);
           if (clients) {
             clients.add(ws);
           }
