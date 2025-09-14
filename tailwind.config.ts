@@ -69,10 +69,6 @@ export default {
           tertiary: "#334155",
         },
         "secondary-cyan": "#06b6d4",
-        emerald: {
-          500: "#10b981",
-          600: "#059669",
-        },
         cyan: {
           400: "#22d3ee",
           500: "#06b6d4",

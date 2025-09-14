@@ -442,9 +442,9 @@ export default function AdminDashboard() {
 
   // Category color options
   const colorOptions = [
-    { value: "bg-primary", label: "Emerald (Padrão)" },
+    { value: "bg-primary", label: "Roxo (Padrão)" },
     { value: "bg-cyan-500", label: "Cyan" },
-    { value: "bg-emerald-600", label: "Emerald Escuro" },
+    { value: "bg-primary-dark", label: "Roxo Escuro" },
     { value: "bg-teal-500", label: "Teal" },
     { value: "bg-green-500", label: "Verde" },
     { value: "bg-blue-500", label: "Azul" },
@@ -469,7 +469,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-emerald-600 to-cyan-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary-purple rounded-lg flex items-center justify-center">
                 <Settings className="w-5 h-5 text-white" />
               </div>
               <h1 className="text-xl font-semibold text-gray-900">Dashboard Admin</h1>
@@ -495,7 +495,7 @@ export default function AdminDashboard() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center">
-                <Calendar className="w-8 h-8 text-emerald-600" />
+                <Calendar className="w-8 h-8 text-primary" />
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Total de Eventos</p>
                   <p className="text-2xl font-bold text-gray-900">{events.length}</p>
@@ -555,7 +555,7 @@ export default function AdminDashboard() {
                 <DialogTrigger asChild>
                   <Button
                     onClick={handleNewEvent}
-                    className="bg-gradient-to-r from-emerald-600 to-cyan-500 hover:from-emerald-700 hover:to-cyan-600"
+                    className="bg-gradient-to-r from-primary to-secondary-purple hover:from-primary-dark hover:to-accent-purple"
                     data-testid="admin-new-event-button"
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -661,7 +661,7 @@ export default function AdminDashboard() {
                       <Button
                         type="submit"
                         disabled={createEventMutation.isPending || updateEventMutation.isPending}
-                        className="bg-gradient-to-r from-emerald-600 to-cyan-500 hover:from-emerald-700 hover:to-cyan-600"
+                        className="bg-gradient-to-r from-primary to-secondary-purple hover:from-primary-dark hover:to-accent-purple"
                         data-testid="event-save-button"
                       >
                         {(createEventMutation.isPending || updateEventMutation.isPending) ? (
@@ -793,7 +793,7 @@ export default function AdminDashboard() {
                 <DialogTrigger asChild>
                   <Button
                     onClick={handleNewProject}
-                    className="bg-gradient-to-r from-emerald-600 to-cyan-500 hover:from-emerald-700 hover:to-cyan-600"
+                    className="bg-gradient-to-r from-primary to-secondary-purple hover:from-primary-dark hover:to-accent-purple"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Novo Projeto
@@ -1022,7 +1022,7 @@ export default function AdminDashboard() {
                       <Button
                         type="submit"
                         disabled={createProjectMutation.isPending || updateProjectMutation.isPending}
-                        className="bg-gradient-to-r from-emerald-600 to-cyan-500 hover:from-emerald-700 hover:to-cyan-600"
+                        className="bg-gradient-to-r from-primary to-secondary-purple hover:from-primary-dark hover:to-accent-purple"
                       >
                         {(createProjectMutation.isPending || updateProjectMutation.isPending) ? (
                           <>
