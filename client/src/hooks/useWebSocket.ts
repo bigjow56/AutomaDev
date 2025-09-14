@@ -30,6 +30,10 @@ export function useWebSocket({
   const [connectionState, setConnectionState] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected');
   const isMountedRef = useRef(true);
   
+  // Store handlers in refs to avoid capturing them in connect dependencies
+  const handlersRef = useRef({ onMessage, onConnect, onDisconnect, onError });
+  handlersRef.current = { onMessage, onConnect, onDisconnect, onError };
+  
   const connect = useCallback(() => {
     try {
       // Get WebSocket URL with dedicated /ws path
@@ -60,14 +64,14 @@ export function useWebSocket({
           }, 100);
         }
         
-        onConnect?.();
+        handlersRef.current.onConnect?.();
       };
 
       ws.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
           console.log('WebSocket message received:', data);
-          onMessage?.(data);
+          handlersRef.current.onMessage?.(data);
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
         }
@@ -81,7 +85,7 @@ export function useWebSocket({
           setConnectionState('disconnected');
         }
         
-        onDisconnect?.();
+        handlersRef.current.onDisconnect?.();
         
         // Attempt to reconnect if not a clean close and component is still mounted
         if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts && isMountedRef.current) {
@@ -107,7 +111,7 @@ export function useWebSocket({
           setConnectionState('error');
         }
         
-        onError?.(error);
+        handlersRef.current.onError?.(error);
       };
 
     } catch (error) {
@@ -117,11 +121,9 @@ export function useWebSocket({
         setConnectionState('error');
       }
     }
-  }, [sessionId, onMessage, onConnect, onDisconnect, onError]);
+  }, [sessionId]); // Only sessionId as dependency now
 
   const disconnect = useCallback(() => {
-    isMountedRef.current = false;
-    
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
@@ -132,7 +134,9 @@ export function useWebSocket({
       ws.current = null;
     }
     
-    setConnectionState('disconnected');
+    if (isMountedRef.current) {
+      setConnectionState('disconnected');
+    }
   }, []);
 
   const sendMessage = useCallback((message: WebSocketMessage) => {
@@ -143,13 +147,16 @@ export function useWebSocket({
     }
   }, []);
 
+  // Mount-only effect that only runs when sessionId changes
   useEffect(() => {
+    isMountedRef.current = true;
     connect();
     
     return () => {
+      isMountedRef.current = false;
       disconnect();
     };
-  }, [connect, disconnect]);
+  }, [sessionId]);
 
   return {
     sendMessage,

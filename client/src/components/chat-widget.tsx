@@ -43,13 +43,26 @@ export default function ChatWidget() {
     }
   }, [queryClient, sessionId]);
 
+  // Memoize WebSocket handlers to prevent reconnections on every render
+  const onConnect = useCallback(() => {
+    console.log("WebSocket connected for session:", sessionId);
+  }, [sessionId]);
+
+  const onDisconnect = useCallback(() => {
+    console.log("WebSocket disconnected");
+  }, []);
+
+  const onError = useCallback((error: Event) => {
+    console.error("WebSocket error:", error);
+  }, []);
+
   // Setup WebSocket connection
   const { isConnected } = useWebSocket({
     sessionId,
     onMessage: handleWebSocketMessage,
-    onConnect: () => console.log("WebSocket connected for session:", sessionId),
-    onDisconnect: () => console.log("WebSocket disconnected"),
-    onError: (error) => console.error("WebSocket error:", error),
+    onConnect,
+    onDisconnect,
+    onError,
   });
 
   // Track previous message count for fallback typing indicator clearing
