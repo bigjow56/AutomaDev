@@ -4,7 +4,8 @@ import {
   type Event, type InsertEvent,
   type AdminUser, type InsertAdminUser,
   type Project, type InsertProject,
-  contacts, chatMessages, events, adminUsers, projects
+  type Portfolio, type InsertPortfolio,
+  contacts, chatMessages, events, adminUsers, projects, portfolio
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -37,6 +38,10 @@ export interface IStorage {
   createProject(project: InsertProject): Promise<Project>;
   updateProject(id: string, project: Partial<InsertProject>): Promise<Project>;
   deleteProject(id: string): Promise<boolean>;
+  
+  // Portfolio methods
+  getPortfolio(): Promise<Portfolio | undefined>;
+  createOrUpdatePortfolio(portfolio: InsertPortfolio): Promise<Portfolio>;
 }
 
 
@@ -261,6 +266,56 @@ export class DbStorage implements IStorage {
       .where(eq(projects.id, id))
       .returning();
     return result.length > 0;
+  }
+
+  // Portfolio methods
+  async getPortfolio(): Promise<Portfolio | undefined> {
+    const result = await this.db
+      .select()
+      .from(portfolio)
+      .limit(1);
+    return result[0];
+  }
+
+  async createOrUpdatePortfolio(insertPortfolio: InsertPortfolio): Promise<Portfolio> {
+    // Check if portfolio already exists
+    const existingPortfolio = await this.getPortfolio();
+    
+    const cleanedPortfolio: any = {
+      name: insertPortfolio.name,
+      title: insertPortfolio.title,
+      bio: insertPortfolio.bio,
+      photo: insertPortfolio.photo || null,
+      email: insertPortfolio.email || null,
+      phone: insertPortfolio.phone || null,
+      location: insertPortfolio.location || null,
+      website: insertPortfolio.website || null,
+      linkedin: insertPortfolio.linkedin || null,
+      github: insertPortfolio.github || null,
+      skills: insertPortfolio.skills || "[]",
+      experience: insertPortfolio.experience || "[]",
+      education: insertPortfolio.education || "[]",
+      certifications: insertPortfolio.certifications || "[]",
+      isActive: insertPortfolio.isActive || "true",
+    };
+
+    if (existingPortfolio) {
+      // Update existing portfolio
+      cleanedPortfolio.updatedAt = new Date();
+      const result = await this.db
+        .update(portfolio)
+        .set(cleanedPortfolio)
+        .where(eq(portfolio.id, existingPortfolio.id))
+        .returning();
+      return result[0];
+    } else {
+      // Create new portfolio
+      const result = await this.db
+        .insert(portfolio)
+        .values(cleanedPortfolio)
+        .returning();
+      return result[0];
+    }
   }
 }
 

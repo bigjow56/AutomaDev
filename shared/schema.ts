@@ -124,3 +124,59 @@ export const insertProjectSchema = createInsertSchema(projects).pick({
 
 export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type Project = typeof projects.$inferSelect;
+
+// Portfolio schema (personal profile)
+export const portfolio = pgTable("portfolio", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  title: text("title").notNull(), // Professional title
+  bio: text("bio").notNull(), // Curriculum/biography
+  photo: text("photo"), // Photo URL
+  email: text("email"),
+  phone: text("phone"),
+  location: text("location"),
+  website: text("website"),
+  linkedin: text("linkedin"),
+  github: text("github"),
+  skills: text("skills").notNull().default("[]"), // JSON array of skills
+  experience: text("experience").notNull().default("[]"), // JSON array of work experiences
+  education: text("education").notNull().default("[]"), // JSON array of education
+  certifications: text("certifications").notNull().default("[]"), // JSON array of certifications
+  isActive: text("is_active").notNull().default("true"), // "true" or "false" as string
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPortfolioSchema = createInsertSchema(portfolio).pick({
+  name: true,
+  title: true,
+  bio: true,
+  photo: true,
+  email: true,
+  phone: true,
+  location: true,
+  website: true,
+  linkedin: true,
+  github: true,
+  skills: true,
+  experience: true,
+  education: true,
+  certifications: true,
+  isActive: true,
+}).extend({
+  // Make optional fields truly optional
+  photo: z.string().optional().or(z.literal("")),
+  email: z.string().optional().or(z.literal("")),
+  phone: z.string().optional().or(z.literal("")),
+  location: z.string().optional().or(z.literal("")),
+  website: z.string().optional().or(z.literal("")),
+  linkedin: z.string().optional().or(z.literal("")),
+  github: z.string().optional().or(z.literal("")),
+  skills: z.string().optional().or(z.literal("")),
+  experience: z.string().optional().or(z.literal("")),
+  education: z.string().optional().or(z.literal("")),
+  certifications: z.string().optional().or(z.literal("")),
+});
+
+export type InsertPortfolio = z.infer<typeof insertPortfolioSchema>;
+export type Portfolio = typeof portfolio.$inferSelect;
