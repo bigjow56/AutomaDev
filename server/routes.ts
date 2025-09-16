@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage as dbStorage } from "./storage";
 import express from "express";
-import { insertContactSchema, insertChatMessageSchema, insertEventSchema, insertAdminUserSchema, insertProjectSchema } from "@shared/schema";
+import { insertContactSchema, insertChatMessageSchema, insertEventSchema, insertAdminUserSchema, insertProjectSchema, insertPortfolioSchema } from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import session from "express-session";
@@ -751,6 +751,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Error processing n8n webhook response:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Erro interno do servidor" 
+      });
+    }
+  });
+
+  // Portfolio routes
+  app.get("/api/portfolio", async (req, res) => {
+    try {
+      const portfolio = await dbStorage.getPortfolio();
+      res.json({ success: true, portfolio: portfolio || null });
+    } catch (error) {
+      console.error("Error fetching portfolio:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Erro interno do servidor" 
+      });
+    }
+  });
+
+  app.post("/api/admin/portfolio", requireAuth, async (req, res) => {
+    try {
+      console.log("=== CREATE/UPDATE PORTFOLIO REQUEST ===");
+      console.log("Request body:", JSON.stringify(req.body, null, 2));
+      
+      const validatedData = insertPortfolioSchema.parse(req.body);
+      console.log("Validated data:", JSON.stringify(validatedData, null, 2));
+      
+      const portfolio = await dbStorage.createOrUpdatePortfolio(validatedData);
+      res.json({ success: true, portfolio });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
+        res.status(400).json({ 
+          success: false, 
+          message: "Dados inválidos", 
+          errors: error.errors 
+        });
+      } else {
+        console.error("Error creating/updating portfolio:", error);
+        res.status(500).json({ 
+          success: false, 
+          message: "Erro interno do servidor" 
+        });
+      }
+    }
+  });
+
+  // Portfolio photo upload route
+  app.post("/api/admin/portfolio/upload-photo", requireAuth, upload.single('photo'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Nenhuma foto foi enviada" 
+        });
+      }
+
+      const photoUrl = `/uploads/${req.file.filename}`;
+      res.json({ 
+        success: true, 
+        photoUrl: photoUrl,
+        message: "Foto enviada com sucesso" 
+      });
+    } catch (error) {
+      console.error("Error uploading portfolio photo:", error);
       res.status(500).json({ 
         success: false, 
         message: "Erro interno do servidor" 

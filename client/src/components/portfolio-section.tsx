@@ -1,20 +1,46 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building, ShoppingCart, BarChart3, ArrowRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { Project } from "@shared/schema";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { User, Mail, Phone, MapPin, Globe, Linkedin, Github, Edit, Upload, Camera, Save } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Portfolio } from "@shared/schema";
 import { useParallax } from "@/hooks/use-scroll";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import { apiRequest } from "@/lib/queryClient";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
+
+const portfolioFormSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  title: z.string().min(1, "Título profissional é obrigatório"),
+  bio: z.string().min(1, "Biografia é obrigatória"),
+  photo: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  location: z.string().optional(),
+  website: z.string().optional(),
+  linkedin: z.string().optional(),
+  github: z.string().optional(),
+  skills: z.string().optional(),
+  experience: z.string().optional(),
+  education: z.string().optional(),
+  certifications: z.string().optional(),
+});
+
+type PortfolioForm = z.infer<typeof portfolioFormSchema>;
 
 export default function PortfolioSection() {
   const parallaxOffset = useParallax(-0.15);
+  const [isEditing, setIsEditing] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -27,58 +53,146 @@ export default function PortfolioSection() {
     }
   };
 
-  // Fetch projects from API
-  const { data: projectsData, isLoading } = useQuery<{ success: boolean; projects: Project[] }>({
-    queryKey: ["/api/projects"],
+  // Fetch portfolio data
+  const { data: portfolioData, isLoading } = useQuery<{ success: boolean; portfolio: Portfolio | null }>({
+    queryKey: ["/api/portfolio"],
   });
 
-  const projects = projectsData?.projects || [];
+  const portfolio = portfolioData?.portfolio;
 
-  // Icon mapping
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case "Building":
-        return <Building className="w-6 h-6 text-primary mr-2" />;
-      case "ShoppingCart":
-        return <ShoppingCart className="w-6 h-6 text-primary mr-2" />;
-      case "BarChart3":
-        return <BarChart3 className="w-6 h-6 text-primary mr-2" />;
-      default:
-        return <Building className="w-6 h-6 text-primary mr-2" />;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<PortfolioForm>({
+    resolver: zodResolver(portfolioFormSchema),
+    defaultValues: {
+      name: portfolio?.name || "",
+      title: portfolio?.title || "",
+      bio: portfolio?.bio || "",
+      photo: portfolio?.photo || "",
+      email: portfolio?.email || "",
+      phone: portfolio?.phone || "",
+      location: portfolio?.location || "",
+      website: portfolio?.website || "",
+      linkedin: portfolio?.linkedin || "",
+      github: portfolio?.github || "",
+      skills: portfolio?.skills || "[]",
+      experience: portfolio?.experience || "[]",
+      education: portfolio?.education || "[]",
+      certifications: portfolio?.certifications || "[]",
     }
+  });
+
+  // Reset form when portfolio data changes
+  useEffect(() => {
+    if (portfolio) {
+      reset({
+        name: portfolio.name || "",
+        title: portfolio.title || "",
+        bio: portfolio.bio || "",
+        photo: portfolio.photo || "",
+        email: portfolio.email || "",
+        phone: portfolio.phone || "",
+        location: portfolio.location || "",
+        website: portfolio.website || "",
+        linkedin: portfolio.linkedin || "",
+        github: portfolio.github || "",
+        skills: portfolio.skills || "[]",
+        experience: portfolio.experience || "[]",
+        education: portfolio.education || "[]",
+        certifications: portfolio.certifications || "[]",
+      });
+    }
+  }, [portfolio, reset]);
+
+  // Photo upload mutation
+  const uploadPhotoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('photo', file);
+      
+      const response = await fetch('/api/admin/portfolio/upload-photo', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro no upload da foto');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setValue('photo', data.photoUrl);
+      toast({
+        title: "Foto enviada com sucesso!",
+        description: "Sua foto de perfil foi atualizada.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro no upload",
+        description: "Não foi possível enviar a foto. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Save portfolio mutation
+  const savePortfolioMutation = useMutation({
+    mutationFn: async (data: PortfolioForm) => {
+      return await apiRequest("POST", "/api/admin/portfolio", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/portfolio"] });
+      setIsEditing(false);
+      toast({
+        title: "Portfolio salvo com sucesso!",
+        description: "Suas informações foram atualizadas.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar o portfolio. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadingPhoto(true);
+      uploadPhotoMutation.mutate(file, {
+        onSettled: () => setUploadingPhoto(false),
+      });
+    }
+    e.target.value = '';
   };
 
-  // Parse tags from string
-  const parseTags = (tagsString: string): string[] => {
-    return tagsString.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+  const onSubmit = (data: PortfolioForm) => {
+    savePortfolioMutation.mutate(data);
   };
 
-  // Parse images from JSON string
-  const parseImages = (imagesString: string): Array<{url: string, type: string, alt: string}> => {
+  // Parse JSON arrays safely
+  const parseArray = (jsonString: string): string[] => {
     try {
-      const arr = JSON.parse(imagesString || "[]");
-      if (!Array.isArray(arr)) return [];
-      return arr
-        .map((img: any) => {
-          const url = img?.url ?? img?.src ?? img?.path ?? img?.href;
-          if (!url) return null;
-          return {
-            url,
-            type: img?.type ?? img?.role ?? "gallery",
-            alt: img?.alt ?? img?.title ?? "",
-          };
-        })
-        .filter(Boolean) as Array<{url: string, type: string, alt: string}>;
+      const arr = JSON.parse(jsonString || "[]");
+      return Array.isArray(arr) ? arr : [];
     } catch {
       return [];
     }
   };
 
-  // Get primary image (first image or fallback to icon)
-  const getPrimaryImage = (project: Project) => {
-    const images = parseImages(project.images || "[]");
-    return images.length > 0 ? images[0].url : null;
-  };
+  const skills = parseArray(portfolio?.skills || "[]");
+  const experience = parseArray(portfolio?.experience || "[]");
+  const education = parseArray(portfolio?.education || "[]");
 
   return (
     <section id="portfolio" className="py-20 bg-dark-secondary relative overflow-hidden">
@@ -123,208 +237,383 @@ export default function PortfolioSection() {
         >
           <div className="text-center mb-6">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4" data-testid="portfolio-title">
-              Cronograma visual dos módulos
+              Sobre Mim
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Explore nossos projetos de automação e desenvolvimento em um formato interativo
+              Conheça minha trajetória profissional e experiência em automação e desenvolvimento
             </p>
           </div>
         </motion.div>
 
-        {/* Projects Carousel */}
-        <div className="w-full max-w-[calc(100vw-2rem)] mx-auto">
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <Card className="bg-dark border border-dark-tertiary/30 rounded-2xl p-8 h-64">
-                    <CardContent className="p-0">
-                      <div className="w-8 h-8 bg-gray-600 rounded mb-4"></div>
-                      <div className="h-6 bg-gray-600 rounded mb-4"></div>
-                      <div className="h-4 bg-gray-600 rounded mb-2"></div>
-                      <div className="h-4 bg-gray-600 rounded w-3/4"></div>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))}
+        {/* Portfolio Content */}
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        ) : portfolio ? (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+          >
+            {/* Profile Card */}
+            <div className="lg:col-span-1">
+              <Card className="bg-dark/80 backdrop-blur-sm border border-dark-tertiary/40 rounded-2xl p-8 hover:border-primary/60 transition-all duration-500">
+                <CardContent className="p-0 text-center">
+                  {/* Profile Photo */}
+                  <div className="relative mb-6">
+                    <div className="w-48 h-48 mx-auto rounded-full overflow-hidden bg-dark-tertiary/50 border-4 border-primary/20">
+                      {portfolio.photo ? (
+                        <img 
+                          src={portfolio.photo} 
+                          alt={portfolio.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <User className="w-20 h-20 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Basic Info */}
+                  <h3 className="text-2xl font-bold text-white mb-2" data-testid="portfolio-name">
+                    {portfolio.name}
+                  </h3>
+                  <p className="text-primary text-lg font-semibold mb-4" data-testid="portfolio-title">
+                    {portfolio.title}
+                  </p>
+
+                  {/* Contact Info */}
+                  <div className="space-y-3 text-gray-300">
+                    {portfolio.email && (
+                      <div className="flex items-center justify-center space-x-2">
+                        <Mail className="w-4 h-4 text-primary" />
+                        <span className="text-sm">{portfolio.email}</span>
+                      </div>
+                    )}
+                    {portfolio.phone && (
+                      <div className="flex items-center justify-center space-x-2">
+                        <Phone className="w-4 h-4 text-primary" />
+                        <span className="text-sm">{portfolio.phone}</span>
+                      </div>
+                    )}
+                    {portfolio.location && (
+                      <div className="flex items-center justify-center space-x-2">
+                        <MapPin className="w-4 h-4 text-primary" />
+                        <span className="text-sm">{portfolio.location}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Social Links */}
+                  <div className="flex justify-center space-x-4 mt-6">
+                    {portfolio.website && (
+                      <a 
+                        href={portfolio.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-primary transition-colors"
+                      >
+                        <Globe className="w-5 h-5" />
+                      </a>
+                    )}
+                    {portfolio.linkedin && (
+                      <a 
+                        href={portfolio.linkedin} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-primary transition-colors"
+                      >
+                        <Linkedin className="w-5 h-5" />
+                      </a>
+                    )}
+                    {portfolio.github && (
+                      <a 
+                        href={portfolio.github} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-primary transition-colors"
+                      >
+                        <Github className="w-5 h-5" />
+                      </a>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          ) : projects.length > 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                className="w-full"
+
+            {/* Biography & Details */}
+            <div className="lg:col-span-2">
+              <Card className="bg-dark/80 backdrop-blur-sm border border-dark-tertiary/40 rounded-2xl p-8 hover:border-primary/60 transition-all duration-500 h-full">
+                <CardContent className="p-0">
+                  <div className="mb-6">
+                    <h4 className="text-xl font-bold text-white mb-4">Sobre Mim</h4>
+                    <p className="text-gray-300 leading-relaxed whitespace-pre-line" data-testid="portfolio-bio">
+                      {portfolio.bio}
+                    </p>
+                  </div>
+
+                  {/* Skills */}
+                  {skills.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="text-lg font-semibold text-white mb-3">Habilidades</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {skills.map((skill, index) => (
+                          <span 
+                            key={index}
+                            className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm border border-primary/30"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Experience */}
+                  {experience.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="text-lg font-semibold text-white mb-3">Experiência</h4>
+                      <div className="space-y-2">
+                        {experience.map((exp, index) => (
+                          <p key={index} className="text-gray-300 text-sm">• {exp}</p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Education */}
+                  {education.length > 0 && (
+                    <div>
+                      <h4 className="text-lg font-semibold text-white mb-3">Educação</h4>
+                      <div className="space-y-2">
+                        {education.map((edu, index) => (
+                          <p key={index} className="text-gray-300 text-sm">• {edu}</p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            className="text-center py-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <div className="text-gray-400 mb-6">
+              <User className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <h3 className="text-xl font-semibold mb-2">Portfolio não configurado</h3>
+              <p>Configure suas informações pessoais no painel administrativo.</p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Edit Button - Only shown to admins */}
+        <motion.div
+          className="text-center mt-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          <Dialog open={isEditing} onOpenChange={setIsEditing}>
+            <DialogTrigger asChild>
+              <Button
+                className="inline-flex items-center bg-primary hover:bg-primary-dark text-white px-6 py-3 font-semibold transition-all duration-300 transform hover:scale-105"
+                data-testid="button-edit-portfolio"
               >
-                <CarouselContent className="-ml-2 md:-ml-4">
-                  {projects.map((project, index) => {
-                    const tags = parseTags(project.tags);
-                    const primaryImage = getPrimaryImage(project);
+                <Edit className="mr-2 w-4 h-4" />
+                Editar Portfolio
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Editar Portfolio</DialogTitle>
+                <DialogDescription>
+                  Configure suas informações pessoais e profissionais
+                </DialogDescription>
+              </DialogHeader>
 
-                    return (
-                      <CarouselItem key={project.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                        <motion.div
-                          initial={{ opacity: 0, y: 50, rotateX: 15 }}
-                          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                          transition={{ 
-                            duration: 0.8, 
-                            delay: index * 0.1,
-                            type: "spring",
-                            stiffness: 100,
-                            damping: 15
-                          }}
-                          viewport={{ once: true, margin: "-10%" }}
-                          whileHover={{ 
-                            scale: 1.03, 
-                            y: -10,
-                            transition: { duration: 0.3 }
-                          }}
-                          className="h-full"
-                        >
-                          <Card className="group bg-gradient-to-br from-dark via-dark-secondary to-dark border border-dark-tertiary/30 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500 h-full hover:shadow-2xl hover:shadow-primary/20 backdrop-blur-sm">
-                            <CardContent className="p-0 h-full flex flex-col">
-                              {/* Project Header with gradient background */}
-                              <div className="relative h-32 bg-gradient-to-br from-primary/20 via-purple-light/10 to-accent-purple/5 flex items-center justify-center overflow-hidden">
-                                {/* Floating background elements */}
-                                <motion.div
-                                  className="absolute top-2 right-2 w-8 h-8 bg-accent-purple/20 rounded-full blur-sm"
-                                  animate={{
-                                    scale: [1, 1.2, 1],
-                                    opacity: [0.3, 0.6, 0.3],
-                                  }}
-                                  transition={{
-                                    duration: 3,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                  }}
-                                ></motion.div>
-                                
-                                <motion.div
-                                  className="absolute bottom-2 left-2 w-6 h-6 bg-cyan-500/20 rounded-full blur-sm"
-                                  animate={{
-                                    scale: [1.2, 1, 1.2],
-                                    opacity: [0.2, 0.5, 0.2],
-                                  }}
-                                  transition={{
-                                    duration: 4,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                  }}
-                                ></motion.div>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {/* Photo Upload */}
+                <div className="space-y-2">
+                  <Label>Foto de Perfil</Label>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100">
+                      {watch('photo') ? (
+                        <img src={watch('photo')} alt="Preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Camera className="w-6 h-6 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <input
+                        id="photo-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById('photo-upload')?.click()}
+                        disabled={uploadingPhoto}
+                        className="flex items-center space-x-2"
+                      >
+                        {uploadingPhoto ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                        ) : (
+                          <Upload className="w-4 h-4" />
+                        )}
+                        <span>Enviar Foto</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
 
-                                {primaryImage ? (
-                                  <img 
-                                    src={primaryImage} 
-                                    alt={project.title}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <motion.div 
-                                    className="text-primary text-6xl" 
-                                    data-testid={`project-icon-${project.id}`}
-                                    whileHover={{ scale: 1.1, rotate: 5 }}
-                                    transition={{ duration: 0.3 }}
-                                  >
-                                    {getIcon(project.icon)}
-                                  </motion.div>
-                                )}
-                                
-                                {/* Category Badge with modern styling */}
-                                <motion.div 
-                                  className={`absolute top-3 left-3 ${project.categoryColor} text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm`}
-                                  initial={{ opacity: 0, scale: 0.8 }}
-                                  whileInView={{ opacity: 1, scale: 1 }}
-                                  transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
-                                >
-                                  {project.category}
-                                </motion.div>
-                              </div>
+                {/* Basic Information */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome *</Label>
+                    <Input
+                      id="name"
+                      {...register("name")}
+                      placeholder="Seu nome completo"
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-red-600">{errors.name.message}</p>
+                    )}
+                  </div>
 
-                              {/* Project Content */}
-                              <div className="p-4 flex-1 flex flex-col">
-                                <motion.h3 
-                                  className="text-lg font-bold text-white mb-2 group-hover:text-primary transition-colors line-clamp-2" 
-                                  data-testid={`project-title-${project.id}`}
-                                  initial={{ opacity: 0, x: -20 }}
-                                  whileInView={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.6, delay: index * 0.1 + 0.4 }}
-                                >
-                                  {project.title}
-                                </motion.h3>
-                                
-                                <motion.p 
-                                  className="text-gray-300 leading-relaxed mb-3 text-sm line-clamp-3 flex-1" 
-                                  data-testid={`project-description-${project.id}`}
-                                  initial={{ opacity: 0, x: -20 }}
-                                  whileInView={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.6, delay: index * 0.1 + 0.5 }}
-                                >
-                                  {project.description}
-                                </motion.p>
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Título Profissional *</Label>
+                    <Input
+                      id="title"
+                      {...register("title")}
+                      placeholder="Ex: Desenvolvedor Full-Stack"
+                    />
+                    {errors.title && (
+                      <p className="text-sm text-red-600">{errors.title.message}</p>
+                    )}
+                  </div>
+                </div>
 
-                                {/* Tags */}
-                                {tags.length > 0 && (
-                                  <motion.div 
-                                    className="flex flex-wrap gap-1 mb-3" 
-                                    data-testid={`project-tags-${project.id}`}
-                                    initial={{ opacity: 0 }}
-                                    whileInView={{ opacity: 1 }}
-                                    transition={{ duration: 0.6, delay: index * 0.1 + 0.6 }}
-                                  >
-                                    {tags.slice(0, 2).map((tag, tagIndex) => (
-                                      <span key={tagIndex} className="bg-dark-tertiary/50 text-gray-300 px-2 py-1 rounded text-xs">
-                                        {tag}
-                                      </span>
-                                    ))}
-                                  </motion.div>
-                                )}
+                {/* Biography */}
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Biografia *</Label>
+                  <Textarea
+                    id="bio"
+                    {...register("bio")}
+                    placeholder="Conte sobre sua trajetória profissional, experiências e objetivos..."
+                    rows={6}
+                  />
+                  {errors.bio && (
+                    <p className="text-sm text-red-600">{errors.bio.message}</p>
+                  )}
+                </div>
 
-                                {/* Metric */}
-                                {project.metric && (
-                                  <motion.div 
-                                    className="text-primary font-semibold text-sm" 
-                                    data-testid={`project-metric-${project.id}`}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 + 0.7 }}
-                                  >
-                                    {project.metric}
-                                  </motion.div>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </motion.div>
-                      </CarouselItem>
-                    );
-                  })}
-                </CarouselContent>
-                <CarouselPrevious className="hidden md:flex -left-12 bg-dark/80 border-primary/30 text-primary hover:bg-primary hover:text-white transition-all duration-300" />
-                <CarouselNext className="hidden md:flex -right-12 bg-dark/80 border-primary/30 text-primary hover:bg-primary hover:text-white transition-all duration-300" />
-              </Carousel>
-            </motion.div>
-          ) : (
-            <motion.div
-              className="text-center py-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <div className="text-gray-400 mb-6">
-                <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <h3 className="text-xl font-semibold mb-2">Nenhum projeto encontrado</h3>
-                <p>Em breve teremos novos projetos para mostrar.</p>
-              </div>
-            </motion.div>
-          )}
-        </div>
+                {/* Contact Information */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-mail</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      {...register("email")}
+                      placeholder="seu@email.com"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Telefone</Label>
+                    <Input
+                      id="phone"
+                      {...register("phone")}
+                      placeholder="(11) 99999-9999"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="location">Localização</Label>
+                  <Input
+                    id="location"
+                    {...register("location")}
+                    placeholder="São Paulo, SP - Brasil"
+                  />
+                </div>
+
+                {/* Social Links */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium">Links Sociais</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="website">Website</Label>
+                      <Input
+                        id="website"
+                        {...register("website")}
+                        placeholder="https://meusite.com"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="linkedin">LinkedIn</Label>
+                      <Input
+                        id="linkedin"
+                        {...register("linkedin")}
+                        placeholder="https://linkedin.com/in/seu-perfil"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="github">GitHub</Label>
+                      <Input
+                        id="github"
+                        {...register("github")}
+                        placeholder="https://github.com/seu-usuario"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={savePortfolioMutation.isPending}
+                    className="flex items-center space-x-2"
+                  >
+                    {savePortfolioMutation.isPending ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                    <span>Salvar</span>
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </motion.div>
 
         {/* CTA */}
         <motion.div
@@ -336,11 +625,10 @@ export default function PortfolioSection() {
         >
           <Button
             onClick={() => scrollToSection("contact")}
-            className="inline-flex items-center bg-primary hover:bg-primary-dark text-white px-8 py-4 font-bold text-lg transition-all duration-300 transform hover:scale-105"
-            data-testid="button-see-more-projects"
+            className="inline-flex items-center bg-gradient-to-r from-primary to-secondary-purple hover:from-primary-dark hover:to-accent-purple text-white px-8 py-4 font-bold text-lg transition-all duration-300 transform hover:scale-105"
+            data-testid="button-contact-from-portfolio"
           >
-            Ver Mais Projetos
-            <ArrowRight className="ml-2 w-5 h-5" />
+            Vamos Conversar?
           </Button>
         </motion.div>
       </div>
