@@ -162,7 +162,6 @@ export const insertPortfolioSchema = createInsertSchema(portfolio).pick({
   experience: true,
   education: true,
   certifications: true,
-  isActive: true,
 }).extend({
   // Make optional fields truly optional
   photo: z.string().optional().or(z.literal("")),
@@ -176,6 +175,7 @@ export const insertPortfolioSchema = createInsertSchema(portfolio).pick({
   experience: z.string().optional().or(z.literal("")),
   education: z.string().optional().or(z.literal("")),
   certifications: z.string().optional().or(z.literal("")),
+  // isActive is managed by backend - not required from frontend
 });
 
 export type InsertPortfolio = z.infer<typeof insertPortfolioSchema>;

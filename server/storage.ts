@@ -296,7 +296,7 @@ export class DbStorage implements IStorage {
       experience: insertPortfolio.experience || "[]",
       education: insertPortfolio.education || "[]",
       certifications: insertPortfolio.certifications || "[]",
-      isActive: insertPortfolio.isActive || "true",
+      isActive: "true", // Always active for portfolio
     };
 
     if (existingPortfolio) {
