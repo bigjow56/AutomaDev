@@ -72,7 +72,7 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-br from-dark via-dark-secondary to-dark relative overflow-hidden">
+    <section id="contact" className="py-20 bg-dark-secondary relative overflow-hidden">
       {/* Parallax background elements */}
       <motion.div
         className="absolute top-16 left-16 w-24 h-24 bg-purple-500/10 rounded-full blur-xl"
@@ -129,7 +129,7 @@ export default function ContactSection() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <Card className="bg-dark/60 backdrop-blur-sm border border-dark-tertiary/30 rounded-2xl p-8">
+            <Card className="bg-dark/80 backdrop-blur-sm border border-dark-tertiary/40 rounded-2xl p-8">
               <CardContent className="p-0">
                 <h3 className="text-2xl font-bold text-white mb-6" data-testid="contact-info-title">
                   Entre em Contato Agora
@@ -215,7 +215,7 @@ export default function ContactSection() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <Card className="bg-dark border border-dark-tertiary/30 rounded-2xl p-8">
+            <Card className="bg-dark/90 border border-dark-tertiary/50 rounded-2xl p-8">
               <CardContent className="p-0">
                 <h3 className="text-2xl font-bold text-white mb-6" data-testid="contact-form-title">
                   Solicite uma Proposta

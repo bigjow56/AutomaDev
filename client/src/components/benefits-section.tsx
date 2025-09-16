@@ -40,7 +40,7 @@ export default function BenefitsSection() {
   ];
 
   return (
-    <section id="benefits" className="py-20 bg-gradient-to-br from-dark via-dark-secondary to-dark relative overflow-hidden" ref={ref}>
+    <section id="benefits" className="py-20 bg-dark-secondary relative overflow-hidden" ref={ref}>
       {/* Parallax background decoration */}
       <motion.div 
         className="absolute inset-0 opacity-5"
@@ -116,7 +116,7 @@ export default function BenefitsSection() {
                 transition: { duration: 0.3 }
               }}
             >
-              <Card className="bg-dark/60 backdrop-blur-sm border border-dark-tertiary/30 rounded-2xl p-8 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/20">
+              <Card className="bg-dark/80 backdrop-blur-sm border border-dark-tertiary/40 rounded-2xl p-8 hover:border-primary/60 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/30">
                 <CardContent className="p-0">
                   <div className="flex items-start space-x-4">
                     <motion.div 
