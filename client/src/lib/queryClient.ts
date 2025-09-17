@@ -23,7 +23,7 @@ export async function apiRequest(
   
   // Add auth token header if available (for Replit browser compatibility)
   if (authToken) {
-    headers["Authorization"] = authToken;
+    headers["Authorization"] = `Bearer ${authToken}`;
     headers["x-auth-token"] = authToken;
   }
 
@@ -49,7 +49,7 @@ export const getQueryFn: <T>(options: {
     
     const headers: Record<string, string> = {};
     if (authToken) {
-      headers["Authorization"] = authToken;
+      headers["Authorization"] = `Bearer ${authToken}`;
       headers["x-auth-token"] = authToken;
     }
 
