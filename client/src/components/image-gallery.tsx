@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,10 @@ interface ImageGalleryProps {
 export function ImageGallery({ images, projectTitle, className = "" }: ImageGalleryProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [originalBodyOverflow, setOriginalBodyOverflow] = useState('');
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const focusableElementsRef = useRef<HTMLElement[]>([]);
 
   // Parse images if they come as JSON string
   const parsedImages = Array.isArray(images) ? images : [];
@@ -36,12 +40,19 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
   const openModal = (index: number = 0) => {
     setCurrentImageIndex(index);
     setIsModalOpen(true);
+    setOriginalBodyOverflow(document.body.style.overflow || 'auto');
     document.body.style.overflow = 'hidden';
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = originalBodyOverflow;
+    // Restore focus to trigger element
+    setTimeout(() => {
+      if (triggerRef.current) {
+        triggerRef.current.focus();
+      }
+    }, 100);
   };
 
   const nextImage = () => {
@@ -52,7 +63,7 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
     setCurrentImageIndex((prev) => (prev - 1 + parsedImages.length) % parsedImages.length);
   };
 
-  // Handle keyboard navigation
+  // Handle keyboard navigation and focus management
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!isModalOpen) return;
@@ -67,6 +78,26 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
         case 'ArrowRight':
           nextImage();
           break;
+        case 'Tab':
+          // Trap focus within modal
+          const focusableElements = focusableElementsRef.current;
+          if (focusableElements.length === 0) return;
+          
+          const firstElement = focusableElements[0];
+          const lastElement = focusableElements[focusableElements.length - 1];
+          
+          if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement.focus();
+            }
+          } else {
+            if (document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement.focus();
+            }
+          }
+          break;
       }
     };
 
@@ -74,15 +105,50 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [isModalOpen]);
 
+  // Focus management when modal opens
+  useEffect(() => {
+    if (isModalOpen && modalRef.current) {
+      // Get all focusable elements within modal
+      const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+      const focusableElements = Array.from(modalRef.current.querySelectorAll(focusableSelectors)) as HTMLElement[];
+      focusableElementsRef.current = focusableElements.filter(el => !el.hasAttribute('disabled'));
+      
+      // Focus the close button initially
+      setTimeout(() => {
+        const closeButton = focusableElementsRef.current.find(el => el.getAttribute('data-testid') === 'button-close-gallery');
+        if (closeButton) {
+          closeButton.focus();
+        }
+      }, 100);
+    }
+  }, [isModalOpen, currentImageIndex]);
+
+  const handleTriggerKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openModal(0);
+    }
+  };
+
   return (
     <>
       {/* Main gallery preview */}
-      <div className={`relative group cursor-pointer ${className}`} onClick={() => openModal(0)}>
+      <div 
+        ref={triggerRef}
+        className={`relative group cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-lg ${className}`} 
+        onClick={() => openModal(0)}
+        onKeyDown={handleTriggerKeyPress}
+        role="button"
+        tabIndex={0}
+        aria-label={`Abrir galeria de imagens do projeto ${projectTitle}. ${parsedImages.length > 1 ? `${parsedImages.length} imagens disponíveis` : '1 imagem disponível'}`}
+        data-testid="trigger-gallery"
+      >
         <div className="w-full h-48 overflow-hidden rounded-lg bg-slate-800">
           <img
             src={parsedImages[0]?.url || ''}
             alt={parsedImages[0]?.title || projectTitle}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            loading="lazy"
             onError={(e) => {
               e.currentTarget.src = '';
               e.currentTarget.style.display = 'none';
@@ -117,12 +183,17 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
+            ref={modalRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={closeModal}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="gallery-title"
+            aria-describedby="gallery-description"
             data-testid="modal-gallery"
           >
             {/* Close button */}
@@ -130,7 +201,8 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
               variant="ghost"
               size="icon"
               onClick={closeModal}
-              className="absolute top-4 right-4 z-60 text-white hover:text-purple-400 hover:bg-white/10"
+              className="absolute top-4 right-4 z-50 text-white hover:text-purple-400 hover:bg-white/10"
+              aria-label="Fechar galeria de imagens"
               data-testid="button-close-gallery"
             >
               <X className="w-6 h-6" />
@@ -146,7 +218,8 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
                     e.stopPropagation();
                     prevImage();
                   }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-60 text-white hover:text-purple-400 hover:bg-white/10 w-12 h-12"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-purple-400 hover:bg-white/10 w-12 h-12"
+                  aria-label={`Imagem anterior (${currentImageIndex} de ${parsedImages.length})`}
                   data-testid="button-prev-image"
                 >
                   <ChevronLeft className="w-8 h-8" />
@@ -159,7 +232,8 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
                     e.stopPropagation();
                     nextImage();
                   }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-60 text-white hover:text-purple-400 hover:bg-white/10 w-12 h-12"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-50 text-white hover:text-purple-400 hover:bg-white/10 w-12 h-12"
+                  aria-label={`Próxima imagem (${currentImageIndex + 2} de ${parsedImages.length})`}
                   data-testid="button-next-image"
                 >
                   <ChevronRight className="w-8 h-8" />
@@ -182,6 +256,7 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
                   src={currentImage?.url || ''}
                   alt={currentImage?.title || `${projectTitle} - Imagem ${currentImageIndex + 1}`}
                   className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                  loading="lazy"
                   data-testid={`image-${currentImageIndex}`}
                 />
               </div>
@@ -191,11 +266,11 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
                 <div className="text-purple-400 font-medium text-sm mb-2">
                   {currentImageIndex + 1} de {parsedImages.length}
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">
+                <h3 id="gallery-title" className="text-white font-semibold text-lg mb-2">
                   {currentImage?.title || projectTitle}
                 </h3>
                 {currentImage?.description && (
-                  <p className="text-gray-300 text-sm">
+                  <p id="gallery-description" className="text-gray-300 text-sm">
                     {currentImage.description}
                   </p>
                 )}
@@ -219,6 +294,7 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
                         src={image.url}
                         alt={`Thumbnail ${index + 1}`}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                     </button>
                   ))}
