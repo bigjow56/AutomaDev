@@ -213,8 +213,18 @@ export default function AdminDashboard() {
       const formData = new FormData();
       formData.append('image', file);
       
+      // Get auth token from localStorage
+      const authToken = localStorage.getItem('authToken');
+      const headers: Record<string, string> = {};
+      
+      if (authToken) {
+        headers["Authorization"] = `Bearer ${authToken}`;
+        headers["x-auth-token"] = authToken;
+      }
+      
       const response = await fetch('/api/admin/upload', {
         method: 'POST',
+        headers,
         body: formData,
         credentials: 'include',
       });
