@@ -707,6 +707,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Portfolio routes
+  app.get("/api/portfolio", async (req, res) => {
+    try {
+      const portfolioData = await dbStorage.getPortfolio();
+      res.json({ success: true, portfolio: portfolioData });
+    } catch (error) {
+      console.error("Error fetching portfolio:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Erro interno do servidor" 
+      });
+    }
+  });
+
+  app.get("/api/admin/portfolio", requireAuth, async (req, res) => {
+    try {
+      const portfolioData = await dbStorage.getPortfolio();
+      res.json({ success: true, portfolio: portfolioData });
+    } catch (error) {
+      console.error("Error fetching portfolio for admin:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Erro interno do servidor" 
+      });
+    }
+  });
+
+  app.post("/api/admin/portfolio", requireAuth, async (req, res) => {
+    try {
+      console.log("=== CREATE/UPDATE PORTFOLIO REQUEST ===");
+      console.log("Request body:", JSON.stringify(req.body, null, 2));
+      
+      const validatedData = insertPortfolioSchema.parse(req.body);
+      console.log("Validated data:", JSON.stringify(validatedData, null, 2));
+      
+      const portfolioData = await dbStorage.createOrUpdatePortfolio(validatedData);
+      res.json({ success: true, portfolio: portfolioData });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
+        res.status(400).json({ 
+          success: false, 
+          message: "Dados inválidos", 
+          errors: error.errors 
+        });
+      } else {
+        console.error("Error creating/updating portfolio:", error);
+        res.status(500).json({ 
+          success: false, 
+          message: "Erro interno do servidor" 
+        });
+      }
+    }
+  });
+
   // Webhook endpoint for n8n to send responses back (asynchronous)
   app.post("/api/webhook/n8n-response", async (req, res) => {
     try {
