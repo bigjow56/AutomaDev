@@ -37,7 +37,7 @@ import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import { Event, Project, Portfolio } from "@shared/schema";
+import { Event, Project, Portfolio, insertPortfolioSchema } from "@shared/schema";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -65,26 +65,9 @@ const projectFormSchema = z.object({
   sortOrder: z.string().optional().or(z.literal("")),
 });
 
-const portfolioFormSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  title: z.string().min(1, "Título profissional é obrigatório"),
-  bio: z.string().min(1, "Biografia é obrigatória"),
-  photo: z.string().optional().or(z.literal("")),
-  email: z.string().optional().or(z.literal("")),
-  phone: z.string().optional().or(z.literal("")),
-  location: z.string().optional().or(z.literal("")),
-  website: z.string().optional().or(z.literal("")),
-  linkedin: z.string().optional().or(z.literal("")),
-  github: z.string().optional().or(z.literal("")),
-  skills: z.string().optional().or(z.literal("")),
-  experience: z.string().optional().or(z.literal("")),
-  education: z.string().optional().or(z.literal("")),
-  certifications: z.string().optional().or(z.literal("")),
-});
-
 type EventForm = z.infer<typeof eventFormSchema>;
 type ProjectForm = z.infer<typeof projectFormSchema>;
-type PortfolioForm = z.infer<typeof portfolioFormSchema>;
+type PortfolioForm = z.infer<typeof insertPortfolioSchema>;
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -167,7 +150,7 @@ export default function AdminDashboard() {
     watch: watchPortfolio,
     formState: { errors: errorsPortfolio },
   } = useForm<PortfolioForm>({
-    resolver: zodResolver(portfolioFormSchema),
+    resolver: zodResolver(insertPortfolioSchema),
     defaultValues: {
       name: "",
       title: "",
