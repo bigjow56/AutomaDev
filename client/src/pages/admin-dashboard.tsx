@@ -37,12 +37,12 @@ import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import { Event, Project } from "@shared/schema";
+import { Event, Project, Portfolio } from "@shared/schema";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building, ShoppingCart, BarChart3, Image, Upload } from "lucide-react";
+import { Building, ShoppingCart, BarChart3, Image, Upload, User } from "lucide-react";
 
 const eventFormSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
@@ -65,8 +65,26 @@ const projectFormSchema = z.object({
   sortOrder: z.string().optional().or(z.literal("")),
 });
 
+const portfolioFormSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  title: z.string().min(1, "Título profissional é obrigatório"),
+  bio: z.string().min(1, "Biografia é obrigatória"),
+  photo: z.string().optional().or(z.literal("")),
+  email: z.string().optional().or(z.literal("")),
+  phone: z.string().optional().or(z.literal("")),
+  location: z.string().optional().or(z.literal("")),
+  website: z.string().optional().or(z.literal("")),
+  linkedin: z.string().optional().or(z.literal("")),
+  github: z.string().optional().or(z.literal("")),
+  skills: z.string().optional().or(z.literal("")),
+  experience: z.string().optional().or(z.literal("")),
+  education: z.string().optional().or(z.literal("")),
+  certifications: z.string().optional().or(z.literal("")),
+});
+
 type EventForm = z.infer<typeof eventFormSchema>;
 type ProjectForm = z.infer<typeof projectFormSchema>;
+type PortfolioForm = z.infer<typeof portfolioFormSchema>;
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -74,6 +92,7 @@ export default function AdminDashboard() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+  const [isPortfolioDialogOpen, setIsPortfolioDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [activeTab, setActiveTab] = useState("events");
@@ -99,8 +118,15 @@ export default function AdminDashboard() {
     enabled: !!authCheck?.isAdmin,
   });
 
+  // Fetch portfolio
+  const { data: portfolioData, isLoading: portfolioLoading } = useQuery<{ success: boolean; portfolio: Portfolio | null }>({
+    queryKey: ["/api/admin/portfolio"],
+    enabled: !!authCheck?.isAdmin,
+  });
+
   const events = eventsData?.events || [];
   const projects = projectsData?.projects || [];
+  const portfolio = portfolioData?.portfolio;
 
   const {
     register,
@@ -130,6 +156,33 @@ export default function AdminDashboard() {
       categoryColor: "bg-primary",
       icon: "Building",
       sortOrder: "0"
+    }
+  });
+
+  const {
+    register: registerPortfolio,
+    handleSubmit: handleSubmitPortfolio,
+    reset: resetPortfolio,
+    setValue: setValuePortfolio,
+    watch: watchPortfolio,
+    formState: { errors: errorsPortfolio },
+  } = useForm<PortfolioForm>({
+    resolver: zodResolver(portfolioFormSchema),
+    defaultValues: {
+      name: "",
+      title: "",
+      bio: "",
+      photo: "",
+      email: "",
+      phone: "",
+      location: "",
+      website: "",
+      linkedin: "",
+      github: "",
+      skills: "",
+      experience: "",
+      education: "",
+      certifications: "",
     }
   });
 
@@ -281,6 +334,18 @@ export default function AdminDashboard() {
     },
   });
 
+  // Create/update portfolio mutation
+  const createPortfolioMutation = useMutation({
+    mutationFn: async (data: PortfolioForm) => {
+      return await apiRequest("POST", "/api/admin/portfolio", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/portfolio"] });
+      setIsPortfolioDialogOpen(false);
+      resetPortfolio();
+    },
+  });
+
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !authCheck?.isAdmin) {
@@ -306,6 +371,10 @@ export default function AdminDashboard() {
     } else {
       createProjectMutation.mutate(data);
     }
+  };
+
+  const onSubmitPortfolio = (data: PortfolioForm) => {
+    createPortfolioMutation.mutate(data);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -398,6 +467,31 @@ export default function AdminDashboard() {
     setProjectImages([]);
     setImageUrlInput("");
     setIsProjectDialogOpen(true);
+  };
+
+  const handleEditPortfolio = () => {
+    if (portfolio) {
+      setValuePortfolio("name", portfolio.name);
+      setValuePortfolio("title", portfolio.title);
+      setValuePortfolio("bio", portfolio.bio);
+      setValuePortfolio("photo", portfolio.photo || "");
+      setValuePortfolio("email", portfolio.email || "");
+      setValuePortfolio("phone", portfolio.phone || "");
+      setValuePortfolio("location", portfolio.location || "");
+      setValuePortfolio("website", portfolio.website || "");
+      setValuePortfolio("linkedin", portfolio.linkedin || "");
+      setValuePortfolio("github", portfolio.github || "");
+      setValuePortfolio("skills", portfolio.skills || "");
+      setValuePortfolio("experience", portfolio.experience || "");
+      setValuePortfolio("education", portfolio.education || "");
+      setValuePortfolio("certifications", portfolio.certifications || "");
+    }
+    setIsPortfolioDialogOpen(true);
+  };
+
+  const handleNewPortfolio = () => {
+    resetPortfolio();
+    setIsPortfolioDialogOpen(true);
   };
 
   const handleTemplateSelect = (templateKey: string) => {
@@ -545,9 +639,10 @@ export default function AdminDashboard() {
 
         {/* Tabs Section */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="events">Eventos</TabsTrigger>
             <TabsTrigger value="projects">Projetos</TabsTrigger>
+            <TabsTrigger value="portfolio">Portfólio</TabsTrigger>
           </TabsList>
 
           {/* Events Tab */}
@@ -1154,6 +1249,334 @@ export default function AdminDashboard() {
                     </div>
                   </motion.div>
                 ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Portfolio Tab */}
+      <TabsContent value="portfolio">
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Gerenciar Portfólio</CardTitle>
+                <CardDescription>
+                  Configure suas informações pessoais e profissionais
+                </CardDescription>
+              </div>
+              <Dialog open={isPortfolioDialogOpen} onOpenChange={setIsPortfolioDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    onClick={portfolio ? handleEditPortfolio : handleNewPortfolio}
+                    className="bg-gradient-to-r from-primary to-secondary-purple hover:from-primary-dark hover:to-accent-purple"
+                    data-testid="admin-portfolio-button"
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    {portfolio ? "Editar Portfólio" : "Criar Portfólio"}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {portfolio ? "Editar Portfólio" : "Criar Portfólio"}
+                    </DialogTitle>
+                    <DialogDescription>
+                      Preencha suas informações pessoais e profissionais
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <form onSubmit={handleSubmitPortfolio(onSubmitPortfolio)} className="space-y-6">
+                    {/* Informações Básicas */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Informações Básicas</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-name">Nome Completo *</Label>
+                          <Input
+                            id="portfolio-name"
+                            {...registerPortfolio("name")}
+                            placeholder="Ex: João Silva"
+                            data-testid="portfolio-name-input"
+                          />
+                          {errorsPortfolio.name && (
+                            <p className="text-sm text-red-600">{errorsPortfolio.name.message}</p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-title">Título Profissional *</Label>
+                          <Input
+                            id="portfolio-title"
+                            {...registerPortfolio("title")}
+                            placeholder="Ex: Desenvolvedor Full Stack"
+                            data-testid="portfolio-title-input"
+                          />
+                          {errorsPortfolio.title && (
+                            <p className="text-sm text-red-600">{errorsPortfolio.title.message}</p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                          <Label htmlFor="portfolio-bio">Biografia *</Label>
+                          <Textarea
+                            id="portfolio-bio"
+                            {...registerPortfolio("bio")}
+                            placeholder="Conte um pouco sobre sua trajetória profissional..."
+                            rows={4}
+                            data-testid="portfolio-bio-input"
+                          />
+                          {errorsPortfolio.bio && (
+                            <p className="text-sm text-red-600">{errorsPortfolio.bio.message}</p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-photo">URL da Foto</Label>
+                          <Input
+                            id="portfolio-photo"
+                            {...registerPortfolio("photo")}
+                            placeholder="https://exemplo.com/foto.jpg"
+                            data-testid="portfolio-photo-input"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Informações de Contato */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Informações de Contato</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-email">E-mail</Label>
+                          <Input
+                            id="portfolio-email"
+                            {...registerPortfolio("email")}
+                            type="email"
+                            placeholder="joao@exemplo.com"
+                            data-testid="portfolio-email-input"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-phone">Telefone</Label>
+                          <Input
+                            id="portfolio-phone"
+                            {...registerPortfolio("phone")}
+                            placeholder="(11) 99999-9999"
+                            data-testid="portfolio-phone-input"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-location">Localização</Label>
+                          <Input
+                            id="portfolio-location"
+                            {...registerPortfolio("location")}
+                            placeholder="São Paulo, SP"
+                            data-testid="portfolio-location-input"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-website">Website</Label>
+                          <Input
+                            id="portfolio-website"
+                            {...registerPortfolio("website")}
+                            placeholder="https://meusite.com"
+                            data-testid="portfolio-website-input"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-linkedin">LinkedIn</Label>
+                          <Input
+                            id="portfolio-linkedin"
+                            {...registerPortfolio("linkedin")}
+                            placeholder="https://linkedin.com/in/joaosilva"
+                            data-testid="portfolio-linkedin-input"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-github">GitHub</Label>
+                          <Input
+                            id="portfolio-github"
+                            {...registerPortfolio("github")}
+                            placeholder="https://github.com/joaosilva"
+                            data-testid="portfolio-github-input"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Informações Profissionais */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Informações Profissionais</h3>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-skills">Habilidades (JSON)</Label>
+                          <Textarea
+                            id="portfolio-skills"
+                            {...registerPortfolio("skills")}
+                            placeholder='["JavaScript", "React", "Node.js", "Python"]'
+                            rows={2}
+                            data-testid="portfolio-skills-input"
+                          />
+                          <p className="text-sm text-gray-600">
+                            Formato JSON: ["Habilidade 1", "Habilidade 2"]
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-experience">Experiência (JSON)</Label>
+                          <Textarea
+                            id="portfolio-experience"
+                            {...registerPortfolio("experience")}
+                            placeholder='[{"company": "Empresa", "role": "Cargo", "period": "2020-2023", "description": "Descrição"}]'
+                            rows={3}
+                            data-testid="portfolio-experience-input"
+                          />
+                          <p className="text-sm text-gray-600">
+                            Formato JSON com objetos contendo company, role, period, description
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-education">Educação (JSON)</Label>
+                          <Textarea
+                            id="portfolio-education"
+                            {...registerPortfolio("education")}
+                            placeholder='[{"institution": "Universidade", "degree": "Curso", "period": "2016-2020"}]'
+                            rows={3}
+                            data-testid="portfolio-education-input"
+                          />
+                          <p className="text-sm text-gray-600">
+                            Formato JSON com objetos contendo institution, degree, period
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-certifications">Certificações (JSON)</Label>
+                          <Textarea
+                            id="portfolio-certifications"
+                            {...registerPortfolio("certifications")}
+                            placeholder='[{"name": "Certificação", "issuer": "Emissor", "date": "2023"}]'
+                            rows={3}
+                            data-testid="portfolio-certifications-input"
+                          />
+                          <p className="text-sm text-gray-600">
+                            Formato JSON com objetos contendo name, issuer, date
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <DialogFooter>
+                      <Button
+                        type="submit"
+                        disabled={createPortfolioMutation.isPending}
+                        className="bg-gradient-to-r from-primary to-secondary-purple hover:from-primary-dark hover:to-accent-purple"
+                        data-testid="portfolio-submit-button"
+                      >
+                        {createPortfolioMutation.isPending ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Salvando...
+                          </>
+                        ) : (
+                          <>Salvar Portfólio</>
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+
+          <CardContent>
+            {portfolioLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin" />
+                <span className="ml-2">Carregando portfólio...</span>
+              </div>
+            ) : portfolio ? (
+              <div className="space-y-6">
+                <div className="border rounded-lg p-6">
+                  <div className="flex items-start space-x-6">
+                    {portfolio.photo && (
+                      <img 
+                        src={portfolio.photo} 
+                        alt={portfolio.name}
+                        className="w-24 h-24 rounded-full object-cover"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-gray-900">{portfolio.name}</h3>
+                      <p className="text-lg text-primary font-medium">{portfolio.title}</p>
+                      <p className="text-gray-600 mt-2">{portfolio.bio}</p>
+                      
+                      {/* Informações de Contato */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        {portfolio.email && (
+                          <div className="text-sm">
+                            <span className="font-medium">Email:</span> {portfolio.email}
+                          </div>
+                        )}
+                        {portfolio.phone && (
+                          <div className="text-sm">
+                            <span className="font-medium">Telefone:</span> {portfolio.phone}
+                          </div>
+                        )}
+                        {portfolio.location && (
+                          <div className="text-sm">
+                            <span className="font-medium">Localização:</span> {portfolio.location}
+                          </div>
+                        )}
+                        {portfolio.website && (
+                          <div className="text-sm">
+                            <span className="font-medium">Website:</span> 
+                            <a href={portfolio.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline ml-1">
+                              {portfolio.website}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 flex justify-end">
+                    <Button
+                      onClick={handleEditPortfolio}
+                      variant="outline"
+                      className="flex items-center space-x-2"
+                      data-testid="portfolio-edit-button"
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>Editar</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Portfólio não configurado
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Configure suas informações pessoais no painel administrativo.
+                </p>
+                <Button
+                  onClick={handleNewPortfolio}
+                  className="bg-gradient-to-r from-primary to-secondary-purple hover:from-primary-dark hover:to-accent-purple"
+                  data-testid="portfolio-create-button"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Criar Portfólio
+                </Button>
               </div>
             )}
           </CardContent>
