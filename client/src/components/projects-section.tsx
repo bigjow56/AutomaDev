@@ -5,6 +5,7 @@ import { ExternalLink, Github, Eye, FileText } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Project } from "@shared/schema";
 import { useParallax } from "@/hooks/use-scroll";
+import { ImageGallery, parseProjectImages } from "@/components/image-gallery";
 
 export default function ProjectsSection() {
   const parallaxOffset = useParallax(-0.15);
@@ -105,9 +106,13 @@ export default function ProjectsSection() {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
                   
                   <CardContent className="p-8 relative z-10 h-full flex flex-col">
-                    {/* Project icon */}
-                    <div className="w-15 h-15 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-lg">
-                      {getIconEmoji(project.icon)}
+                    {/* Project gallery */}
+                    <div className="mb-6">
+                      <ImageGallery 
+                        images={parseProjectImages(project.images || '[]')} 
+                        projectTitle={project.title}
+                        className="rounded-lg"
+                      />
                     </div>
 
                     {/* Project title */}
