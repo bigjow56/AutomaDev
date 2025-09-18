@@ -1,14 +1,16 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Github, Eye, FileText } from "lucide-react";
+import { ExternalLink, Github, Eye, FileText, Image as ImageIcon, Maximize2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Project } from "@shared/schema";
 import { useParallax } from "@/hooks/use-scroll";
 import { ImageGallery, parseProjectImages } from "@/components/image-gallery";
+import { useState } from "react";
 
 export default function ProjectsSection() {
   const parallaxOffset = useParallax(-0.15);
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
   // Fetch projects data
   const { data: projectsData } = useQuery<{ success: boolean; projects: Project[] }>({
@@ -92,6 +94,8 @@ export default function ProjectsSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           {projects.map((project, index) => {
             const tags = parseJsonArray(project.tags);
+            const images = parseProjectImages(project.images || '[]');
+            const isExpanded = expandedProject === project.id;
             
             return (
               <motion.div
@@ -100,48 +104,134 @@ export default function ProjectsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                layout
+                className={`${isExpanded ? 'lg:col-span-2' : ''}`}
               >
                 <Card className="bg-slate-800/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-500/40 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/20 relative overflow-hidden group h-full">
                   {/* Hover effect overlay */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
                   
                   <CardContent className="p-8 relative z-10 h-full flex flex-col">
-                    {/* Project gallery */}
-                    <div className="mb-6">
-                      <ImageGallery 
-                        images={parseProjectImages(project.images || '[]')} 
-                        projectTitle={project.title}
-                        className="rounded-lg"
-                      />
-                    </div>
+                    <div className={`${isExpanded ? 'grid grid-cols-1 lg:grid-cols-2 gap-8' : ''}`}>
+                      
+                      {/* Left Column - Images */}
+                      <div className={`${isExpanded ? 'order-1' : ''}`}>
+                        {/* Project gallery */}
+                        <div className="mb-6">
+                          <ImageGallery 
+                            images={images} 
+                            projectTitle={project.title}
+                            className="rounded-lg"
+                          />
+                        </div>
 
-                    {/* Project title */}
-                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
-                      {project.title}
-                    </h3>
+                        {/* Gallery preview for expanded view */}
+                        {isExpanded && images.length > 1 && (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+                            {images.slice(1, 4).map((image, imgIndex) => (
+                              <motion.div
+                                key={imgIndex}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.3, delay: imgIndex * 0.1 }}
+                                className="aspect-square rounded-lg overflow-hidden bg-slate-700 cursor-pointer group/thumb"
+                                onClick={() => {
+                                  // Trigger gallery opening at specific image
+                                  const galleryTrigger = document.querySelector(`[data-testid="trigger-gallery"]`) as HTMLElement;
+                                  if (galleryTrigger) {
+                                    galleryTrigger.click();
+                                  }
+                                }}
+                                data-testid={`preview-image-${imgIndex}`}
+                              >
+                                <img
+                                  src={image.url}
+                                  alt={image.title || `${project.title} - Imagem ${imgIndex + 2}`}
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                  <Maximize2 className="w-6 h-6 text-white" />
+                                </div>
+                              </motion.div>
+                            ))}
+                            
+                            {/* More images indicator */}
+                            {images.length > 4 && (
+                              <motion.div
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.3, delay: 0.4 }}
+                                className="aspect-square rounded-lg bg-purple-600/20 border-2 border-purple-500/30 flex flex-col items-center justify-center text-purple-300 cursor-pointer hover:bg-purple-600/30 transition-colors"
+                                onClick={() => {
+                                  const galleryTrigger = document.querySelector(`[data-testid="trigger-gallery"]`) as HTMLElement;
+                                  if (galleryTrigger) {
+                                    galleryTrigger.click();
+                                  }
+                                }}
+                                data-testid="more-images-indicator"
+                              >
+                                <ImageIcon className="w-6 h-6 mb-1" />
+                                <span className="text-xs font-medium">+{images.length - 4}</span>
+                                <span className="text-xs">mais</span>
+                              </motion.div>
+                            )}
+                          </div>
+                        )}
+                      </div>
 
-                    {/* Project description */}
-                    <p className="text-gray-300 mb-6 leading-relaxed flex-grow">
-                      {project.description}
-                    </p>
+                      {/* Right Column - Content */}
+                      <div className={`${isExpanded ? 'order-2' : ''} flex flex-col justify-between`}>
+                        {/* Project title */}
+                        <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
+                          {project.title}
+                        </h3>
 
-                    {/* Tech tags */}
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {tags.map((tag, tagIndex) => (
-                        <span
-                          key={tagIndex}
-                          className="px-3 py-1 bg-purple-600/20 text-purple-300 text-sm rounded-full border border-purple-600/30 font-medium hover:bg-purple-600/30 transition-colors"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                        {/* Project description */}
+                        <p className="text-gray-300 mb-6 leading-relaxed flex-grow">
+                          {project.description}
+                        </p>
 
-                    {/* Project info footer */}
-                    <div className="text-center">
-                      <div className="inline-flex items-center px-4 py-2 bg-purple-600/10 border border-purple-500/20 rounded-full text-purple-300 text-sm">
-                        <Eye className="w-4 h-4 mr-2" />
-                        {project.metric}
+                        {/* Tech tags */}
+                        <div className="flex flex-wrap gap-2 mb-6">
+                          {tags.map((tag, tagIndex) => (
+                            <span
+                              key={tagIndex}
+                              className="px-3 py-1 bg-purple-600/20 text-purple-300 text-sm rounded-full border border-purple-600/30 font-medium hover:bg-purple-600/30 transition-colors"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Project actions */}
+                        <div className="flex flex-col sm:flex-row gap-3 items-center">
+                          {/* Metric display */}
+                          <div className="inline-flex items-center px-4 py-2 bg-purple-600/10 border border-purple-500/20 rounded-full text-purple-300 text-sm">
+                            <Eye className="w-4 h-4 mr-2" />
+                            {project.metric}
+                          </div>
+
+                          {/* Expand/Collapse button */}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setExpandedProject(isExpanded ? null : project.id)}
+                            className="border-purple-500/30 text-purple-300 hover:bg-purple-600/20 hover:border-purple-500/50 transition-all"
+                            data-testid={`button-${isExpanded ? 'collapse' : 'expand'}-project`}
+                          >
+                            {isExpanded ? (
+                              <>
+                                <FileText className="w-4 h-4 mr-2" />
+                                Ver Menos
+                              </>
+                            ) : (
+                              <>
+                                <ImageIcon className="w-4 h-4 mr-2" />
+                                Ver Galeria
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
