@@ -5,8 +5,8 @@ import { ExternalLink, Github, Eye, FileText, Image as ImageIcon, Maximize2 } fr
 import { useQuery } from "@tanstack/react-query";
 import { Project } from "@shared/schema";
 import { useParallax } from "@/hooks/use-scroll";
-import { ImageGallery, parseProjectImages } from "@/components/image-gallery";
-import { useState } from "react";
+import { ImageGallery, ImageGalleryRef, parseProjectImages } from "@/components/image-gallery";
+import { useState, useRef } from "react";
 
 export default function ProjectsSection() {
   const parallaxOffset = useParallax(-0.15);
@@ -96,6 +96,7 @@ export default function ProjectsSection() {
             const tags = parseJsonArray(project.tags);
             const images = parseProjectImages(project.images || '[]');
             const isExpanded = expandedProject === project.id;
+            const galleryRef = useRef<ImageGalleryRef>(null);
             
             return (
               <motion.div
@@ -119,6 +120,7 @@ export default function ProjectsSection() {
                         {/* Project gallery */}
                         <div className="mb-6">
                           <ImageGallery 
+                            ref={galleryRef}
                             images={images} 
                             projectTitle={project.title}
                             className="rounded-lg"
@@ -136,11 +138,8 @@ export default function ProjectsSection() {
                                 transition={{ duration: 0.3, delay: imgIndex * 0.1 }}
                                 className="aspect-square rounded-lg overflow-hidden bg-slate-700 cursor-pointer group/thumb"
                                 onClick={() => {
-                                  // Trigger gallery opening at specific image
-                                  const galleryTrigger = document.querySelector(`[data-testid="trigger-gallery"]`) as HTMLElement;
-                                  if (galleryTrigger) {
-                                    galleryTrigger.click();
-                                  }
+                                  // Open gallery at the clicked image (imgIndex + 1 because we skipped first image)
+                                  galleryRef.current?.open(imgIndex + 1);
                                 }}
                                 data-testid={`preview-image-${imgIndex}`}
                               >
@@ -163,10 +162,8 @@ export default function ProjectsSection() {
                                 transition={{ duration: 0.3, delay: 0.4 }}
                                 className="aspect-square rounded-lg bg-purple-600/20 border-2 border-purple-500/30 flex flex-col items-center justify-center text-purple-300 cursor-pointer hover:bg-purple-600/30 transition-colors"
                                 onClick={() => {
-                                  const galleryTrigger = document.querySelector(`[data-testid="trigger-gallery"]`) as HTMLElement;
-                                  if (galleryTrigger) {
-                                    galleryTrigger.click();
-                                  }
+                                  // Open gallery from the beginning to show all images
+                                  galleryRef.current?.open(0);
                                 }}
                                 data-testid="more-images-indicator"
                               >

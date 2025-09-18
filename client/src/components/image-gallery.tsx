@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,16 +15,21 @@ interface ImageGalleryProps {
   className?: string;
 }
 
-export function ImageGallery({ images, projectTitle, className = "" }: ImageGalleryProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [originalBodyOverflow, setOriginalBodyOverflow] = useState('');
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const focusableElementsRef = useRef<HTMLElement[]>([]);
+export interface ImageGalleryRef {
+  open: (index?: number) => void;
+}
 
-  // Parse images if they come as JSON string
-  const parsedImages = Array.isArray(images) ? images : [];
+export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
+  ({ images, projectTitle, className = "" }, ref) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [originalBodyOverflow, setOriginalBodyOverflow] = useState('');
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+    const focusableElementsRef = useRef<HTMLElement[]>([]);
+
+    // Parse images if they come as JSON string
+    const parsedImages = Array.isArray(images) ? images : [];
   
   // If no images, show placeholder
   if (!parsedImages || parsedImages.length === 0) {
@@ -43,6 +48,11 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
     setOriginalBodyOverflow(document.body.style.overflow || 'auto');
     document.body.style.overflow = 'hidden';
   };
+
+  // Expose the open method through ref
+  useImperativeHandle(ref, () => ({
+    open: (index = 0) => openModal(index)
+  }));
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -179,7 +189,7 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
         {/* Image counter badge */}
         {parsedImages.length > 1 && (
           <div className="absolute top-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-            +{parsedImages.length}
+            {parsedImages.length} fotos
           </div>
         )}
       </div>
@@ -347,7 +357,7 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
       </AnimatePresence>
     </>
   );
-}
+});
 
 // Helper function to parse images from JSON string
 export function parseProjectImages(images: string): ImageData[] {
