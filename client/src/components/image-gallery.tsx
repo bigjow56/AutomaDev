@@ -161,12 +161,17 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
         </div>
         
         {/* Overlay on hover */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
-          <div className="text-center text-white">
-            <Images className="w-8 h-8 mx-auto mb-2" />
-            <p className="text-sm font-medium">Ver Galeria</p>
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-lg flex items-center justify-center backdrop-blur-sm">
+          <div className="text-center text-white transform scale-90 group-hover:scale-100 transition-transform duration-300">
+            <div className="bg-white/20 rounded-full p-3 mb-3 mx-auto w-fit">
+              <Images className="w-8 h-8" />
+            </div>
+            <p className="text-sm font-medium mb-1">Ver Galeria Completa</p>
             {parsedImages.length > 1 && (
-              <p className="text-xs text-white/80">{parsedImages.length} imagens</p>
+              <div className="inline-flex items-center gap-1 bg-purple-500/80 px-3 py-1 rounded-full text-xs">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                {parsedImages.length} fotos
+              </div>
             )}
           </div>
         </div>
@@ -247,55 +252,91 @@ export function ImageGallery({ images, projectTitle, className = "" }: ImageGall
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative max-w-5xl max-h-[90vh] w-full flex flex-col items-center"
+              className="relative max-w-6xl max-h-[95vh] w-full flex flex-col items-center px-4"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Main image */}
-              <div className="relative max-h-[70vh] w-full flex items-center justify-center mb-6">
-                <img
-                  src={currentImage?.url || ''}
-                  alt={currentImage?.title || `${projectTitle} - Imagem ${currentImageIndex + 1}`}
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                  loading="lazy"
-                  data-testid={`image-${currentImageIndex}`}
-                />
+              {/* Project title header */}
+              <div className="mb-4 text-center">
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  {projectTitle}
+                </h2>
+                <div className="text-purple-400 font-medium text-sm">
+                  Galeria de Imagens • {currentImageIndex + 1} de {parsedImages.length}
+                </div>
               </div>
 
-              {/* Image info */}
-              <div className="bg-slate-800/80 backdrop-blur-sm border border-purple-500/20 rounded-lg p-6 max-w-md text-center">
-                <div className="text-purple-400 font-medium text-sm mb-2">
-                  {currentImageIndex + 1} de {parsedImages.length}
+              {/* Main image container with enhanced styling */}
+              <div className="relative max-h-[60vh] w-full flex items-center justify-center mb-6 group/image">
+                <div className="relative bg-slate-900/50 p-2 rounded-xl backdrop-blur border border-white/10">
+                  <img
+                    src={currentImage?.url || ''}
+                    alt={currentImage?.title || `${projectTitle} - Imagem ${currentImageIndex + 1}`}
+                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-transform duration-300 hover:scale-[1.02]"
+                    loading="lazy"
+                    data-testid={`image-${currentImageIndex}`}
+                  />
+                  
+                  {/* Image loading skeleton */}
+                  <div className="absolute inset-2 bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg animate-pulse opacity-0 transition-opacity duration-300" />
+                  
+                  {/* Image zoom hint */}
+                  <div className="absolute top-4 left-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
+                    Clique para ver em tamanho real
+                  </div>
                 </div>
-                <h3 id="gallery-title" className="text-white font-semibold text-lg mb-2">
+              </div>
+
+              {/* Enhanced image info */}
+              <div className="bg-gradient-to-r from-slate-800/90 to-slate-900/90 backdrop-blur-md border border-purple-500/30 rounded-xl p-6 max-w-2xl w-full text-center shadow-xl">
+                <h3 id="gallery-title" className="text-white font-bold text-xl mb-3 bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent">
                   {currentImage?.title || projectTitle}
                 </h3>
                 {currentImage?.description && (
-                  <p id="gallery-description" className="text-gray-300 text-sm">
+                  <p id="gallery-description" className="text-gray-300 text-sm leading-relaxed">
                     {currentImage.description}
                   </p>
                 )}
+                
+                {/* Progress indicator */}
+                <div className="flex justify-center mt-4">
+                  <div className="flex gap-1">
+                    {parsedImages.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index === currentImageIndex
+                            ? 'bg-purple-500 w-6'
+                            : 'bg-white/30 hover:bg-white/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              {/* Thumbnails */}
+              {/* Enhanced thumbnails */}
               {parsedImages.length > 1 && (
-                <div className="flex gap-2 mt-6 max-w-full overflow-x-auto pb-2">
+                <div className="flex gap-3 mt-6 max-w-full overflow-x-auto pb-2 px-2">
                   {parsedImages.map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                      className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 transform hover:scale-105 ${
                         index === currentImageIndex
-                          ? 'border-purple-500 opacity-100'
-                          : 'border-white/20 opacity-60 hover:opacity-80'
+                          ? 'border-purple-500 shadow-lg shadow-purple-500/30 scale-105'
+                          : 'border-white/20 opacity-70 hover:opacity-90 hover:border-white/40'
                       }`}
                       data-testid={`thumbnail-${index}`}
                     >
                       <img
                         src={image.url}
                         alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-300"
                         loading="lazy"
                       />
+                      {index === currentImageIndex && (
+                        <div className="absolute inset-0 bg-purple-500/20 rounded-xl" />
+                      )}
                     </button>
                   ))}
                 </div>
