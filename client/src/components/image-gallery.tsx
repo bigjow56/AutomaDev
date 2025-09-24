@@ -13,6 +13,7 @@ interface ImageGalleryProps {
   images: ImageData[];
   projectTitle: string;
   className?: string;
+  previewClassName?: string;
 }
 
 export interface ImageGalleryRef {
@@ -20,7 +21,7 @@ export interface ImageGalleryRef {
 }
 
 export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
-  ({ images, projectTitle, className = "" }, ref) => {
+  ({ images, projectTitle, className = "", previewClassName = "h-48" }, ref) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [originalBodyOverflow, setOriginalBodyOverflow] = useState('');
@@ -36,7 +37,7 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
   // If no images, show placeholder
   if (!parsedImages || parsedImages.length === 0) {
     return (
-      <div className={`w-full h-48 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center ${className}`}>
+      <div className={`w-full ${previewClassName} bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center ${className}`}>
         <Images className="w-12 h-12 text-white/60" />
       </div>
     );
@@ -47,8 +48,9 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
   const openModal = (index: number = 0) => {
     setCurrentImageIndex(index);
     setIsModalOpen(true);
-    setOriginalBodyOverflow(document.body.style.overflow || 'auto');
-    document.body.style.overflow = 'hidden';
+    // Robust scroll locking using classList
+    document.documentElement.classList.add('overflow-hidden');
+    document.body.classList.add('overflow-hidden');
   };
 
   // Expose the open method through ref
@@ -58,7 +60,9 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
 
   const closeModal = () => {
     setIsModalOpen(false);
-    document.body.style.overflow = originalBodyOverflow;
+    // Robust scroll unlock using classList
+    document.documentElement.classList.remove('overflow-hidden');
+    document.body.classList.remove('overflow-hidden');
     // Restore focus to trigger element
     setTimeout(() => {
       if (triggerRef.current) {
@@ -86,6 +90,24 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
       setImageError(false);
     }
   }, [isModalOpen, currentImageIndex]);
+
+  // Cleanup scroll lock on unmount or when modal state changes
+  useEffect(() => {
+    return () => {
+      // Always ensure scroll is restored when component unmounts
+      document.documentElement.classList.remove('overflow-hidden');
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, []);
+
+  // Additional cleanup when isModalOpen changes
+  useEffect(() => {
+    if (!isModalOpen) {
+      // Ensure scroll is always restored when modal closes
+      document.documentElement.classList.remove('overflow-hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+  }, [isModalOpen]);
 
   // Handle keyboard navigation and focus management
   useEffect(() => {
@@ -167,7 +189,7 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
         aria-label={`Abrir galeria de imagens do projeto ${projectTitle}. ${parsedImages.length > 1 ? `${parsedImages.length} imagens disponíveis` : '1 imagem disponível'}`}
         data-testid="trigger-gallery"
       >
-        <div className="w-full h-48 overflow-hidden rounded-lg bg-slate-800">
+        <div className={`w-full ${previewClassName} overflow-hidden rounded-lg bg-slate-800`}>
           <img
             src={parsedImages[0]?.url || ''}
             alt={parsedImages[0]?.title || projectTitle}

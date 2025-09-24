@@ -147,6 +147,7 @@ export default function ProjectsSection() {
                             images={images} 
                             projectTitle={project.title}
                             className={isExpanded ? "rounded-lg" : "h-full"}
+                            previewClassName={isExpanded ? "h-[420px] md:h-[560px]" : "h-48"}
                           />
                         </div>
 
