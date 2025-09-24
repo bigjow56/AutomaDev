@@ -239,25 +239,46 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex flex-col"
             onClick={closeModal}
             role="dialog"
             aria-modal="true"
             aria-labelledby="gallery-title"
-            aria-describedby="gallery-description"
+            aria-describedby={currentImage?.description ? "gallery-description" : undefined}
             data-testid="modal-gallery"
           >
-            {/* Close button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={closeModal}
-              className="absolute top-4 right-4 z-50 text-white hover:text-purple-400 hover:bg-white/10"
-              aria-label="Fechar galeria de imagens"
-              data-testid="button-close-gallery"
-            >
-              <X className="w-6 h-6" />
-            </Button>
+            {/* Fixed Header with Close Button - Always Visible */}
+            <div className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-b from-black/80 to-transparent p-4 flex justify-between items-center">
+              <div className="flex-1">
+                <h2 id="gallery-title" className="text-xl font-bold text-white truncate">
+                  {projectTitle}
+                </h2>
+                <div className="text-purple-400 font-medium text-sm">
+                  {currentImageIndex + 1} de {parsedImages.length}
+                </div>
+              </div>
+              
+              {/* Enhanced Close Button - Larger Click Area */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeModal();
+                }}
+                className="group relative ml-4 w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center justify-center"
+                aria-label="Fechar galeria de imagens"
+                data-testid="button-close-gallery"
+              >
+                <X className="w-6 h-6 text-white group-hover:text-purple-400 transition-colors" />
+                
+                {/* Visual feedback on hover */}
+                <div className="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-purple-400/50 group-focus:border-purple-500 transition-colors" />
+              </button>
+            </div>
+
+            {/* Escape hint */}
+            <div className="fixed top-20 left-4 text-white/60 text-xs bg-black/30 px-2 py-1 rounded">
+              ESC para fechar
+            </div>
 
             {/* Navigation arrows */}
             {parsedImages.length > 1 && (
@@ -292,24 +313,15 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
               </>
             )}
 
-            {/* Modal content */}
+            {/* Main Content Area - Scrollable with padding for fixed header */}
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative max-w-6xl max-h-[90vh] w-full flex flex-col items-center px-4 overflow-y-auto"
+              className="flex-1 w-full flex flex-col items-center px-4 pt-24 pb-8 overflow-y-auto max-h-screen"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Project title header */}
-              <div className="mb-4 text-center">
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  {projectTitle}
-                </h2>
-                <div className="text-purple-400 font-medium text-sm">
-                  Galeria de Imagens • {currentImageIndex + 1} de {parsedImages.length}
-                </div>
-              </div>
 
               {/* Main image container with enhanced styling */}
               <div className="relative max-h-[60vh] w-full flex items-center justify-center mb-6 group/image">
@@ -368,9 +380,11 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
 
               {/* Enhanced image info */}
               <div className="bg-gradient-to-r from-slate-800/90 to-slate-900/90 backdrop-blur-md border border-purple-500/30 rounded-xl p-6 max-w-2xl w-full text-center shadow-xl">
-                <h3 id="gallery-title" className="text-white font-bold text-xl mb-3 bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent">
-                  {currentImage?.title || projectTitle}
-                </h3>
+                {currentImage?.title && currentImage.title !== projectTitle && (
+                  <h3 id="gallery-title" className="text-white font-bold text-xl mb-3 bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent">
+                    {currentImage.title}
+                  </h3>
+                )}
                 {currentImage?.description && (
                   <p id="gallery-description" className="text-gray-300 text-sm leading-relaxed">
                     {currentImage.description}
@@ -378,20 +392,27 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
                 )}
                 
                 {/* Progress indicator */}
-                <div className="flex justify-center mt-4">
-                  <div className="flex gap-1">
-                    {parsedImages.map((_, index) => (
-                      <div
-                        key={index}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                          index === currentImageIndex
-                            ? 'bg-purple-500 w-6'
-                            : 'bg-white/30 hover:bg-white/50'
-                        }`}
-                      />
-                    ))}
+                {parsedImages.length > 1 && (
+                  <div className="flex justify-center mt-4">
+                    <div className="flex gap-1">
+                      {parsedImages.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentImageIndex(index);
+                          }}
+                          className={`w-2 h-2 rounded-full transition-all duration-300 hover:scale-125 ${
+                            index === currentImageIndex
+                              ? 'bg-purple-500 w-6'
+                              : 'bg-white/30 hover:bg-white/50'
+                          }`}
+                          aria-label={`Ir para imagem ${index + 1}`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Enhanced thumbnails */}
