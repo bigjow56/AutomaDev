@@ -24,6 +24,8 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [originalBodyOverflow, setOriginalBodyOverflow] = useState('');
+    const [imageLoading, setImageLoading] = useState(true);
+    const [imageError, setImageError] = useState(false);
     const triggerRef = useRef<HTMLDivElement>(null);
     const modalRef = useRef<HTMLDivElement>(null);
     const focusableElementsRef = useRef<HTMLElement[]>([]);
@@ -66,12 +68,24 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
   };
 
   const nextImage = () => {
+    setImageLoading(true);
+    setImageError(false);
     setCurrentImageIndex((prev) => (prev + 1) % parsedImages.length);
   };
 
   const prevImage = () => {
+    setImageLoading(true);
+    setImageError(false);
     setCurrentImageIndex((prev) => (prev - 1 + parsedImages.length) % parsedImages.length);
   };
+
+  // Reset loading state when modal opens or image index changes
+  useEffect(() => {
+    if (isModalOpen) {
+      setImageLoading(true);
+      setImageError(false);
+    }
+  }, [isModalOpen, currentImageIndex]);
 
   // Handle keyboard navigation and focus management
   useEffect(() => {
@@ -262,7 +276,7 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="relative max-w-6xl max-h-[95vh] w-full flex flex-col items-center px-4"
+              className="relative max-w-6xl max-h-[90vh] w-full flex flex-col items-center px-4 overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Project title header */}
@@ -278,21 +292,55 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
               {/* Main image container with enhanced styling */}
               <div className="relative max-h-[60vh] w-full flex items-center justify-center mb-6 group/image">
                 <div className="relative bg-slate-900/50 p-2 rounded-xl backdrop-blur border border-white/10">
+                  {/* Loading skeleton - visible while image loads */}
+                  {imageLoading && !imageError && (
+                    <div className="absolute inset-2 bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg animate-pulse z-10 flex items-center justify-center min-h-[300px]">
+                      <div className="text-purple-400 text-sm">Carregando imagem...</div>
+                    </div>
+                  )}
+                  
+                  {/* Error state */}
+                  {imageError && (
+                    <div className="absolute inset-2 bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg z-10 flex items-center justify-center min-h-[300px]">
+                      <div className="text-red-400 text-sm text-center">
+                        <div className="mb-2">Erro ao carregar imagem</div>
+                        <button 
+                          onClick={() => {
+                            setImageError(false);
+                            setImageLoading(true);
+                          }}
+                          className="text-purple-400 hover:text-purple-300 underline"
+                        >
+                          Tentar novamente
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  
                   <img
                     src={currentImage?.url || ''}
                     alt={currentImage?.title || `${projectTitle} - Imagem ${currentImageIndex + 1}`}
-                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-transform duration-300 hover:scale-[1.02]"
-                    loading="lazy"
+                    className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-all duration-300 hover:scale-[1.02] ${
+                      imageLoading || imageError ? 'opacity-0' : 'opacity-100'
+                    }`}
+                    loading="eager"
+                    onLoad={() => {
+                      setImageLoading(false);
+                      setImageError(false);
+                    }}
+                    onError={() => {
+                      setImageLoading(false);
+                      setImageError(true);
+                    }}
                     data-testid={`image-${currentImageIndex}`}
                   />
                   
-                  {/* Image loading skeleton */}
-                  <div className="absolute inset-2 bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg animate-pulse opacity-0 transition-opacity duration-300" />
-                  
                   {/* Image zoom hint */}
-                  <div className="absolute top-4 left-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
-                    Clique para ver em tamanho real
-                  </div>
+                  {!imageLoading && !imageError && (
+                    <div className="absolute top-4 left-4 bg-black/50 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
+                      Clique para ver em tamanho real
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -326,29 +374,34 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
 
               {/* Enhanced thumbnails */}
               {parsedImages.length > 1 && (
-                <div className="flex gap-3 mt-6 max-w-full overflow-x-auto pb-2 px-2">
-                  {parsedImages.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 transform hover:scale-105 ${
-                        index === currentImageIndex
-                          ? 'border-purple-500 shadow-lg shadow-purple-500/30 scale-105'
-                          : 'border-white/20 opacity-70 hover:opacity-90 hover:border-white/40'
-                      }`}
-                      data-testid={`thumbnail-${index}`}
-                    >
-                      <img
-                        src={image.url}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-300"
-                        loading="lazy"
-                      />
-                      {index === currentImageIndex && (
-                        <div className="absolute inset-0 bg-purple-500/20 rounded-xl" />
-                      )}
-                    </button>
-                  ))}
+                <div className="w-full mt-6">
+                  <div className="flex gap-3 max-w-full overflow-x-auto pb-4 px-2 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-transparent">
+                    {parsedImages.map((image, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentImageIndex(index);
+                        }}
+                        className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 transform hover:scale-105 ${
+                          index === currentImageIndex
+                            ? 'border-purple-500 shadow-lg shadow-purple-500/30 scale-105'
+                            : 'border-white/20 opacity-70 hover:opacity-90 hover:border-white/40'
+                        }`}
+                        data-testid={`thumbnail-${index}`}
+                      >
+                        <img
+                          src={image.url}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover transition-transform duration-300"
+                          loading="lazy"
+                        />
+                        {index === currentImageIndex && (
+                          <div className="absolute inset-0 bg-purple-500/20 rounded-xl" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </motion.div>

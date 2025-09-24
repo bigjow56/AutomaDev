@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Github, Eye, FileText, Image as ImageIcon, Maximize2 } from "lucide-react";
+import { ExternalLink, Github, Eye, FileText, Image as ImageIcon, Maximize2, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Project } from "@shared/schema";
 import { useParallax } from "@/hooks/use-scroll";
@@ -111,6 +111,22 @@ export default function ProjectsSection() {
                 className={`${isExpanded ? 'lg:col-span-2' : ''}`}
               >
                 <Card className="bg-slate-800/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-500/40 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/20 relative overflow-hidden group h-full">
+                  {/* Close button for expanded view */}
+                  {isExpanded && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedProject(null);
+                      }}
+                      className="absolute top-4 right-4 z-20 text-gray-400 hover:text-white hover:bg-purple-600/20 border border-purple-500/30 w-8 h-8"
+                      data-testid="button-close-expanded-view"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                  
                   {/* Hover effect overlay */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
                   
@@ -141,7 +157,8 @@ export default function ProjectsSection() {
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.3, delay: imgIndex * 0.1 }}
                                 className="aspect-square rounded-lg overflow-hidden bg-slate-700 cursor-pointer group/thumb"
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   // Open gallery at the clicked image (imgIndex + 1 because we skipped first image)
                                   galleryRefs.current[project.id]?.open(imgIndex + 1);
                                 }}
@@ -165,7 +182,8 @@ export default function ProjectsSection() {
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.3, delay: 0.4 }}
                                 className="aspect-square rounded-lg bg-purple-600/20 border-2 border-purple-500/30 flex flex-col items-center justify-center text-purple-300 cursor-pointer hover:bg-purple-600/30 transition-colors"
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   // Open gallery from the beginning to show all images
                                   galleryRefs.current[project.id]?.open(0);
                                 }}
@@ -216,7 +234,10 @@ export default function ProjectsSection() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setExpandedProject(isExpanded ? null : project.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedProject(isExpanded ? null : project.id);
+                            }}
                             className="border-purple-500/30 text-purple-300 hover:bg-purple-600/20 hover:border-purple-500/50 transition-all"
                             data-testid={`button-${isExpanded ? 'collapse' : 'expand'}-project`}
                           >
