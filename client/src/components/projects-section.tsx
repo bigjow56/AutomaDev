@@ -18,6 +18,9 @@ export default function ProjectsSection() {
   });
 
   const projects = projectsData?.projects || [];
+  
+  // Create refs for all projects to avoid hooks inside map
+  const galleryRefs = useRef<{ [key: string]: ImageGalleryRef | null }>({});
 
   const parseJsonArray = (jsonString: string | undefined): string[] => {
     if (!jsonString) return [];
@@ -96,7 +99,6 @@ export default function ProjectsSection() {
             const tags = parseJsonArray(project.tags);
             const images = parseProjectImages(project.images || '[]');
             const isExpanded = expandedProject === project.id;
-            const galleryRef = useRef<ImageGalleryRef>(null);
             
             return (
               <motion.div
@@ -120,7 +122,9 @@ export default function ProjectsSection() {
                         {/* Project gallery */}
                         <div className="mb-6">
                           <ImageGallery 
-                            ref={galleryRef}
+                            ref={(ref) => {
+                              galleryRefs.current[project.id] = ref;
+                            }}
                             images={images} 
                             projectTitle={project.title}
                             className="rounded-lg"
@@ -139,7 +143,7 @@ export default function ProjectsSection() {
                                 className="aspect-square rounded-lg overflow-hidden bg-slate-700 cursor-pointer group/thumb"
                                 onClick={() => {
                                   // Open gallery at the clicked image (imgIndex + 1 because we skipped first image)
-                                  galleryRef.current?.open(imgIndex + 1);
+                                  galleryRefs.current[project.id]?.open(imgIndex + 1);
                                 }}
                                 data-testid={`preview-image-${imgIndex}`}
                               >
@@ -163,7 +167,7 @@ export default function ProjectsSection() {
                                 className="aspect-square rounded-lg bg-purple-600/20 border-2 border-purple-500/30 flex flex-col items-center justify-center text-purple-300 cursor-pointer hover:bg-purple-600/30 transition-colors"
                                 onClick={() => {
                                   // Open gallery from the beginning to show all images
-                                  galleryRef.current?.open(0);
+                                  galleryRefs.current[project.id]?.open(0);
                                 }}
                                 data-testid="more-images-indicator"
                               >
