@@ -18,7 +18,7 @@ export default function ProjectsSection() {
   });
 
   const projects = projectsData?.projects || [];
-  
+
   // Create refs for all projects to avoid hooks inside map
   const galleryRefs = useRef<{ [key: string]: ImageGalleryRef | null }>({});
 
@@ -36,7 +36,7 @@ export default function ProjectsSection() {
   const getIconEmoji = (iconName: string): string => {
     const iconMap: { [key: string]: string } = {
       'BarChart': '📊',
-      'Globe': '🌐', 
+      'Globe': '🌐',
       'Bot': '🤖',
       'ShoppingCart': '🛒',
       'Building': '🏢',
@@ -70,7 +70,7 @@ export default function ProjectsSection() {
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
         </div>
-        
+
         {/* Grid Pattern */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgaWQ9ImdyaWQiPgo8cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIIC3N0cm9rZT0iIzM3MzY0MyIgc3Ryb2tlLXdpZHRoPSIxIi8+CjwvZz4KPHN2Zz4=')] opacity-20"></div>
       </div>
@@ -98,8 +98,7 @@ export default function ProjectsSection() {
           {projects.map((project, index) => {
             const tags = parseJsonArray(project.tags);
             const images = parseProjectImages(project.images || '[]');
-            const isExpanded = expandedProject === project.id;
-            
+
             return (
               <motion.div
                 key={project.id}
@@ -107,159 +106,68 @@ export default function ProjectsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                layout
-                className={`${isExpanded ? 'lg:col-span-2' : ''}`}
               >
-                <Card className={`bg-slate-800/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-500/40 transition-all duration-300 ${!isExpanded ? 'hover:-translate-y-2' : ''} hover:shadow-xl hover:shadow-purple-500/20 relative overflow-hidden group ${isExpanded ? 'h-auto' : 'h-full'}`}>
-                  {/* Close button for expanded view */}
-                  {isExpanded && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedProject(null);
-                      }}
-                      className="absolute top-4 right-4 z-20 text-gray-400 hover:text-white hover:bg-purple-600/20 border border-purple-500/30 w-8 h-8"
-                      data-testid="button-close-expanded-view"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  )}
-                  
-                  {/* Hover effect overlay - only when not expanded */}
-                  {!isExpanded && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
-                  )}
-                  
-                  <CardContent className="p-8 relative z-10 flex flex-col">
-                    <div className={`${isExpanded ? 'grid grid-cols-1 lg:grid-cols-2 gap-8' : ''}`}>
-                      
-                      {/* Left Column - Images */}
-                      <div className={`${isExpanded ? 'order-1' : ''}`}>
-                        {/* Project gallery */}
-                        <div className="mb-6">
-                          <ImageGallery 
-                            ref={(ref) => {
-                              galleryRefs.current[project.id] = ref;
-                            }}
-                            images={images} 
-                            projectTitle={project.title}
-                            className="rounded-lg"
-                          />
-                        </div>
+                <Card className="bg-slate-800/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-500/40 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/20 relative overflow-hidden group h-full">
+                  {/* Hover effect overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
 
-                        {/* Gallery preview for expanded view */}
-                        {isExpanded && images.length > 1 && (
-                          <div className="mt-6">
-                            <h4 className="text-lg font-semibold text-white mb-4">Galeria de Imagens</h4>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
-                              {images.slice(1, 8).map((image, imgIndex) => (
-                                <motion.div
-                                  key={imgIndex}
-                                  initial={{ opacity: 0, scale: 0.8 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  transition={{ duration: 0.3, delay: imgIndex * 0.1 }}
-                                  className="relative aspect-square rounded-lg overflow-hidden bg-slate-700 cursor-pointer group/thumb"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    // Open gallery at the clicked image (imgIndex + 1 because we skipped first image)
-                                    galleryRefs.current[project.id]?.open(imgIndex + 1);
-                                  }}
-                                  data-testid={`preview-image-${imgIndex}`}
-                                >
-                                  <img
-                                    src={image.url}
-                                    alt={image.title || `${project.title} - Imagem ${imgIndex + 2}`}
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110"
-                                  />
-                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                    <Maximize2 className="w-6 h-6 text-white" />
-                                  </div>
-                                </motion.div>
-                              ))}
-                              
-                              {/* More images indicator */}
-                              {images.length > 8 && (
-                                <motion.div
-                                  initial={{ opacity: 0, scale: 0.8 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  transition={{ duration: 0.3, delay: 0.8 }}
-                                  className="aspect-square rounded-lg bg-purple-600/20 border-2 border-purple-500/30 flex flex-col items-center justify-center text-purple-300 cursor-pointer hover:bg-purple-600/30 transition-colors"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    // Open gallery from the beginning to show all images
-                                    galleryRefs.current[project.id]?.open(0);
-                                  }}
-                                  data-testid="more-images-indicator"
-                                >
-                                  <ImageIcon className="w-6 h-6 mb-1" />
-                                  <span className="text-xs font-medium">+{images.length - 8}</span>
-                                  <span className="text-xs">mais</span>
-                                </motion.div>
-                              )}
-                            </div>
-                          </div>
-                        )}
+                  <CardContent className="p-8 relative z-10 flex flex-col h-full">
+                    {/* Project gallery */}
+                    <div className="mb-6">
+                      <ImageGallery
+                        ref={(ref) => {
+                          galleryRefs.current[project.id] = ref;
+                        }}
+                        images={images}
+                        projectTitle={project.title}
+                        className="rounded-lg"
+                      />
+                    </div>
+
+                    {/* Project title */}
+                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
+                      {project.title}
+                    </h3>
+
+                    {/* Project description */}
+                    <p className="text-gray-300 mb-6 leading-relaxed flex-grow">
+                      {project.description}
+                    </p>
+
+                    {/* Tech tags */}
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {tags.map((tag, tagIndex) => (
+                        <span
+                          key={tagIndex}
+                          className="px-3 py-1 bg-purple-600/20 text-purple-300 text-sm rounded-full border border-purple-600/30 font-medium hover:bg-purple-600/30 transition-colors"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Project actions */}
+                    <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                      {/* Metric display */}
+                      <div className="inline-flex items-center px-4 py-2 bg-purple-600/10 border border-purple-500/20 rounded-full text-purple-300 text-sm">
+                        <Eye className="w-4 h-4 mr-2" />
+                        {project.metric}
                       </div>
 
-                      {/* Right Column - Content */}
-                      <div className={`${isExpanded ? 'order-2' : ''} ${isExpanded ? '' : 'flex flex-col justify-between'}`}>
-                        {/* Project title */}
-                        <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
-                          {project.title}
-                        </h3>
-
-                        {/* Project description */}
-                        <p className={`text-gray-300 mb-6 leading-relaxed ${isExpanded ? '' : 'flex-grow'}`}>
-                          {project.description}
-                        </p>
-
-                        {/* Tech tags */}
-                        <div className="flex flex-wrap gap-2 mb-6">
-                          {tags.map((tag, tagIndex) => (
-                            <span
-                              key={tagIndex}
-                              className="px-3 py-1 bg-purple-600/20 text-purple-300 text-sm rounded-full border border-purple-600/30 font-medium hover:bg-purple-600/30 transition-colors"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-
-                        {/* Project actions */}
-                        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-                          {/* Metric display */}
-                          <div className="inline-flex items-center px-4 py-2 bg-purple-600/10 border border-purple-500/20 rounded-full text-purple-300 text-sm">
-                            <Eye className="w-4 h-4 mr-2" />
-                            {project.metric}
-                          </div>
-
-                          {/* Expand/Collapse button */}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedProject(isExpanded ? null : project.id);
-                            }}
-                            className="border-purple-500/30 text-purple-300 hover:bg-purple-600/20 hover:border-purple-500/50 transition-all"
-                            data-testid={`button-${isExpanded ? 'collapse' : 'expand'}-project`}
-                          >
-                            {isExpanded ? (
-                              <>
-                                <X className="w-4 h-4 mr-2" />
-                                Fechar
-                              </>
-                            ) : (
-                              <>
-                                <ImageIcon className="w-4 h-4 mr-2" />
-                                Ver Galeria
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
+                      {/* Gallery button */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          galleryRefs.current[project.id]?.open(0);
+                        }}
+                        className="border-purple-500/30 text-purple-300 hover:bg-purple-600/20 hover:border-purple-500/50 transition-all"
+                        data-testid="button-view-gallery"
+                      >
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        Ver Galeria
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
