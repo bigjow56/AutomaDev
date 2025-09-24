@@ -314,17 +314,18 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
             )}
 
             {/* Main Content Area - Scrollable with padding for fixed header */}
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="flex-1 w-full flex flex-col items-center px-4 pt-24 pb-8 overflow-y-auto max-h-screen"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="flex-1 w-full flex flex-col overflow-hidden">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex-1 w-full flex flex-col items-center px-4 pt-24 pb-8 overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
 
               {/* Main image container with enhanced styling */}
-              <div className="relative max-h-[60vh] w-full flex items-center justify-center mb-6 group/image">
+              <div className="relative w-full flex items-center justify-center mb-6 group/image">
                 <div className="relative bg-slate-900/50 p-2 rounded-xl backdrop-blur border border-white/10">
                   {/* Loading skeleton - visible while image loads */}
                   {imageLoading && !imageError && (
@@ -448,6 +449,7 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
                 </div>
               )}
             </motion.div>
+          </div>
           </motion.div>
         )}
       </AnimatePresence>
