@@ -110,7 +110,7 @@ export default function ProjectsSection() {
                 layout
                 className={`${isExpanded ? 'lg:col-span-2' : ''}`}
               >
-                <Card className={`bg-slate-800/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-500/40 transition-all duration-300 ${!isExpanded ? 'hover:-translate-y-2' : ''} hover:shadow-xl hover:shadow-purple-500/20 relative overflow-hidden group ${isExpanded ? 'h-auto' : 'h-full'}`}>
+                <Card className={`bg-slate-800/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-500/40 transition-all duration-300 ${!isExpanded ? 'hover:-translate-y-2' : ''} hover:shadow-xl hover:shadow-purple-500/20 relative ${isExpanded ? 'overflow-visible' : 'overflow-hidden'} group ${isExpanded ? 'h-auto' : 'h-full'}`}>
                   {/* Close button for expanded view */}
                   {isExpanded && (
                     <Button
@@ -155,7 +155,7 @@ export default function ProjectsSection() {
                           <div className="mt-6">
                             <h4 className="text-lg font-semibold text-white mb-4">Galeria de Imagens</h4>
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
-                              {images.slice(1, 8).map((image, imgIndex) => (
+                              {images.slice(1).map((image, imgIndex) => (
                                 <motion.div
                                   key={imgIndex}
                                   initial={{ opacity: 0, scale: 0.8 }}
@@ -167,38 +167,19 @@ export default function ProjectsSection() {
                                     // Open gallery at the clicked image (imgIndex + 1 because we skipped first image)
                                     galleryRefs.current[project.id]?.open(imgIndex + 1);
                                   }}
-                                  data-testid={`preview-image-${imgIndex}`}
+                                  data-testid={`thumb-image-${project.id}-${imgIndex+1}`}
                                 >
                                   <img
                                     src={image.url}
                                     alt={image.title || `${project.title} - Imagem ${imgIndex + 2}`}
                                     className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110"
+                                    loading="lazy"
                                   />
                                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                     <Maximize2 className="w-6 h-6 text-white" />
                                   </div>
                                 </motion.div>
                               ))}
-                              
-                              {/* More images indicator */}
-                              {images.length > 8 && (
-                                <motion.div
-                                  initial={{ opacity: 0, scale: 0.8 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  transition={{ duration: 0.3, delay: 0.8 }}
-                                  className="aspect-square rounded-lg bg-purple-600/20 border-2 border-purple-500/30 flex flex-col items-center justify-center text-purple-300 cursor-pointer hover:bg-purple-600/30 transition-colors"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    // Open gallery from the beginning to show all images
-                                    galleryRefs.current[project.id]?.open(0);
-                                  }}
-                                  data-testid="more-images-indicator"
-                                >
-                                  <ImageIcon className="w-6 h-6 mb-1" />
-                                  <span className="text-xs font-medium">+{images.length - 8}</span>
-                                  <span className="text-xs">mais</span>
-                                </motion.div>
-                              )}
                             </div>
                           </div>
                         )}
