@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Images } from "lucide-react";
+import { ChevronLeft, ChevronRight, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ImageData {
@@ -24,7 +24,6 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
   ({ images, projectTitle, className = "", previewClassName = "h-48" }, ref) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [originalBodyOverflow, setOriginalBodyOverflow] = useState('');
     const [imageLoading, setImageLoading] = useState(true);
     const [imageError, setImageError] = useState(false);
     const triggerRef = useRef<HTMLDivElement>(null);
@@ -48,9 +47,9 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
   const openModal = (index: number = 0) => {
     setCurrentImageIndex(index);
     setIsModalOpen(true);
-    // Robust scroll locking using classList
-    document.documentElement.classList.add('overflow-hidden');
-    document.body.classList.add('overflow-hidden');
+    // Simplificar controle de scroll - usar apenas style
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
   };
 
   // Expose the open method through ref
@@ -60,9 +59,9 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
 
   const closeModal = () => {
     setIsModalOpen(false);
-    // Robust scroll unlock using classList
-    document.documentElement.classList.remove('overflow-hidden');
-    document.body.classList.remove('overflow-hidden');
+    // Simplificar controle de scroll - usar apenas style
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     // Restore focus to trigger element
     setTimeout(() => {
       if (triggerRef.current) {
@@ -95,8 +94,8 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
   useEffect(() => {
     return () => {
       // Always ensure scroll is restored when component unmounts
-      document.documentElement.classList.remove('overflow-hidden');
-      document.body.classList.remove('overflow-hidden');
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, []);
 
@@ -104,8 +103,8 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
   useEffect(() => {
     if (!isModalOpen) {
       // Ensure scroll is always restored when modal closes
-      document.documentElement.classList.remove('overflow-hidden');
-      document.body.classList.remove('overflow-hidden');
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     }
   }, [isModalOpen]);
 
@@ -159,11 +158,11 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
       const focusableElements = Array.from(modalRef.current.querySelectorAll(focusableSelectors)) as HTMLElement[];
       focusableElementsRef.current = focusableElements.filter(el => !el.hasAttribute('disabled'));
       
-      // Focus the close button initially
+      // Focus the first navigation button or thumbnail
       setTimeout(() => {
-        const closeButton = focusableElementsRef.current.find(el => el.getAttribute('data-testid') === 'button-close-gallery');
-        if (closeButton) {
-          closeButton.focus();
+        const firstButton = focusableElementsRef.current[0];
+        if (firstButton) {
+          firstButton.focus();
         }
       }, 100);
     }
@@ -247,32 +246,16 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
             aria-describedby={currentImage?.description ? "gallery-description" : undefined}
             data-testid="modal-gallery"
           >
-            {/* Fixed Header with Close Button - Always Visible */}
-            <div className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-b from-black/80 to-transparent p-4 flex justify-between items-center">
-              <div className="flex-1">
-                <h2 id="gallery-title" className="text-xl font-bold text-white truncate">
+            {/* Fixed Header - Always Visible */}
+            <div className="fixed top-0 left-0 right-0 z-[60] bg-gradient-to-b from-black/90 via-black/70 to-transparent p-4">
+              <div className="text-center">
+                <h2 id="gallery-title" className="text-xl font-bold text-white">
                   {projectTitle}
                 </h2>
                 <div className="text-purple-400 font-medium text-sm">
                   {currentImageIndex + 1} de {parsedImages.length}
                 </div>
               </div>
-              
-              {/* Enhanced Close Button - Larger Click Area */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  closeModal();
-                }}
-                className="group relative ml-4 w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center justify-center"
-                aria-label="Fechar galeria de imagens"
-                data-testid="button-close-gallery"
-              >
-                <X className="w-6 h-6 text-white group-hover:text-purple-400 transition-colors" />
-                
-                {/* Visual feedback on hover */}
-                <div className="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-purple-400/50 group-focus:border-purple-500 transition-colors" />
-              </button>
             </div>
 
             {/* Escape hint */}
@@ -314,13 +297,13 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
             )}
 
             {/* Main Content Area - Scrollable with padding for fixed header */}
-            <div className="flex-1 w-full flex flex-col overflow-hidden">
+            <div className="h-full w-full overflow-y-auto overflow-x-hidden pt-20 pb-4">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="flex-1 w-full flex flex-col items-center px-4 pt-24 pb-8 overflow-y-auto"
+                className="w-full flex flex-col items-center px-4 py-8"
                 onClick={(e) => e.stopPropagation()}
               >
 
@@ -355,9 +338,10 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
                   <img
                     src={currentImage?.url || ''}
                     alt={currentImage?.title || `${projectTitle} - Imagem ${currentImageIndex + 1}`}
-                    className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-all duration-300 hover:scale-[1.02] ${
+                    className={`max-w-[85vw] max-h-[70vh] object-contain rounded-lg shadow-2xl transition-all duration-300 hover:scale-[1.02] ${
                       imageLoading || imageError ? 'opacity-0' : 'opacity-100'
                     }`}
+                    style={{ maxWidth: 'min(85vw, 1200px)', maxHeight: 'min(70vh, 800px)' }}
                     loading="eager"
                     onLoad={() => {
                       setImageLoading(false);
