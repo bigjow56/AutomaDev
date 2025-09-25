@@ -15,10 +15,10 @@ export default function Home() {
       <ScrollProgress />
       <Navigation />
       <HeroSection />
-      <ServicesSection />
-      <BenefitsSection />
       <PortfolioSection />
       <ProjectsSection />
+      <ServicesSection />
+      <BenefitsSection />
       <EventsSection />
       <ContactSection />
       <Footer />
