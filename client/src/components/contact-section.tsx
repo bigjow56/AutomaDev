@@ -215,7 +215,7 @@ export default function ContactSection() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <Card className="bg-dark/90 border border-dark-tertiary/50 rounded-2xl p-8">
+            <Card className="text-card-foreground shadow-sm border border-dark-tertiary/50 rounded-2xl p-8 bg-[#0c0c0c]">
               <CardContent className="p-0">
                 <h3 className="text-2xl font-bold text-white mb-6" data-testid="contact-form-title">
                   Solicite uma Proposta
