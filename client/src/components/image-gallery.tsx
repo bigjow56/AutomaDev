@@ -29,6 +29,7 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
     const triggerRef = useRef<HTMLDivElement>(null);
     const modalRef = useRef<HTMLDivElement>(null);
     const focusableElementsRef = useRef<HTMLElement[]>([]);
+    const scrollPositionRef = useRef<number>(0);
 
     // Parse images if they come as JSON string
     const parsedImages = Array.isArray(images) ? images : [];
@@ -47,8 +48,16 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
   const openModal = (index: number = 0) => {
     setCurrentImageIndex(index);
     setIsModalOpen(true);
-    // Simplificar controle de scroll - usar apenas style
+    
+    // Salvar posição atual do scroll
+    scrollPositionRef.current = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Bloquear scroll de forma mais robusta para mobile
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollPositionRef.current}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
     document.documentElement.style.overflow = 'hidden';
   };
 
@@ -59,9 +68,18 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
 
   const closeModal = () => {
     setIsModalOpen(false);
-    // Simplificar controle de scroll - usar apenas style
+    
+    // Restaurar scroll de forma mais robusta para mobile
     document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
     document.documentElement.style.overflow = '';
+    
+    // Restaurar posição do scroll
+    window.scrollTo(0, scrollPositionRef.current);
+    
     // Restore focus to trigger element
     setTimeout(() => {
       if (triggerRef.current) {
@@ -95,6 +113,10 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
     return () => {
       // Always ensure scroll is restored when component unmounts
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
       document.documentElement.style.overflow = '';
     };
   }, []);
@@ -104,6 +126,10 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
     if (!isModalOpen) {
       // Ensure scroll is always restored when modal closes
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
       document.documentElement.style.overflow = '';
     }
   }, [isModalOpen]);
