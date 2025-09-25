@@ -231,7 +231,7 @@ export default function ContactSection() {
                         type="text"
                         value={formData.name}
                         onChange={(e) => handleInputChange("name", e.target.value)}
-                        className="bg-dark-secondary border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary"
+                        className="bg-[#1e1e1e] border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary"
                         placeholder="Seu nome"
                         required
                         data-testid="input-name"
@@ -246,7 +246,7 @@ export default function ContactSection() {
                         type="email"
                         value={formData.email}
                         onChange={(e) => handleInputChange("email", e.target.value)}
-                        className="bg-dark-secondary border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary"
+                        className="bg-[#1e1e1e] border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary"
                         placeholder="seu@email.com"
                         required
                         data-testid="input-email"
@@ -263,7 +263,7 @@ export default function ContactSection() {
                       type="text"
                       value={formData.company || ""}
                       onChange={(e) => handleInputChange("company", e.target.value)}
-                      className="bg-dark-secondary border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary"
+                      className="bg-[#1e1e1e] border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary"
                       placeholder="Nome da sua empresa"
                       data-testid="input-company"
                     />
@@ -279,12 +279,12 @@ export default function ContactSection() {
                       required
                     >
                       <SelectTrigger 
-                        className="bg-dark-secondary border-dark-tertiary/30 text-white focus:border-primary"
+                        className="bg-[#1e1e1e] border-dark-tertiary/30 text-white focus:border-primary"
                         data-testid="select-service"
                       >
                         <SelectValue placeholder="Selecione um serviço" />
                       </SelectTrigger>
-                      <SelectContent className="bg-dark-secondary border-dark-tertiary/30 text-white">
+                      <SelectContent className="bg-[#1e1e1e] border-dark-tertiary/30 text-white">
                         <SelectItem value="automation">Automação de Processos</SelectItem>
                         <SelectItem value="website">Criação de Sites</SelectItem>
                         <SelectItem value="integration">Integração de Sistemas</SelectItem>
@@ -302,7 +302,7 @@ export default function ContactSection() {
                       rows={4}
                       value={formData.message}
                       onChange={(e) => handleInputChange("message", e.target.value)}
-                      className="bg-dark-secondary border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary resize-none"
+                      className="bg-[#1e1e1e] border-dark-tertiary/30 text-white placeholder-gray-500 focus:border-primary resize-none"
                       placeholder="Conte-nos mais sobre seu projeto..."
                       required
                       data-testid="textarea-message"
