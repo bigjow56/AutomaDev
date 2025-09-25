@@ -64,6 +64,20 @@
   --secondary-purple-dark: #7c3aed;
 }
 
+/* Modal scroll lock styles - prevents scrolling on mobile */
+body.modal-open {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Webkit specific mobile scroll prevention */
+body.modal-open,
+html.modal-open {
+  touch-action: none;
+  -webkit-overflow-scrolling: touch;
+}
+
 .dark {
   --background: #0c0c0c;
   --foreground: hsl(280, 25%, 85%);

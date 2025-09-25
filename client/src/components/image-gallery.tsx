@@ -52,13 +52,13 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
     // Salvar posição atual do scroll
     scrollPositionRef.current = window.pageYOffset || document.documentElement.scrollTop;
     
-    // Bloquear scroll de forma mais robusta para mobile
+    // Bloquear scroll de forma simples e compatível
     document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollPositionRef.current}px`;
-    document.body.style.left = '0';
-    document.body.style.right = '0';
     document.documentElement.style.overflow = 'hidden';
+    
+    // Adicionar classe específica para mobile que previne scroll
+    document.body.classList.add('modal-open');
+    document.documentElement.classList.add('modal-open');
   };
 
   // Expose the open method through ref
@@ -69,13 +69,11 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
   const closeModal = () => {
     setIsModalOpen(false);
     
-    // Restaurar scroll de forma mais robusta para mobile
+    // Restaurar scroll de forma simples e compatível
     document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
     document.documentElement.style.overflow = '';
+    document.body.classList.remove('modal-open');
+    document.documentElement.classList.remove('modal-open');
     
     // Restaurar posição do scroll
     window.scrollTo(0, scrollPositionRef.current);
@@ -113,11 +111,9 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
     return () => {
       // Always ensure scroll is restored when component unmounts
       document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
       document.documentElement.style.overflow = '';
+      document.body.classList.remove('modal-open');
+      document.documentElement.classList.remove('modal-open');
     };
   }, []);
 
@@ -126,11 +122,9 @@ export const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
     if (!isModalOpen) {
       // Ensure scroll is always restored when modal closes
       document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
       document.documentElement.style.overflow = '';
+      document.body.classList.remove('modal-open');
+      document.documentElement.classList.remove('modal-open');
     }
   }, [isModalOpen]);
 
