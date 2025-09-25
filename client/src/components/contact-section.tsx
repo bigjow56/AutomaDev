@@ -83,7 +83,7 @@ export default function ContactSection() {
           rotate: [0, 90, 180],
         }}
         transition={{
-          duration: 11,
+          duration: 5,
           repeat: Infinity,
           ease: "easeInOut",
         }}
@@ -97,7 +97,7 @@ export default function ContactSection() {
           opacity: [0.2, 0.5, 0.2],
         }}
         transition={{
-          duration: 8,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
         }}
@@ -312,7 +312,7 @@ export default function ContactSection() {
                   <Button
                     type="submit"
                     disabled={contactMutation.isPending}
-                    className="w-full bg-primary hover:bg-primary-dark text-white px-8 py-4 font-bold text-lg transition-all duration-300 transform hover:scale-105"
+                    className="w-full purple-gradient-button hover:from-primary-dark hover:to-secondary-purple-dark text-white px-8 py-4 font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-purple hover:shadow-purple-lg"
                     data-testid="button-submit-contact"
                   >
                     {contactMutation.isPending ? "Enviando..." : "Enviar Mensagem"}
