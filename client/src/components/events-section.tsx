@@ -17,15 +17,15 @@ export default function EventsSection() {
 
   if (isLoading) {
     return (
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+      <section className="py-20 bg-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-3xl font-bold text-white mb-4">
               Próximos Eventos
             </h2>
             <div className="flex items-center justify-center space-x-2">
               <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
-              <span className="text-gray-600 dark:text-gray-300">Carregando eventos...</span>
+              <span className="text-gray-300">Carregando eventos...</span>
             </div>
           </div>
         </div>
@@ -38,7 +38,7 @@ export default function EventsSection() {
   }
 
   return (
-    <section className="py-20 bg-gray-50 dark:bg-gray-900">
+    <section className="py-20 bg-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -47,10 +47,10 @@ export default function EventsSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl font-bold text-white mb-4">
             Próximos Eventos
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Participe dos nossos eventos exclusivos e aprenda as melhores práticas em automação de processos
           </p>
         </motion.div>
@@ -82,11 +82,11 @@ export default function EventsSection() {
                       </Badge>
                       <Calendar className="w-5 h-5 text-purple-600" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    <CardTitle className="text-xl font-bold text-white mb-2">
                       {event.title}
                     </CardTitle>
                     {event.subtitle && (
-                      <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
+                      <CardDescription className="text-gray-300 font-medium">
                         {event.subtitle}
                       </CardDescription>
                     )}
@@ -94,13 +94,13 @@ export default function EventsSection() {
 
                   <CardContent className="pb-6">
                     {event.description && (
-                      <p className="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
+                      <p className="text-gray-300 mb-4 line-clamp-3">
                         {event.description}
                       </p>
                     )}
 
                     {event.endDate && (
-                      <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
+                      <div className="flex items-center text-sm text-gray-400 mb-4">
                         <Clock className="w-4 h-4 mr-2" />
                         <span>
                           {isExpired
@@ -111,7 +111,7 @@ export default function EventsSection() {
                       </div>
                     )}
 
-                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    <div className="flex items-center text-sm text-gray-400 mb-6">
                       <Users className="w-4 h-4 mr-2" />
                       <span>Vagas limitadas</span>
                     </div>
@@ -148,7 +148,7 @@ export default function EventsSection() {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
+          <p className="text-gray-300 mb-6">
             Quer receber notificações sobre novos eventos?
           </p>
           <Button

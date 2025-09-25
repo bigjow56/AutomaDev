@@ -72,7 +72,7 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-dark-secondary relative overflow-hidden">
+    <section id="contact" className="py-20 bg-dark relative overflow-hidden">
       {/* Parallax background elements */}
       <motion.div
         className="absolute top-16 left-16 w-24 h-24 bg-purple-500/10 rounded-full blur-xl"

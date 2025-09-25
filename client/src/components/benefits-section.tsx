@@ -40,7 +40,7 @@ export default function BenefitsSection() {
   ];
 
   return (
-    <section id="benefits" className="py-20 bg-dark-secondary relative overflow-hidden" ref={ref}>
+    <section id="benefits" className="py-20 bg-dark relative overflow-hidden" ref={ref}>
       {/* Parallax background decoration */}
       <motion.div 
         className="absolute inset-0 opacity-5"

@@ -51,10 +51,10 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
   
-  /* AutomaDev Custom Colors - Purple Innovation */
+  /* AutomaDev Custom Colors - Purple Innovation - Unified Monochromatic */
   --dark: #0c0c0c;
-  --dark-secondary: #1a0f2e;
-  --dark-tertiary: #2d1b45;
+  --dark-secondary: #0c0c0c;
+  --dark-tertiary: #1a0f2e;
   --primary: #9333ea;
   --primary-dark: #7c3aed;
   --secondary-purple: #a855f7;
@@ -111,10 +111,10 @@
   --shadow-xl: 0px 2px 0px 0px hsl(42, 92%, 50%, 0.00), 0px 8px 10px -1px hsl(42, 92%, 50%, 0.00);
   --shadow-2xl: 0px 2px 0px 0px hsl(42, 92%, 50%, 0.00);
   
-  /* AutomaDev Dark Mode Colors - Purple Innovation */
+  /* AutomaDev Dark Mode Colors - Purple Innovation - Unified Monochromatic */
   --dark: #0c0c0c;
-  --dark-secondary: #1a0f2e;
-  --dark-tertiary: #2d1b45;
+  --dark-secondary: #0c0c0c;
+  --dark-tertiary: #1a0f2e;
 }
 
 @layer base {
@@ -195,7 +195,7 @@
 
   /* Purple Gradient Classes - AutomaDev Innovation */
   .purple-gradient {
-    background: linear-gradient(135deg, #0c0c0c 0%, #1a0f2e 100%);
+    background: var(--dark);
   }
   
   .purple-gradient-primary {

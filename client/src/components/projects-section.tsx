@@ -56,11 +56,10 @@ export default function ProjectsSection() {
   return (
     <section
       id="projects"
-      className="py-20 relative overflow-hidden"
+      className="py-20 relative overflow-hidden bg-dark"
     >
       {/* Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900"></div>
         <div
           className="absolute inset-0"
           style={{

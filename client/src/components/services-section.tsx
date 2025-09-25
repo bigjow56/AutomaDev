@@ -43,7 +43,7 @@ export default function ServicesSection() {
   ];
 
   return (
-    <section id="services" className="py-20 bg-dark-secondary relative overflow-hidden">
+    <section id="services" className="py-20 bg-dark relative overflow-hidden">
       {/* Parallax background elements */}
       <motion.div
         className="absolute top-20 left-20 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"

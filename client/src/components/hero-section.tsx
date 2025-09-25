@@ -14,7 +14,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden purple-gradient">
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-dark">
       {/* Logo Neural Network Background */}
       <div className="absolute w-96 h-96 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-15 z-10">
         <div className="w-full h-full relative">
