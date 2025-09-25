@@ -133,7 +133,7 @@ export default function ProjectsSection() {
                             images={images} 
                             projectTitle={project.title}
                             className={isExpanded ? "rounded-lg" : "h-full"}
-                            previewClassName={isExpanded ? "h-[420px] md:h-[560px]" : "h-48"}
+                            previewClassName={isExpanded ? "h-[280px] md:h-[360px]" : "h-48"}
                           />
                         </div>
 
