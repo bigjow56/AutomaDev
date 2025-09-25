@@ -111,21 +111,7 @@ export default function ProjectsSection() {
                 className={`${isExpanded ? 'lg:col-span-2' : ''}`}
               >
                 <Card className={`bg-slate-800/40 border-purple-500/20 backdrop-blur-sm hover:border-purple-500/40 transition-all duration-300 ${!isExpanded ? 'hover:-translate-y-2' : ''} hover:shadow-xl hover:shadow-purple-500/20 relative ${isExpanded ? 'overflow-visible' : 'overflow-hidden'} group ${isExpanded ? 'h-auto' : 'h-full'}`}>
-                  {/* Close button for expanded view */}
-                  {isExpanded && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setExpandedProject(null);
-                      }}
-                      className="absolute top-4 right-4 z-20 text-gray-400 hover:text-white hover:bg-purple-600/20 border border-purple-500/30 w-8 h-8"
-                      data-testid="button-close-expanded-view"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  )}
+                  
                   
                   {/* Hover effect overlay - only when not expanded */}
                   {!isExpanded && (
