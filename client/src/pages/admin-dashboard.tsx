@@ -162,6 +162,8 @@ export default function AdminDashboard() {
       website: "",
       linkedin: "",
       github: "",
+      instagram: "",
+      whatsapp: "",
       skills: "",
       experience: "",
       education: "",
