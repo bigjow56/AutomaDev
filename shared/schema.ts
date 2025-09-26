@@ -138,6 +138,8 @@ export const portfolio = pgTable("portfolio", {
   website: text("website"),
   linkedin: text("linkedin"),
   github: text("github"),
+  instagram: text("instagram"),
+  whatsapp: text("whatsapp"),
   skills: text("skills").notNull().default("[]"), // JSON array of skills
   experience: text("experience").notNull().default("[]"), // JSON array of work experiences
   education: text("education").notNull().default("[]"), // JSON array of education
@@ -158,6 +160,8 @@ export const insertPortfolioSchema = createInsertSchema(portfolio).pick({
   website: true,
   linkedin: true,
   github: true,
+  instagram: true,
+  whatsapp: true,
   skills: true,
   experience: true,
   education: true,
@@ -171,6 +175,8 @@ export const insertPortfolioSchema = createInsertSchema(portfolio).pick({
   website: z.string().optional().or(z.literal("")),
   linkedin: z.string().optional().or(z.literal("")),
   github: z.string().optional().or(z.literal("")),
+  instagram: z.string().optional().or(z.literal("")),
+  whatsapp: z.string().optional().or(z.literal("")),
   skills: z.string().optional().or(z.literal("")),
   experience: z.string().optional().or(z.literal("")),
   education: z.string().optional().or(z.literal("")),

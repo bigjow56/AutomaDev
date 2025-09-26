@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
+import { User, Mail, Phone, MapPin, Globe, Linkedin, Github, Instagram, MessageCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Portfolio } from "@shared/schema";
 import { useParallax } from "@/hooks/use-scroll";
@@ -151,6 +151,7 @@ export default function PortfolioSection() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 bg-slate-700 rounded-lg hover:bg-purple-600 transition-colors"
+                        data-testid="link-linkedin"
                       >
                         <Linkedin className="w-5 h-5 text-white" />
                       </a>
@@ -161,8 +162,31 @@ export default function PortfolioSection() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 bg-slate-700 rounded-lg hover:bg-purple-600 transition-colors"
+                        data-testid="link-github"
                       >
                         <Github className="w-5 h-5 text-white" />
+                      </a>
+                    )}
+                    {portfolio.instagram && (
+                      <a
+                        href={portfolio.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 bg-slate-700 rounded-lg hover:bg-purple-600 transition-colors"
+                        data-testid="link-instagram"
+                      >
+                        <Instagram className="w-5 h-5 text-white" />
+                      </a>
+                    )}
+                    {portfolio.whatsapp && (
+                      <a
+                        href={portfolio.whatsapp}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 bg-slate-700 rounded-lg hover:bg-green-600 transition-colors"
+                        data-testid="link-whatsapp"
+                      >
+                        <MessageCircle className="w-5 h-5 text-white" />
                       </a>
                     )}
                   </div>

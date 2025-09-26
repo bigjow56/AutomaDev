@@ -1391,6 +1391,26 @@ export default function AdminDashboard() {
                             data-testid="portfolio-github-input"
                           />
                         </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-instagram">Instagram</Label>
+                          <Input
+                            id="portfolio-instagram"
+                            {...registerPortfolio("instagram")}
+                            placeholder="https://instagram.com/joaosilva"
+                            data-testid="portfolio-instagram-input"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="portfolio-whatsapp">WhatsApp</Label>
+                          <Input
+                            id="portfolio-whatsapp"
+                            {...registerPortfolio("whatsapp")}
+                            placeholder="https://wa.me/5511999999999"
+                            data-testid="portfolio-whatsapp-input"
+                          />
+                        </div>
                       </div>
                     </div>
 
