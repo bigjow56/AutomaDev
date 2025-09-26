@@ -99,10 +99,10 @@ export default function ServicesSection() {
               initial={{ opacity: 0, y: 60, rotateY: 15 }}
               whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
               transition={{ 
-                duration: 0.8, 
-                delay: index * 0.2,
+                duration: 0.5, 
+                delay: index * 0.1,
                 type: "spring",
-                stiffness: 80,
+                stiffness: 120,
                 damping: 12
               }}
               viewport={{ once: true, margin: "-10%" }}
@@ -125,7 +125,7 @@ export default function ServicesSection() {
                     }}
                     initial={{ opacity: 0, scale: 0.5 }}
                     whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: index * 0.2 + 0.3 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 + 0.1 }}
                   >
                     {service.icon}
                   </motion.div>
@@ -134,7 +134,7 @@ export default function ServicesSection() {
                     data-testid={`service-title-${service.id}`}
                     initial={{ opacity: 0, x: -30 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.2 + 0.4 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 + 0.15 }}
                   >
                     {service.title}
                   </motion.h3>
@@ -143,7 +143,7 @@ export default function ServicesSection() {
                     data-testid={`service-description-${service.id}`}
                     initial={{ opacity: 0, x: -30 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.2 + 0.5 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 + 0.2 }}
                   >
                     {service.description}
                   </motion.p>
@@ -152,7 +152,7 @@ export default function ServicesSection() {
                     data-testid={`service-features-${service.id}`}
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: index * 0.2 + 0.6 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 + 0.25 }}
                   >
                     {service.features.map((feature, featureIndex) => (
                       <motion.li 
@@ -161,8 +161,8 @@ export default function ServicesSection() {
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ 
-                          duration: 0.4, 
-                          delay: index * 0.2 + 0.7 + featureIndex * 0.1 
+                          duration: 0.3, 
+                          delay: index * 0.1 + 0.3 + featureIndex * 0.05 
                         }}
                       >
                         <span className="text-primary mr-2">✓</span>
