@@ -1,0 +1,548 @@
+/* Logo Container */
+.logo-container {
+    text-align: center;
+    position: relative;
+    padding: 40px;
+}
+
+/* Círculo principal da logo */
+.main-circle {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 0 auto 40px;
+    border: 3px solid rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1), transparent);
+    animation: circle-glow 4s ease-in-out infinite;
+}
+
+/* Cobra central */
+.snake-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+}
+
+/* Cobra realista e contínua */
+.snake {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    animation: snake-breathe 3s ease-in-out infinite;
+}
+
+/* Corpo principal da cobra - uma peça única */
+.snake-body {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 100px;
+}
+
+.snake-main-body {
+    position: absolute;
+    width: 180px;
+    height: 25px;
+    background: linear-gradient(90deg, 
+        #f1c40f 0%, 
+        #f39c12 20%, 
+        #e67e22 40%, 
+        #f39c12 60%, 
+        #d68910 80%, 
+        #b7950b 100%);
+    border-radius: 15px;
+    top: 40px;
+    left: 10px;
+    clip-path: polygon(
+        0% 50%, 
+        10% 20%, 
+        25% 60%, 
+        35% 30%, 
+        50% 70%, 
+        65% 25%, 
+        75% 65%, 
+        90% 35%, 
+        100% 50%, 
+        90% 65%, 
+        75% 35%, 
+        65% 75%, 
+        50% 30%, 
+        35% 70%, 
+        25% 40%, 
+        10% 80%
+    );
+    box-shadow: 
+        inset 0 3px 10px rgba(255, 255, 255, 0.4),
+        inset 0 -3px 10px rgba(0, 0, 0, 0.3),
+        0 0 25px rgba(241, 196, 15, 0.4);
+    animation: body-undulate 4s ease-in-out infinite;
+}
+
+/* Padrões diamante na cobra */
+.snake-main-body::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 8px,
+        rgba(183, 149, 11, 0.6) 8px,
+        rgba(183, 149, 11, 0.6) 12px
+    );
+    border-radius: inherit;
+}
+
+/* Cabeça da cobra - mais realista */
+.snake-head {
+    position: absolute;
+    width: 40px;
+    height: 32px;
+    top: 32px;
+    left: 5px;
+    background: linear-gradient(135deg, #f1c40f 0%, #e67e22 100%);
+    border-radius: 60% 40% 30% 70%;
+    border: 2px solid #d68910;
+    box-shadow: 
+        inset 2px 2px 8px rgba(255, 255, 255, 0.4),
+        inset -2px -2px 8px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(241, 196, 15, 0.5);
+    z-index: 15;
+    animation: head-sway 4s ease-in-out infinite;
+}
+
+/* Chapéu da cobra */
+.snake-hat {
+    position: absolute;
+    width: 35px;
+    height: 20px;
+    top: 15px;
+    left: 7px;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border-radius: 50% 50% 10% 10%;
+    border: 2px solid #1a252f;
+    box-shadow: 
+        0 -2px 8px rgba(0, 0, 0, 0.5),
+        0 0 15px rgba(52, 73, 94, 0.3);
+    z-index: 20;
+    animation: hat-bob 4s ease-in-out infinite;
+}
+
+/* Aba do chapéu */
+.snake-hat::before {
+    content: '';
+    position: absolute;
+    width: 45px;
+    height: 8px;
+    background: linear-gradient(135deg, #34495e, #2c3e50);
+    border-radius: 50%;
+    top: 15px;
+    left: -5px;
+    border: 1px solid #1a252f;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Fita do chapéu */
+.snake-hat::after {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 4px;
+    background: #e74c3c;
+    border-radius: 2px;
+    top: 12px;
+    left: 5px;
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+}
+
+/* Olhos mais expressivos */
+.snake-eyes {
+    position: absolute;
+    top: 38px;
+    left: 15px;
+    z-index: 16;
+}
+
+.snake-eye {
+    position: absolute;
+    width: 5px;
+    height: 7px;
+    background: #000;
+    border-radius: 50%;
+    animation: snake-blink 5s ease-in-out infinite;
+}
+
+.eye-left { left: 0px; }
+.eye-right { left: 15px; }
+
+.snake-eye::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 3px;
+    background: #ff4444;
+    border-radius: 50%;
+    top: 1px;
+    left: 1.5px;
+    animation: eye-glow 3s ease-in-out infinite;
+}
+
+/* Língua bifurcada */
+.snake-tongue {
+    position: absolute;
+    top: 50px;
+    left: 25px;
+    width: 20px;
+    height: 2px;
+    background: #e74c3c;
+    border-radius: 1px;
+    z-index: 16;
+    animation: tongue-flick 2s ease-in-out infinite;
+    transform-origin: left center;
+}
+
+.snake-tongue::before,
+.snake-tongue::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 1px;
+    background: #c0392b;
+    right: -3px;
+}
+
+.snake-tongue::before {
+    transform: rotate(25deg);
+    top: -1px;
+}
+
+.snake-tongue::after {
+    transform: rotate(-25deg);
+    top: 2px;
+}
+
+/* Cauda suave */
+.snake-tail {
+    position: absolute;
+    width: 15px;
+    height: 20px;
+    top: 42px;
+    right: 8px;
+    background: linear-gradient(135deg, #d68910, #b7950b);
+    border-radius: 50% 50% 90% 10%;
+    border: 1px solid #9c7a0a;
+    box-shadow: 
+        inset 1px 1px 4px rgba(255, 255, 255, 0.3),
+        0 0 10px rgba(214, 137, 16, 0.3);
+    z-index: 10;
+    animation: tail-sway 3s ease-in-out infinite;
+}
+
+/* Chocalho aprimorado */
+.snake-rattle {
+    position: absolute;
+    top: 40px;
+    right: -5px;
+    z-index: 12;
+}
+
+.rattle-segment {
+    position: absolute;
+    background: linear-gradient(135deg, #8b4513, #654321);
+    border-radius: 40%;
+    border: 1px solid #4a2c17;
+    animation: rattle-shake 0.2s ease-in-out infinite;
+}
+
+.rattle-1 {
+    width: 12px;
+    height: 8px;
+    top: 0px;
+    left: 0px;
+}
+
+.rattle-2 {
+    width: 10px;
+    height: 6px;
+    top: -3px;
+    left: 2px;
+}
+
+.rattle-3 {
+    width: 8px;
+    height: 4px;
+    top: -5px;
+    left: 3px;
+}
+
+/* Letras A e D orbitando */
+.orbiting-letters {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 280px;
+    height: 280px;
+    transform: translate(-50%, -50%);
+    animation: orbit 8s linear infinite;
+}
+
+.letter-orbit {
+    position: absolute;
+    font-size: 48px;
+    font-weight: bold;
+    text-shadow: 0 0 20px currentColor;
+    animation: counter-rotate 8s linear infinite reverse;
+}
+
+.letter-a {
+    color: #00d4aa;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 0s;
+}
+
+.letter-d {
+    color: #f39c12;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: -4s;
+}
+
+/* Elementos decorativos - circuitos */
+.circuit-ring {
+    position: absolute;
+    border: 2px solid transparent;
+    border-top: 2px solid #00d4aa;
+    border-right: 2px solid #40e0d0;
+    border-radius: 50%;
+    animation: ring-rotate 6s linear infinite;
+}
+
+.circuit-ring-1 {
+    width: 360px;
+    height: 360px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.6;
+}
+
+.circuit-ring-2 {
+    width: 280px;
+    height: 280px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-direction: reverse;
+    animation-duration: 4s;
+    border-top: 2px solid #f39c12;
+    border-right: 2px solid #e74c3c;
+    opacity: 0.4;
+}
+
+/* Partículas de código */
+.code-particle {
+    position: absolute;
+    color: #00d4aa;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    opacity: 0.7;
+    animation: particle-drift 6s linear infinite;
+}
+
+.particle-1 { top: 10%; left: 15%; animation-delay: 0s; }
+.particle-2 { top: 20%; right: 20%; animation-delay: 1s; }
+.particle-3 { bottom: 25%; left: 10%; animation-delay: 2s; }
+.particle-4 { bottom: 15%; right: 15%; animation-delay: 3s; }
+.particle-5 { top: 60%; left: 5%; animation-delay: 4s; }
+.particle-6 { top: 70%; right: 8%; animation-delay: 5s; }
+
+/* Texto da empresa */
+.company-name {
+    font-size: 56px;
+    font-weight: 300;
+    color: #ffffff;
+    letter-spacing: 3px;
+    margin-top: 30px;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+    animation: text-glow 3s ease-in-out infinite;
+}
+
+.company-name .highlight {
+    font-weight: bold;
+    color: #f1c40f;
+    text-shadow: 0 0 40px #f1c40f;
+    animation: highlight-pulse 2s ease-in-out infinite;
+}
+
+/* Slogan */
+.slogan {
+    font-size: 16px;
+    color: #bbb;
+    margin-top: 15px;
+    font-style: italic;
+    letter-spacing: 1px;
+    opacity: 0.8;
+    animation: slogan-fade 4s ease-in-out infinite;
+}
+
+/* Animações */
+@keyframes circle-glow {
+    0%, 100% { 
+        border-color: rgba(255, 215, 0, 0.3);
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    }
+    50% { 
+        border-color: rgba(255, 215, 0, 0.8);
+        box-shadow: 0 0 60px rgba(255, 215, 0, 0.4);
+    }
+}
+
+@keyframes snake-breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes body-undulate {
+    0%, 100% { 
+        clip-path: polygon(
+            0% 50%, 10% 20%, 25% 60%, 35% 30%, 50% 70%, 
+            65% 25%, 75% 65%, 90% 35%, 100% 50%, 
+            90% 65%, 75% 35%, 65% 75%, 50% 30%, 
+            35% 70%, 25% 40%, 10% 80%
+        );
+    }
+    50% { 
+        clip-path: polygon(
+            0% 50%, 10% 80%, 25% 40%, 35% 70%, 50% 30%, 
+            65% 75%, 75% 35%, 90% 65%, 100% 50%, 
+            90% 35%, 75% 65%, 65% 25%, 50% 70%, 
+            35% 30%, 25% 60%, 10% 20%
+        );
+    }
+}
+
+@keyframes hat-bob {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-2px); }
+}
+
+@keyframes eye-glow {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+@keyframes tail-sway {
+    0%, 100% { transform: rotate(10deg); }
+    50% { transform: rotate(25deg); }
+}
+
+@keyframes tongue-flick {
+    0%, 80%, 100% { transform: scaleX(1); opacity: 1; }
+    85%, 95% { transform: scaleX(1.5); opacity: 0.8; }
+}
+
+@keyframes snake-blink {
+    0%, 94%, 100% { transform: scaleY(1); }
+    95%, 99% { transform: scaleY(0.1); }
+}
+
+@keyframes head-sway {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+}
+
+@keyframes rattle-shake {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+}
+
+@keyframes orbit {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes counter-rotate {
+    0% { transform: translateX(-50%) rotate(0deg); }
+    100% { transform: translateX(-50%) rotate(-360deg); }
+}
+
+@keyframes ring-rotate {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes particle-drift {
+    0% { 
+        transform: translateY(0px) rotate(0deg); 
+        opacity: 0; 
+    }
+    10% { opacity: 0.7; }
+    90% { opacity: 0.7; }
+    100% { 
+        transform: translateY(-50px) rotate(360deg); 
+        opacity: 0; 
+    }
+}
+
+@keyframes text-glow {
+    0%, 100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+    50% { text-shadow: 0 0 40px rgba(255, 255, 255, 0.8); }
+}
+
+@keyframes highlight-pulse {
+    0%, 100% { text-shadow: 0 0 30px #f1c40f; }
+    50% { text-shadow: 0 0 60px #f39c12; }
+}
+
+@keyframes slogan-fade {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Efeitos hover */
+.logo-container:hover .snake {
+    animation-duration: 1s;
+}
+
+.logo-container:hover .orbiting-letters {
+    animation-duration: 4s;
+}
+
+.logo-container:hover .main-circle {
+    border-color: rgba(255, 215, 0, 1);
+    box-shadow: 0 0 100px rgba(255, 215, 0, 0.6);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .main-circle {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .company-name {
+        font-size: 42px;
+    }
+    
+    .letter-orbit {
+        font-size: 36px;
+    }
+    
+    .slogan {
+        font-size: 14px;
+    }
+    
+    .logo-container {
+        padding: 20px;
+    }
+}
