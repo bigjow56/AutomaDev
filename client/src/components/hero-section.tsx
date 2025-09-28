@@ -22,7 +22,7 @@ export default function HeroSection() {
 
           <h1 className="hero-title">
             AUTOMA<br />
-            <span style={{background: 'linear-gradient(135deg, #00d4ff, #8a2be2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>DEV</span>
+            <span className="hero-title-dev">DEV</span>
           </h1>
 
           <p className="hero-subtitle">
