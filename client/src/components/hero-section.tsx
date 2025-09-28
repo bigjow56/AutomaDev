@@ -1,5 +1,5 @@
 import "./hero-section.css";
-import platformImg from "@assets/AutomaDev - Editado_1759077273996.png";
+import newLogoImg from "@assets/20250927_1949_Logotipo de Automação_remix_01k66ntahqft7a7a2gxwvwxh7b - Editado_1759078127899.png";
 
 export default function HeroSection() {
   const scrollToSection = (sectionId: string) => {
@@ -21,10 +21,6 @@ export default function HeroSection() {
           <div className="hero-badge">
             ✨ Soluções em Automação
           </div>
-          
-          <h1 className="hero-title">
-            AUTOMA DEV
-          </h1>
           
           <p className="hero-subtitle">
             Transformamos ideias em soluções automatizadas. 
@@ -58,8 +54,8 @@ export default function HeroSection() {
                 {/* Plataforma principal elíptica com imagem */}
                 <div className="main-ellipse">
                   <img 
-                    src={platformImg} 
-                    alt="AutomaDev Platform" 
+                    src={newLogoImg} 
+                    alt="AutomaDev Logo" 
                     className="platform-image"
                   />
                 </div>
