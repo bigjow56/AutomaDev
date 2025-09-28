@@ -73,7 +73,7 @@ export default function PortfolioSection() {
           viewport={{ once: true }}
         >
           <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
-            Meu Portfolio
+            Sobre Mim
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Conheça minha trajetória profissional, habilidades e experiências que me definem como desenvolvedor

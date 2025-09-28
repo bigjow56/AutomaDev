@@ -4,7 +4,6 @@ import ServicesSection from "@/components/services-section";
 import BenefitsSection from "@/components/benefits-section";
 import PortfolioSection from "@/components/portfolio-section";
 import ProjectsSection from "@/components/projects-section";
-import EventsSection from "@/components/events-section";
 import ContactSection from "@/components/contact-section";
 import Footer from "@/components/footer";
 import ScrollProgress from "@/components/scroll-progress";
@@ -15,11 +14,10 @@ export default function Home() {
       <ScrollProgress />
       <Navigation />
       <HeroSection />
-      <PortfolioSection />
-      <ProjectsSection />
       <ServicesSection />
       <BenefitsSection />
-      <EventsSection />
+      <ProjectsSection />
+      <PortfolioSection />
       <ContactSection />
       <Footer />
     </div>

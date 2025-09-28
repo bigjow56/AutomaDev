@@ -113,7 +113,8 @@ export default function Navigation() {
                 { id: "home", label: "Início" },
                 { id: "services", label: "Serviços" },
                 { id: "benefits", label: "Benefícios" },
-                { id: "portfolio", label: "Portfolio" },
+                { id: "projects", label: "Projetos" },
+                { id: "portfolio", label: "Sobre Mim" },
                 { id: "contact", label: "Contato" }
               ].map((item) => (
                 <motion.button
@@ -229,7 +230,8 @@ export default function Navigation() {
                 { id: "home", label: "Início" },
                 { id: "services", label: "Serviços" },
                 { id: "benefits", label: "Benefícios" },
-                { id: "portfolio", label: "Portfolio" },
+                { id: "projects", label: "Projetos" },
+                { id: "portfolio", label: "Sobre Mim" },
                 { id: "contact", label: "Contato" }
               ].map((item, index) => (
                 <motion.button

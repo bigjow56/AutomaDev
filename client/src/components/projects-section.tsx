@@ -85,7 +85,7 @@ export default function ProjectsSection() {
         >
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-purple-500 via-purple-400 to-purple-300 rounded-full mb-6"></div>
           <h2 className="text-5xl md:text-6xl font-bold mb-6 pt-8 bg-gradient-to-r from-purple-400 via-purple-300 to-purple-200 bg-clip-text text-transparent">
-            Meus Projetos
+            Projetos de Sucesso
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Conheça alguns dos projetos que desenvolvi, combinando tecnologia e criatividade para resolver problemas reais
