@@ -20,6 +20,11 @@ export default function HeroSection() {
         <div className="hero-content">
           <div className="hero-badge">✨ Soluções em Automação</div>
 
+          <h1 className="hero-title">
+            AUTOMA<br />
+            <span style={{background: 'linear-gradient(135deg, #00d4ff, #8a2be2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>DEV</span>
+          </h1>
+
           <p className="hero-subtitle">
             Transformamos ideias em soluções automatizadas. Desenvolvemos
             sistemas inteligentes que otimizam processos e impulsionam o
