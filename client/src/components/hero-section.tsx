@@ -98,21 +98,6 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Stats section */}
-      <div className="stats">
-        <div className="stat-item" data-testid="stat-projects">
-          <div className="stat-number">50+</div>
-          <div className="stat-label">Projetos</div>
-        </div>
-        <div className="stat-item" data-testid="stat-satisfaction">
-          <div className="stat-number">100%</div>
-          <div className="stat-label">Satisfação</div>
-        </div>
-        <div className="stat-item" data-testid="stat-support">
-          <div className="stat-number">24/7</div>
-          <div className="stat-label">Suporte</div>
-        </div>
-      </div>
     </section>
   );
 }
