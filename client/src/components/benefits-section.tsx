@@ -104,7 +104,7 @@ export default function BenefitsSection() {
               whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
               transition={{ 
                 duration: 0.8, 
-                delay: index * 0.15,
+                delay: index * 0.05,
                 type: "spring",
                 stiffness: 100,
                 damping: 15
@@ -134,7 +134,7 @@ export default function BenefitsSection() {
                         data-testid={`benefit-title-${benefit.id}`}
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: index * 0.2 + 0.3 }}
+                        transition={{ duration: 0.6, delay: index * 0.05 + 0.1 }}
                       >
                         {benefit.title}
                       </motion.h3>
