@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import logoImg from "@assets/20250927_1949_Logotipo de Automação_remix_01k66ntahqft7a7a2gxwvwxh7b - Editado_1759078127899.png";
 
 interface AnimatedLogoProps {
   size?: "small" | "medium" | "large";
@@ -163,28 +164,20 @@ export default function AnimatedLogo({ size = "medium", className = "" }: Animat
         </motion.div>
       </div>
 
-      {/* Letras orbitais A e D */}
+      {/* Logo AutomaDev */}
       <motion.div 
-        className="absolute inset-0"
+        className="absolute inset-0 flex items-center justify-center"
         animate={{ rotate: 360 }}
         transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
       >
-        <motion.div 
-          className="absolute top-0 left-1/2 transform -translate-x-1/2 text-cyan-400 font-bold text-xs"
+        <motion.img
+          src={logoImg}
+          alt="AutomaDev Logo"
+          className="w-full h-full object-contain opacity-80"
           animate={{ rotate: -360 }}
           transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-          style={{ textShadow: "0 0 10px currentColor" }}
-        >
-          A
-        </motion.div>
-        <motion.div 
-          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-orange-400 font-bold text-xs"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear", delay: -4 }}
-          style={{ textShadow: "0 0 10px currentColor" }}
-        >
-          D
-        </motion.div>
+          style={{ filter: "drop-shadow(0 0 8px rgba(0, 212, 255, 0.4))" }}
+        />
       </motion.div>
 
       {/* Partículas de código */}
