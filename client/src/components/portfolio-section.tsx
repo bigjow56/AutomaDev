@@ -271,22 +271,7 @@ export default function PortfolioSection() {
           </motion.div>
         )}
 
-        {/* CTA */}
-        <motion.div
-          className="text-center mt-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <Button
-            onClick={() => scrollToSection("contact")}
-            className="inline-flex items-center bg-gradient-to-r from-primary to-secondary-purple hover:from-primary-dark hover:to-accent-purple text-white px-8 py-4 font-bold text-lg transition-all duration-300 transform hover:scale-105"
-            data-testid="button-contact-from-portfolio"
-          >
-            Vamos Conversar?
-          </Button>
-        </motion.div>
+        
       </div>
     </section>
   );
