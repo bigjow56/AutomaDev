@@ -241,38 +241,7 @@ export default function ProjectsSection() {
           })}
         </div>
 
-        {/* CTA Section */}
-        <motion.div
-          className="bg-slate-800/30 border border-purple-500/20 rounded-3xl p-16 text-center backdrop-blur-sm"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <h3 className="text-3xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent">
-            Gostou do que viu?
-          </h3>
-          <p className="text-xl text-gray-300 mb-8">
-            Vamos conversar sobre como posso ajudar você a transformar suas ideias em realidade
-          </p>
-          <Button
-            onClick={() => {
-              const element = document.getElementById("contact");
-              if (element) {
-                const offsetTop = element.offsetTop - 80;
-                window.scrollTo({
-                  top: offsetTop,
-                  behavior: "smooth",
-                });
-              }
-            }}
-            className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold text-lg px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 shadow-xl"
-            data-testid="button-contact-from-projects"
-          >
-            <ExternalLink className="w-5 h-5 mr-2" />
-            Entre em Contato
-          </Button>
-        </motion.div>
+        
       </div>
     </section>
   );
