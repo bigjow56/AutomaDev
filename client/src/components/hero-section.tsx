@@ -1,7 +1,5 @@
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { useTypewriter } from "@/hooks/use-typewriter";
-import HeroLogo from "@/components/hero-logo";
+import "./hero-section.css";
+import platformImg from "@assets/AutomaDev - Editado_1759077273996.png";
 
 export default function HeroSection() {
   const scrollToSection = (sectionId: string) => {
@@ -15,114 +13,94 @@ export default function HeroSection() {
     }
   };
 
-  // Typewriter effects with different speeds and delays
-  const titleTypewriter = useTypewriter({
-    text: "AutomaDev",
-    speed: 120, // Slow for dramatic effect
-    delay: 0,
-    showCursor: true
-  });
-
-  const subtitleTypewriter = useTypewriter({
-    text: "Automação Inteligente para o Futuro",
-    speed: 40, // Faster
-    delay: 2500, // Start after title is nearly done
-    showCursor: false
-  });
-
-  const descriptionTypewriter = useTypewriter({
-    text: "Transformamos ideias em soluções automatizadas. Desenvolvemos sistemas inteligentes que otimizam processos e impulsionam o crescimento do seu negócio.",
-    speed: 30, // Fast
-    delay: 4000, // Start after subtitle
-    showCursor: false
-  });
-
   return (
-    <section id="home" className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-dark py-20">
-      {/* Logo Central Animada */}
-      <motion.div 
-        className="relative z-10 mb-8"
-        initial={{ opacity: 0, scale: 0.5, y: 50 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-      >
-        <HeroLogo />
-      </motion.div>
+    <section id="home" className="hero">
+      <div className="hero-container">
+        {/* Conteúdo textual */}
+        <div className="hero-content">
+          <div className="hero-badge">
+            ✨ Soluções em Automação
+          </div>
+          
+          <h1 className="hero-title">
+            AUTOMA DEV
+          </h1>
+          
+          <p className="hero-subtitle">
+            Transformamos ideias em soluções automatizadas. 
+            Desenvolvemos sistemas inteligentes que otimizam processos 
+            e impulsionam o crescimento do seu negócio.
+          </p>
+          
+          <div className="hero-buttons">
+            <button 
+              className="btn-primary"
+              onClick={() => scrollToSection("contact")}
+              data-testid="button-start-project-hero"
+            >
+              Começar Projeto
+            </button>
+            <button 
+              className="btn-secondary"
+              onClick={() => scrollToSection("services")}
+              data-testid="button-view-services"
+            >
+              Ver Serviços
+            </button>
+          </div>
+        </div>
 
-      {/* Floating Particles */}
-      <div className="absolute w-full h-full pointer-events-none">
-        {[...Array(15)].map((_, index) => (
-          <motion.div
-            key={index}
-            className="absolute w-1 h-1 bg-yellow-400 rounded-full opacity-20"
-            style={{
-              left: `${5 + index * 6}%`,
-            }}
-            animate={{
-              y: ["100vh", "-100px"],
-              rotate: [0, 360],
-              opacity: [0, 0.2, 0.2, 0]
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "linear",
-              delay: index * 0.8
-            }}
-          />
-        ))}
+        {/* Área visual com a animação 3D */}
+        <div className="hero-visual">
+          <div className="floating-platform-container">
+            <div className="platform-rotator">
+              <div className="platform-floater">
+                {/* Plataforma principal elíptica com imagem */}
+                <div className="main-ellipse">
+                  <img 
+                    src={platformImg} 
+                    alt="AutomaDev Platform" 
+                    className="platform-image"
+                  />
+                </div>
+                
+                {/* Anéis orbitais */}
+                <div className="orbital-ring ring-1"></div>
+                <div className="orbital-ring ring-2"></div>
+                
+                {/* Ícones das plataformas */}
+                <div className="platform-icon instagram" data-testid="icon-instagram"></div>
+                <div className="platform-icon whatsapp" data-testid="icon-whatsapp"></div>
+                <div className="platform-icon globe" data-testid="icon-globe"></div>
+                <div className="platform-icon dollar" data-testid="icon-dollar"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Partículas */}
+          <div className="particle particle-1"></div>
+          <div className="particle particle-2"></div>
+          <div className="particle particle-3"></div>
+          <div className="particle particle-4"></div>
+          <div className="particle particle-5"></div>
+          <div className="particle particle-6"></div>
+        </div>
       </div>
 
-      {/* Hero Content */}
-      <div className="relative z-20 text-center max-w-4xl mx-auto px-8 mt-8">
-        <motion.p
-          className="text-2xl text-slate-400 mb-8 font-light min-h-[40px] flex items-center justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2, duration: 1 }}
-        >
-          {subtitleTypewriter.displayedText}
-        </motion.p>
-
-        <motion.p
-          className="text-xl text-slate-300 leading-relaxed mb-12 min-h-[100px] flex items-center justify-center text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 4, duration: 1 }}
-        >
-          {descriptionTypewriter.displayedText}
-        </motion.p>
-
-        <motion.div
-          initial={{ 
-            opacity: 0,
-            y: -400,
-            scale: 0.5,
-            rotate: -10
-          }}
-          animate={{ 
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            rotate: 0
-          }}
-          transition={{ 
-            duration: 1.2,
-            delay: 8.5, // Falls from sky after all text is done
-            type: "spring",
-            damping: 15,
-            stiffness: 300,
-            mass: 0.8
-          }}
-        >
-          <Button
-            onClick={() => scrollToSection("contact")}
-            className="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white px-10 py-4 text-lg font-semibold rounded-full transform transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-yellow-500/25 uppercase tracking-wide"
-            data-testid="button-start-project-hero"
-          >
-            Começar Agora
-          </Button>
-        </motion.div>
+      {/* Stats section */}
+      <div className="stats">
+        <div className="stat-item" data-testid="stat-projects">
+          <div className="stat-number">50+</div>
+          <div className="stat-label">Projetos</div>
+        </div>
+        <div className="stat-item" data-testid="stat-satisfaction">
+          <div className="stat-number">100%</div>
+          <div className="stat-label">Satisfação</div>
+        </div>
+        <div className="stat-item" data-testid="stat-support">
+          <div className="stat-number">24/7</div>
+          <div className="stat-label">Suporte</div>
+        </div>
       </div>
     </section>
   );
