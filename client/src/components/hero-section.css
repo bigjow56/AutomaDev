@@ -492,71 +492,92 @@
 
 @media (max-width: 768px) {
     .hero {
-        padding: 20px;
+        padding: 80px 20px 20px;
+        min-height: calc(100vh - 60px);
     }
     
     .hero-container {
-        padding: 0 20px;
-        gap: 30px;
+        padding: 0 16px;
+        gap: 24px;
+        max-width: 100%;
+    }
+    
+    .hero-badge {
+        font-size: 12px;
+        padding: 6px 12px;
+        margin-bottom: 16px;
     }
     
     .hero-title {
-        font-size: 2.5rem;
+        font-size: clamp(2rem, 7vw, 2.5rem);
+        margin-bottom: 16px;
+        line-height: 1.2;
     }
     
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 24px;
+        max-width: 100%;
     }
     
     .hero-buttons {
         flex-direction: column;
         align-items: center;
+        gap: 12px;
+        width: 100%;
     }
     
     .btn-primary,
     .btn-secondary {
         width: 100%;
-        max-width: 280px;
+        max-width: 300px;
+        padding: 14px 24px;
+        font-size: 15px;
     }
     
     .hero-visual {
-        height: 300px;
+        height: 280px;
+        margin-top: 20px;
     }
     
     .floating-platform-container {
-        width: 300px;
-        height: 300px;
+        width: 280px;
+        height: 280px;
     }
     
     .main-ellipse {
-        width: 220px;
-        height: 140px;
+        width: 200px;
+        height: 130px;
     }
     
     .platform-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
     }
     
     .stats {
-        bottom: 40px;
-        gap: 15px;
+        bottom: 20px;
+        gap: 12px;
         flex-wrap: wrap;
         justify-content: center;
+        padding: 0 16px;
     }
     
     .stat-item {
-        padding: 10px 15px;
-        min-width: 60px;
+        padding: 8px 12px;
+        min-width: 70px;
+        flex: 1;
+        max-width: calc(33.333% - 8px);
     }
     
     .stat-number {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
     }
     
     .stat-label {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
     }
 }
 

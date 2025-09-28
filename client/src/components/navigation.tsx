@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import AnimatedLogo from "@/components/animated-logo";
+import logoImg from "@assets/20250927_1949_Logotipo de Automação_remix_01k66ntahqft7a7a2gxwvwxh7b - Editado_1759078127899.png";
 import { useSectionDetection } from "@/hooks/use-section-detection";
 
 export default function Navigation() {
@@ -58,11 +58,11 @@ export default function Navigation() {
         }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <motion.div 
             className="flex justify-between items-center"
             animate={{
-              height: isInPortfolioOrProjects ? "56px" : "64px",
+              height: isInPortfolioOrProjects ? "52px" : "60px",
             }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
@@ -78,9 +78,15 @@ export default function Navigation() {
               whileHover={{ scale: isInPortfolioOrProjects ? 0.9 : 1.1 }}
               whileTap={{ scale: isInPortfolioOrProjects ? 0.75 : 0.95 }}
             >
-              <AnimatedLogo 
-                size={isInPortfolioOrProjects ? "small" : "medium"} 
-                className="mr-3" 
+              <motion.img
+                src={logoImg}
+                alt="AutomaDev Logo"
+                className="mr-3 object-contain"
+                animate={{
+                  width: isInPortfolioOrProjects ? "32px" : "40px",
+                  height: isInPortfolioOrProjects ? "32px" : "40px",
+                }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
               />
               <motion.span 
                 className="text-white font-bold"
@@ -218,7 +224,7 @@ export default function Navigation() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <motion.div className="px-2 pt-2 pb-3 space-y-1">
+            <motion.div className="px-3 pt-3 pb-4 space-y-2">
               {[
                 { id: "home", label: "Início" },
                 { id: "services", label: "Serviços" },
@@ -229,10 +235,10 @@ export default function Navigation() {
                 <motion.button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className={`block w-full text-left px-3 py-2 text-base font-medium transition-colors duration-200 ${
+                  className={`block w-full text-left px-4 py-3 text-base font-medium rounded-lg transition-colors duration-200 ${
                     currentSection === item.id 
-                      ? "text-primary bg-primary/10" 
-                      : "text-gray-300 hover:text-primary"
+                      ? "text-primary bg-primary/15 border border-primary/30" 
+                      : "text-gray-300 hover:text-primary hover:bg-primary/5"
                   }`}
                   data-testid={`mobile-nav-${item.id}`}
                   initial={{ opacity: 0, x: -20 }}
@@ -243,6 +249,22 @@ export default function Navigation() {
                   {item.label}
                 </motion.button>
               ))}
+              
+              {/* Mobile CTA Button */}
+              <motion.div 
+                className="pt-2 mt-2 border-t border-primary/20"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.6 }}
+              >
+                <Button
+                  onClick={() => scrollToSection("contact")}
+                  className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3"
+                  data-testid="mobile-button-start-project"
+                >
+                  Começar Projeto
+                </Button>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}
