@@ -1,5 +1,5 @@
 import "./hero-section.css";
-import newLogoImg from "@assets/20250927_1949_Logotipo de Automação_remix_01k66ntahqft7a7a2gxwvwxh7b - Editado_1759078127899.png";
+import newLogoImg from "@assets/AutomaDev - Editado_1759077273996.png";
 
 export default function HeroSection() {
   const scrollToSection = (sectionId: string) => {
@@ -18,25 +18,23 @@ export default function HeroSection() {
       <div className="hero-container">
         {/* Conteúdo textual */}
         <div className="hero-content">
-          <div className="hero-badge">
-            ✨ Soluções em Automação
-          </div>
-          
+          <div className="hero-badge">✨ Soluções em Automação</div>
+
           <p className="hero-subtitle">
-            Transformamos ideias em soluções automatizadas. 
-            Desenvolvemos sistemas inteligentes que otimizam processos 
-            e impulsionam o crescimento do seu negócio.
+            Transformamos ideias em soluções automatizadas. Desenvolvemos
+            sistemas inteligentes que otimizam processos e impulsionam o
+            crescimento do seu negócio.
           </p>
-          
+
           <div className="hero-buttons">
-            <button 
+            <button
               className="btn-primary"
               onClick={() => scrollToSection("contact")}
               data-testid="button-start-project-hero"
             >
               Começar Projeto
             </button>
-            <button 
+            <button
               className="btn-secondary"
               onClick={() => scrollToSection("services")}
               data-testid="button-view-services"
@@ -53,22 +51,34 @@ export default function HeroSection() {
               <div className="platform-floater">
                 {/* Plataforma principal elíptica com imagem */}
                 <div className="main-ellipse">
-                  <img 
-                    src={newLogoImg} 
-                    alt="AutomaDev Logo" 
+                  <img
+                    src={newLogoImg}
+                    alt="AutomaDev Logo"
                     className="platform-image"
                   />
                 </div>
-                
+
                 {/* Anéis orbitais */}
                 <div className="orbital-ring ring-1"></div>
                 <div className="orbital-ring ring-2"></div>
-                
+
                 {/* Ícones das plataformas */}
-                <div className="platform-icon instagram" data-testid="icon-instagram"></div>
-                <div className="platform-icon whatsapp" data-testid="icon-whatsapp"></div>
-                <div className="platform-icon globe" data-testid="icon-globe"></div>
-                <div className="platform-icon dollar" data-testid="icon-dollar"></div>
+                <div
+                  className="platform-icon instagram"
+                  data-testid="icon-instagram"
+                ></div>
+                <div
+                  className="platform-icon whatsapp"
+                  data-testid="icon-whatsapp"
+                ></div>
+                <div
+                  className="platform-icon globe"
+                  data-testid="icon-globe"
+                ></div>
+                <div
+                  className="platform-icon dollar"
+                  data-testid="icon-dollar"
+                ></div>
               </div>
             </div>
           </div>
