@@ -9,7 +9,6 @@ import Home from "@/pages/home";
 import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
 import ChatWidget, { type ChatWidgetRef } from "@/components/chat-widget";
-import ParticlesBackground from "@/components/particles-background";
 import WelcomeMessage from "@/components/welcome-message";
 
 function Router() {
@@ -38,7 +37,6 @@ function App() {
         disableTransitionOnChange
       >
         <TooltipProvider>
-          <ParticlesBackground />
           <div className="relative z-10">
             <Toaster />
             <Router />
