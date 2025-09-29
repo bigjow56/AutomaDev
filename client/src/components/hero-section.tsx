@@ -1,5 +1,5 @@
 import "./hero-section.css";
-import newLogoImg from "@assets/20250927_1949_Logotipo de Automação_remix_01k66ntahqft7a7a2gxwvwxh7b - Editado_1759078127899.png";
+import newLogoImg from "@assets/AutomaDev_1759165797760.png";
 
 export default function HeroSection() {
   const scrollToSection = (sectionId: string) => {
