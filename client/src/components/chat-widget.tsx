@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,11 @@ import { apiRequest } from "@/lib/queryClient";
 import type { ChatMessage, InsertChatMessage } from "@shared/schema";
 import { useWebSocket } from "@/hooks/useWebSocket";
 
-export default function ChatWidget() {
+export interface ChatWidgetRef {
+  openChat: () => void;
+}
+
+const ChatWidget = forwardRef<ChatWidgetRef>((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [sessionId] = useState(() => {
@@ -26,6 +30,11 @@ export default function ChatWidget() {
   const [isTyping, setIsTyping] = useState(false);
   const [isAgentTyping, setIsAgentTyping] = useState(false);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Expose openChat function to parent components
+  useImperativeHandle(ref, () => ({
+    openChat: () => setIsOpen(true)
+  }), []);
 
   // WebSocket message handler
   const handleWebSocketMessage = useCallback((wsMessage: any) => {
@@ -349,4 +358,8 @@ export default function ChatWidget() {
       </AnimatePresence>
     </>
   );
-}
+});
+
+ChatWidget.displayName = 'ChatWidget';
+
+export default ChatWidget;
