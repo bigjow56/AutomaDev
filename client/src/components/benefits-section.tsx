@@ -84,7 +84,7 @@ export default function BenefitsSection() {
           className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.3 }}
           viewport={{ once: true }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6" data-testid="benefits-title">
@@ -100,14 +100,14 @@ export default function BenefitsSection() {
           {benefits.map((benefit, index) => (
             <motion.div
               key={benefit.id}
-              initial={{ opacity: 0, y: 50, rotateX: 15 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.8, 
-                delay: index * 0.05,
+                duration: 0.4, 
+                delay: index * 0.02,
                 type: "spring",
-                stiffness: 100,
-                damping: 15
+                stiffness: 200,
+                damping: 20
               }}
               viewport={{ once: true, margin: "-10%" }}
               whileHover={{ 
@@ -132,27 +132,27 @@ export default function BenefitsSection() {
                       <motion.h3 
                         className="text-2xl font-bold text-white mb-4" 
                         data-testid={`benefit-title-${benefit.id}`}
-                        initial={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, x: -10 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: index * 0.05 + 0.1 }}
+                        transition={{ duration: 0.3, delay: 0.1 }}
                       >
                         {benefit.title}
                       </motion.h3>
                       <motion.p 
                         className="text-gray-300 leading-relaxed mb-4" 
                         data-testid={`benefit-description-${benefit.id}`}
-                        initial={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, x: -10 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: index * 0.2 + 0.4 }}
+                        transition={{ duration: 0.3, delay: 0.15 }}
                       >
                         {benefit.description}
                       </motion.p>
                       <motion.div 
                         className="text-primary font-semibold" 
                         data-testid={`benefit-metric-${benefit.id}`}
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5, delay: index * 0.2 + 0.6 }}
+                        transition={{ duration: 0.2, delay: 0.2 }}
                       >
                         {benefit.metric}
                       </motion.div>
