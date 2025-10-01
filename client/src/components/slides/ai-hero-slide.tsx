@@ -99,7 +99,7 @@ export default function AIHeroSlide() {
             <div className="ai-orbit-item">⚡ IA em Tempo Real</div>
           </div>
           <div className="ai-floating-image">
-            <img src="/uploads/ai-automation-hero.png" alt="IA Global" />
+            <img src="/uploads/cerebro-ai.png" alt="Inteligência Artificial" />
           </div>
         </div>
       </div>
