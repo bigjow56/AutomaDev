@@ -87,3 +87,46 @@ Currently implements a basic contact form system and AI chat without user authen
 - **Drizzle-Zod**: Integration between Drizzle ORM and Zod for type-safe database schemas
 
 The application is designed to be easily deployable on various platforms while maintaining development simplicity and production reliability.
+
+## Replit Environment Setup
+
+### Current Configuration (October 2025)
+This project is fully configured and running on the Replit platform with the following setup:
+
+**Workflow Configuration:**
+- **Name**: Start application
+- **Command**: `npm run dev`
+- **Port**: 5000 (configured with webview output type)
+- **Status**: ✅ Running successfully
+
+**Database Configuration:**
+- PostgreSQL database provisioned and connected via `DATABASE_URL` environment variable
+- Schema synchronized using Drizzle ORM (`npm run db:push`)
+- All tables (contacts, chat_messages, events, admin_users, projects, portfolio) created successfully
+
+**Development Server:**
+- Express backend serving on port 5000 (0.0.0.0)
+- Vite frontend integrated with HMR
+- WebSocket server running on `/ws` path
+- CORS configured for Replit proxy environment
+- All hosts allowed for proxy compatibility (`allowedHosts: true`)
+
+**Deployment Configuration:**
+- **Type**: Autoscale (stateless web application)
+- **Build**: `npm run build` (Vite frontend + esbuild backend)
+- **Run**: `npm run start` (production server)
+- **Production Ready**: ✅ Configured and ready to publish
+
+**Environment Variables Required:**
+- `DATABASE_URL`: Automatically provisioned by Replit PostgreSQL
+- `N8N_WEBHOOK_URL`: Optional - for AI agent integration via n8n
+- `JWT_SECRET`: Auto-generated on first run if not set
+- `SESSION_SECRET`: Has default value, can be customized
+
+### Admin Access
+Default admin credentials (created on first run):
+- Username: `admin`
+- Password: `123456`
+- Access at: `/admin/login`
+
+**Security Note**: Change default credentials in production!
