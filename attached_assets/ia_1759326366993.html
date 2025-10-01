@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA & Automação - AutomaDev</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="main-container">
+        <section class="hero-section">
+            <div class="particles" id="particles1"></div>
+            <div class="content-wrapper">
+                <div class="text-content">
+                    <div class="badge">
+                        ✨ Powered by AI
+                    </div>
+                    <h1 class="glow-text">Automatize seu negócio com Inteligência Artificial</h1>
+                    <p class="subtitle-large">
+                        Soluções inteligentes que aprendem, evoluem e otimizam seus processos em tempo real.
+                    </p>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-number">10x</div>
+                            <div class="stat-label">Mais Rápido</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-number">95%</div>
+                            <div class="stat-label">Precisão</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Disponível</div>
+                        </div>
+                    </div>
+
+                    <div class="cta-group">
+                        <a href="#contato" class="btn-modern btn-primary">
+                            <span>⚡</span> Começar Agora
+                        </a>
+                        <a href="#demo" class="btn-modern btn-secondary">
+                            <span>▶️</span> Explorar Demo
+                        </a>
+                    </div>
+                </div>
+
+                <div class="image-showcase">
+                    <div class="orbiting-elements">
+                        <div class="orbit-item">🌍 Alcance Global</div>
+                        <div class="orbit-item">⚡ IA em Tempo Real</div>
+                    </div>
+                    <div class="floating-image">
+                        <img src="./assets/cerebro.png" alt="IA Global">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Particles
+        function createParticles(containerId) {
+            const container = document.getElementById(containerId);
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 5 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        createParticles('particles1');
+    </script>
+</body>
+</html>
