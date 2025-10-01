@@ -1,5 +1,5 @@
 import Navigation from "@/components/navigation";
-import HeroSection from "@/components/hero-section";
+import HeroSlider from "@/components/hero-slider";
 import ServicesSection from "@/components/services-section";
 import BenefitsSection from "@/components/benefits-section";
 import PortfolioSection from "@/components/portfolio-section";
@@ -13,7 +13,7 @@ export default function Home() {
     <div className="purple-gradient text-white font-sans antialiased">
       <ScrollProgress />
       <Navigation />
-      <HeroSection />
+      <HeroSlider />
       <ServicesSection />
       <BenefitsSection />
       <ProjectsSection />
