@@ -4,7 +4,7 @@
 
 AutomaDev is a full-stack web application that serves as a landing page and contact platform for a business automation consultancy. The application showcases automation services, web development capabilities, and system integration solutions. It's built as a modern, responsive single-page application with a professional contact form system for lead generation.
 
-**Latest Update (Sept 2025)**: The platform now includes complete AI agent integration with n8n workflow automation, featuring real-time bidirectional communication through WebSockets and webhook endpoints for seamless customer support automation.
+**Latest Update (October 2025)**: The platform now includes complete AI agent integration with n8n workflow automation, featuring real-time bidirectional communication through WebSockets and webhook endpoints for seamless customer support automation. Additionally, a dynamic hero slider has been implemented to showcase both the original AutomaDev design and a new IA & Automation design with automatic rotation and manual navigation.
 
 ## User Preferences
 
@@ -23,6 +23,15 @@ The client-side is built using React with TypeScript, leveraging modern React pa
 - **Animations**: Framer Motion for smooth page transitions and interactive elements
 
 The frontend follows a modern component composition pattern with clear separation between UI components, business logic, and data fetching.
+
+**Hero Slider Feature (October 2025)**:
+- **Dynamic Slider**: Automatic rotation between two hero section designs every 8 seconds
+- **Navigation Controls**: Manual navigation via arrow buttons and dot indicators
+- **Pause on Hover**: Autoplay pauses when user hovers over the slider
+- **Smooth Transitions**: Fade-in/fade-out animations with 800ms duration
+- **React Performance**: Self-scheduling setTimeout pattern for robust autoplay without drift
+- **Particle Effects**: React-friendly particle system using useMemo for the AI hero slide
+- **Responsive Design**: Full viewport slider with adaptive controls for all screen sizes
 
 ### Backend Architecture
 The server-side is built with Express.js and TypeScript, following RESTful API design principles:
