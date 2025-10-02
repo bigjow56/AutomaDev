@@ -1,5 +1,6 @@
 import Navigation from "@/components/navigation";
-import HeroSlider from "@/components/hero-slider";
+import AutomaDevSlide from "@/components/slides/automaDev-slide";
+import AIHeroSlide from "@/components/slides/ai-hero-slide";
 import ServicesSection from "@/components/services-section";
 import BenefitsSection from "@/components/benefits-section";
 import PortfolioSection from "@/components/portfolio-section";
@@ -13,7 +14,8 @@ export default function Home() {
     <div className="purple-gradient text-white font-sans antialiased">
       <ScrollProgress />
       <Navigation />
-      <HeroSlider />
+      <AutomaDevSlide />
+      <AIHeroSlide />
       <ServicesSection />
       <BenefitsSection />
       <ProjectsSection />
