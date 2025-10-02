@@ -92,7 +92,6 @@ export default function AIHeroSlide() {
 
         <div className="ai-image-showcase">
           <div className="ai-orbiting-elements">
-            <div className="ai-orbit-item">🌍 Alcance Global</div>
             <div className="ai-orbit-item">⚡ IA em Tempo Real</div>
           </div>
           <div className="ai-floating-image">
