@@ -47,9 +47,6 @@ export default function AIHeroSlide() {
       
       <div className="ai-content-wrapper">
         <div className="ai-text-content">
-          <div className="ai-badge">
-            ✨ Powered by AI
-          </div>
           <h1 className="ai-glow-text">
             Automatize seu negócio com Inteligência Artificial
           </h1>
